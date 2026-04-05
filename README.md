@@ -1,5 +1,7 @@
 # RelatedWorks
 
+> ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.
+
 A native macOS academic literature manager purpose-built for Computer Science researchers. Streamlines organizing papers, taking interconnected notes, and automatically drafting Related Works sections.
 
 ## Features
