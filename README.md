@@ -12,7 +12,8 @@ A native macOS academic literature manager purpose-built for Computer Science re
 - **DBLP + arXiv search** — auto-fetches bibliographic metadata; falls back to arXiv if DBLP returns nothing, then to manual entry
 - **Semantic IDs** — each paper gets a short memorable ID (e.g. `Transformer`, `BERT`) unique across the entire system
 - **Cross-reference annotations** — use `@SemanticID` syntax in notes to link papers; cross-references rendered as clickable navigation
-- **BibTeX management** — fetched from DBLP when available, auto-generated from metadata otherwise
+- **BibTeX management** — fetched from DBLP when available, auto-generated from metadata otherwise; editable via right-click
+- **Metadata editing** — right-click any paper to edit title, authors, year, venue, and abstract; local BibTeX regenerated automatically
 - **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via Ollama (qwen3)
 - **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
 - **CLI interface** — agent-friendly command line for LLM automation
@@ -28,6 +29,21 @@ Open `RelatedWorksApp.xcodeproj` in Xcode and build the `RelatedWorksApp` scheme
 
 ```bash
 xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp -configuration Release build
+```
+
+## Deep Links
+
+Every project and paper has a `relatedworks://` URI. Copy it from the paper detail view via the "Copy Link" button, then use it in Hookmark or any URL-aware tool.
+
+```
+relatedworks://open?project=<UUID>
+relatedworks://open?project=<UUID>&paper=<SemanticID>
+```
+
+You can also open them directly from Terminal:
+
+```bash
+open "relatedworks://open?project=<UUID>&paper=BERT"
 ```
 
 ## Data Storage

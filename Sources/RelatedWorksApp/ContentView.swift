@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var store: Store
+    @ObservedObject var deepLinkHandler: DeepLinkHandler
     @State private var selectedProjectID: UUID?
     @State private var selectedPaperID: String?
 
@@ -26,19 +27,29 @@ struct ContentView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .frame(minWidth: 960, minHeight: 620)
-        .onOpenURL { url in
-            handleDeepLink(url)
+        .onChange(of: deepLinkHandler.pending) { dest in
+            guard let dest else { return }
+            switch dest {
+            case .project(let pid):
+                selectedProjectID = pid
+            case .paper(let pid, let paperID):
+                selectedProjectID = pid
+                // Delay paper selection to let the project detail view load first
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    selectedPaperID = paperID
+                }
+            }
+            deepLinkHandler.pending = nil
         }
     }
+}
 
-    private func handleDeepLink(_ url: URL) {
-        guard let dest = DeepLink.parse(url) else { return }
-        switch dest {
-        case .project(let pid):
-            selectedProjectID = pid
-        case .paper(let pid, let paperID):
-            selectedProjectID = pid
-            selectedPaperID = paperID
+extension DeepLink.Destination: Equatable {
+    static func == (lhs: DeepLink.Destination, rhs: DeepLink.Destination) -> Bool {
+        switch (lhs, rhs) {
+        case (.project(let a), .project(let b)): return a == b
+        case (.paper(let a, let b), .paper(let c, let d)): return a == c && b == d
+        default: return false
         }
     }
 }

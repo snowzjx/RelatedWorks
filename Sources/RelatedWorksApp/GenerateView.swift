@@ -21,6 +21,8 @@ struct GenerateButton: View {
 
     private func regenerate() {
         isGenerating = true
+        project.generatedLatex = nil
+        try? store.save(project)
         Task {
             let output = await RelatedWorksGenerator.generate(for: project)
             await MainActor.run {

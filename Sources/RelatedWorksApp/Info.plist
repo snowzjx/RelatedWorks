@@ -14,5 +14,16 @@
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.relatedworks.app</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>relatedworks</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>
