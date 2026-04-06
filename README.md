@@ -7,21 +7,22 @@ A native macOS academic literature manager purpose-built for Computer Science re
 ## Features
 
 - **Project-based workspaces** — organize literature per paper you're writing
-- **PDF import with AI metadata extraction** — drop a PDF and let Ollama (gemma3:4b) extract title, authors, and suggest a semantic ID
+- **PDF import with AI metadata extraction** — drop a PDF and let Ollama extract title, authors, and suggest a semantic ID
 - **Global PDF deduplication** — same PDF shared across projects by content hash and title match, never duplicated
 - **DBLP + arXiv search** — auto-fetches bibliographic metadata; falls back to arXiv if DBLP returns nothing, then to manual entry
 - **Semantic IDs** — each paper gets a short memorable ID (e.g. `Transformer`, `BERT`) unique across the entire system
 - **Cross-reference annotations** — use `@SemanticID` syntax in notes to link papers; cross-references rendered as clickable navigation
-- **BibTeX management** — fetched from DBLP when available, auto-generated from metadata otherwise; editable via right-click
+- **BibTeX management** — fetched from DBLP when available, auto-generated from metadata otherwise
 - **Metadata editing** — right-click any paper to edit title, authors, year, venue, and abstract; local BibTeX regenerated automatically
-- **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via Ollama (qwen3)
+- **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via Ollama; shows which model was used
 - **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
 - **CLI interface** — agent-friendly command line for LLM automation
+- **Preferences panel** — configure font size, Ollama base URL, and choose extraction/generation models from a live model list
 
 ## Requirements
 
 - macOS 13+
-- [Ollama](https://ollama.com) running locally with `gemma3:4b` and `qwen3` models (for AI features)
+- [Ollama](https://ollama.com) running locally (configure models in Preferences)
 
 ## Building
 
@@ -31,16 +32,21 @@ Open `RelatedWorksApp.xcodeproj` in Xcode and build the `RelatedWorksApp` scheme
 xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp -configuration Release build
 ```
 
+## Preferences
+
+Open via **RelatedWorksApp → Settings…** (`⌘,`):
+
+- **General** — font size slider with live preview
+- **AI Backend** — Ollama base URL, extraction model (for PDF metadata), generation model (for Related Works); model lists are fetched live from Ollama. A status banner appears in the sidebar if Ollama is unreachable and auto-dismisses when it comes back online.
+
 ## Deep Links
 
-Every project and paper has a `relatedworks://` URI. Copy it from the paper detail view via the "Copy Link" button, then use it in Hookmark or any URL-aware tool.
+Every project and paper has a `relatedworks://` URI. Copy it from the paper detail view via the "Copy Link" button.
 
 ```
 relatedworks://open?project=<UUID>
 relatedworks://open?project=<UUID>&paper=<SemanticID>
 ```
-
-You can also open them directly from Terminal:
 
 ```bash
 open "relatedworks://open?project=<UUID>&paper=BERT"

@@ -22,11 +22,13 @@ struct GenerateButton: View {
     private func regenerate() {
         isGenerating = true
         project.generatedLatex = nil
+        project.generationModel = nil
         try? store.save(project)
         Task {
             let output = await RelatedWorksGenerator.generate(for: project)
             await MainActor.run {
                 project.generatedLatex = output
+                project.generationModel = AppSettings.shared.generationModel
                 try? store.save(project)
                 isGenerating = false
             }
@@ -54,7 +56,14 @@ struct GeneratedOutputSheet: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Related Works").font(.title3).fontWeight(.semibold)
-                    Text(project.name).font(.subheadline).foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        Text(project.name).font(.subheadline).foregroundStyle(.secondary)
+                        if let model = project.generationModel {
+                            Text("·").foregroundStyle(.tertiary)
+                            Label(model, systemImage: "cpu")
+                                .font(.caption).foregroundStyle(.tertiary)
+                        }
+                    }
                 }
                 Spacer()
                 Picker("", selection: $tab) {

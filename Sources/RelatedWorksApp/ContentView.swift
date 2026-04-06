@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var store: Store
+    @EnvironmentObject var settings: AppSettings
     @ObservedObject var deepLinkHandler: DeepLinkHandler
     @State private var selectedProjectID: UUID?
     @State private var selectedPaperID: String?
@@ -34,13 +35,32 @@ struct ContentView: View {
                 selectedProjectID = pid
             case .paper(let pid, let paperID):
                 selectedProjectID = pid
-                // Delay paper selection to let the project detail view load first
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     selectedPaperID = paperID
                 }
             }
             deepLinkHandler.pending = nil
         }
+    }
+}
+
+struct OllamaBanner: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+                .font(.caption)
+            Text("Ollama not running")
+                .font(.caption).foregroundStyle(.primary)
+            Spacer()
+            Button("Settings") { openAppSettings() }
+            .font(.caption)
+            .buttonStyle(.borderless)
+            .foregroundStyle(.blue)
+        }
+        .padding(.horizontal, 12).padding(.vertical, 8)
+        .background(.bar)
+        .overlay(alignment: .top) { Divider() }
     }
 }
 

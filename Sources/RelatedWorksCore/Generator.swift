@@ -48,12 +48,12 @@ struct RelatedWorksGenerator {
     }
 
     private static func callOllama(prompt: String) async throws -> String {
-        let url = URL(string: "http://localhost:11434/api/generate")!
+        let url = URL(string: "\(AppSettings.shared.ollamaBaseURL)/api/generate")!
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.timeoutInterval = 120
-        let body: [String: Any] = ["model": "qwen3:latest", "prompt": prompt, "stream": false,
+        let body: [String: Any] = ["model": AppSettings.shared.generationModel, "prompt": prompt, "stream": false,
                                     "options": ["temperature": 0.7]]
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
         let (data, _) = try await URLSession.shared.data(for: req)

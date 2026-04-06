@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProjectSidebar: View {
     @EnvironmentObject var store: Store
+    @EnvironmentObject var settings: AppSettings
     @Binding var selectedProjectID: UUID?
     @State private var showingNewProject = false
     @State private var renameTarget: Project?
@@ -24,6 +25,11 @@ struct ProjectSidebar: View {
                 }
         }
         .navigationTitle("RelatedWorks")
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !settings.ollamaReachable {
+                OllamaBanner()
+            }
+        }
         .toolbar {
             ToolbarItem {
                 Button(action: { showingNewProject = true }) {

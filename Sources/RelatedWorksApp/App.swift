@@ -9,9 +9,8 @@ struct RelatedWorksApp: App {
         WindowGroup {
             ContentView(deepLinkHandler: deepLinkHandler)
                 .environmentObject(store)
-                .onOpenURL { url in
-                    deepLinkHandler.handle(url)
-                }
+                .environmentObject(AppSettings.shared)
+                .onOpenURL { url in deepLinkHandler.handle(url) }
                 .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         }
         .windowStyle(.titleBar)
@@ -19,6 +18,25 @@ struct RelatedWorksApp: App {
         .handlesExternalEvents(matching: ["*"])
         .commands {
             CommandGroup(replacing: .newItem) {}
+        }
+
+        Settings {
+            PreferencesView()
+        }
+    }
+}
+
+// Globally accessible settings opener
+func openAppSettings() {
+    // Find and click the Settings menu item directly
+    for item in NSApp.mainMenu?.items ?? [] {
+        guard let submenu = item.submenu else { continue }
+        for sub in submenu.items {
+            let title = sub.title.lowercased()
+            if title.contains("setting") || title.contains("preference") {
+                sub.menu?.performActionForItem(at: submenu.items.firstIndex(of: sub)!)
+                return
+            }
         }
     }
 }

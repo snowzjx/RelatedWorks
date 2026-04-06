@@ -5,6 +5,7 @@ struct PaperDetailView: View {
     let project: Project
     var onSelectPaper: (String) -> Void = { _ in }
     @EnvironmentObject var store: Store
+    @EnvironmentObject var settings: AppSettings
     @State private var copiedLink = false
 
     var crossRefs: [Paper] { project.crossReferences(for: paper.id) }
@@ -17,12 +18,12 @@ struct PaperDetailView: View {
                 // ── Header ───────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 8) {
                     Text(paper.title)
-                        .font(.title3).fontWeight(.semibold)
+                        .font(.system(size: settings.fontSize + 2)).fontWeight(.semibold)
                         .textSelection(.enabled)
 
                     if !paper.authors.isEmpty {
                         Text(paper.authors.joined(separator: ", "))
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.system(size: settings.fontSize - 1)).foregroundStyle(.secondary)
                             .textSelection(.enabled)
                     }
 
@@ -66,7 +67,7 @@ struct PaperDetailView: View {
                         Label("Abstract", systemImage: "text.quote")
                             .font(.caption).fontWeight(.medium).foregroundStyle(.secondary)
                         Text(abstract)
-                            .font(.callout).foregroundStyle(.secondary)
+                            .font(.system(size: settings.fontSize - 1)).foregroundStyle(.secondary)
                             .textSelection(.enabled)
                     }
                     .padding(20)

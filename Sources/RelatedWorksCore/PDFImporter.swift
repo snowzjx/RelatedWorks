@@ -44,12 +44,12 @@ struct PDFImporter {
         \(text)
         """
 
-        let url = URL(string: "http://localhost:11434/api/generate")!
+        let url = URL(string: "\(AppSettings.shared.ollamaBaseURL)/api/generate")!
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.timeoutInterval = 60
-        let body: [String: Any] = ["model": "gemma3:4b", "prompt": prompt, "stream": false]
+        let body: [String: Any] = ["model": AppSettings.shared.extractionModel, "prompt": prompt, "stream": false]
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, _) = try await URLSession.shared.data(for: req)

@@ -22,6 +22,8 @@
 		A014 /* PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* PDFImporter.swift */; };
 		A015 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* DeepLink.swift */; };
 		A016 /* ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* ArxivService.swift */; };
+		A017 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* AppSettings.swift */; };
+		A018 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* PreferencesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		F014 /* PDFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/PDFImporter.swift; sourceTree = "<absolute>"; };
 		F015 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/DeepLink.swift; sourceTree = "<absolute>"; };
 		F016 /* ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/ArxivService.swift; sourceTree = "<absolute>"; };
+		F017 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/AppSettings.swift; sourceTree = "<absolute>"; };
+		F018 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = "<absolute>"; };
 		FAPP /* RelatedWorksApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -72,6 +76,7 @@
 				F006 /* AddPaperSheet.swift */,
 				F007 /* GenerateView.swift */,
 				F008 /* AnnotationEditor.swift */,
+				F018 /* PreferencesView.swift */,
 			);
 			name = RelatedWorksApp;
 			path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp;
@@ -87,6 +92,7 @@
 				F014 /* PDFImporter.swift */,
 				F015 /* DeepLink.swift */,
 				F016 /* ArxivService.swift */,
+				F017 /* AppSettings.swift */,
 			);
 			name = RelatedWorksCore;
 			path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore;
@@ -157,6 +163,8 @@
 				A014 /* PDFImporter.swift in Sources */,
 				A015 /* DeepLink.swift in Sources */,
 				A016 /* ArxivService.swift in Sources */,
+				A017 /* AppSettings.swift in Sources */,
+				A018 /* PreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

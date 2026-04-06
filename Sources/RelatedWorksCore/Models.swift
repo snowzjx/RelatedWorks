@@ -33,6 +33,7 @@ struct Project: Codable, Identifiable, Hashable {
     var papers: [Paper]
     var createdAt: Date
     var generatedLatex: String?
+    var generationModel: String?
     var bibEntries: [String: String]
 
     init(name: String, description: String = "") {
@@ -53,6 +54,7 @@ struct Project: Codable, Identifiable, Hashable {
         papers = try c.decodeIfPresent([Paper].self, forKey: .papers) ?? []
         createdAt = try c.decode(Date.self, forKey: .createdAt)
         generatedLatex = try c.decodeIfPresent(String.self, forKey: .generatedLatex)
+        generationModel = try c.decodeIfPresent(String.self, forKey: .generationModel)
         bibEntries = try c.decodeIfPresent([String: String].self, forKey: .bibEntries) ?? [:]
     }
 
