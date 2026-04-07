@@ -15,14 +15,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 24px;
+      padding: 48px 16px;
     }
 
     .hero {
       background: #1c1c1e;
       border: 1px solid #2c2c2e;
       border-radius: 24px;
-      padding: 56px 48px;
+      padding: 48px 32px;
       max-width: 680px;
       width: 100%;
       text-align: center;
@@ -41,7 +41,7 @@
     h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
 
     .tagline {
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #8e8e93;
       line-height: 1.6;
       margin-bottom: 32px;
@@ -64,6 +64,8 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .features li .dot { color: #3d8ef0; flex-shrink: 0; margin-top: 1px; }
@@ -96,30 +98,18 @@
     .req a { color: #3d8ef0; text-decoration: none; }
     .req a:hover { text-decoration: underline; }
 
-    /* TUI showcase */
     .tui-card {
       background: #1c1c1e;
       border: 1px solid #2c2c2e;
       border-radius: 24px;
-      padding: 40px 48px;
+      padding: 40px 32px;
       max-width: 680px;
       width: 100%;
       margin-bottom: 24px;
     }
 
-    .tui-card h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #f0f0f0;
-    }
-
-    .tui-card p {
-      font-size: 0.92rem;
-      color: #8e8e93;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
+    .tui-card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+    .tui-card p { font-size: 0.92rem; color: #8e8e93; margin-bottom: 20px; line-height: 1.6; }
 
     .terminal {
       background: #000;
@@ -139,7 +129,6 @@
     .terminal .box    { color: #3d8ef0; }
     .terminal .sel    { background: #3d8ef0; color: #fff; padding: 0 2px; border-radius: 2px; }
     .terminal .dim    { color: #636366; }
-    .terminal .yellow { color: #ffd60a; }
     .terminal .green  { color: #30d158; }
 
     .keys {
@@ -160,6 +149,13 @@
     }
 
     footer { margin-top: 16px; font-size: 0.78rem; color: #48484a; }
+
+    @media (max-width: 480px) {
+      .hero, .tui-card { padding: 32px 20px; border-radius: 16px; }
+      h1 { font-size: 1.8rem; }
+      .features { padding: 16px; }
+      .terminal { font-size: 0.72rem; padding: 14px; }
+    }
   </style>
 </head>
 <body>
@@ -170,7 +166,7 @@
     <p class="tagline">
       A native macOS literature manager for CS researchers.<br/>
       Organize papers, annotate with cross-references, and generate<br/>
-      Related Works sections — powered by local AI via Ollama.
+      Related Works sections — powered by local or cloud AI.
     </p>
 
     <ul class="features">
@@ -178,7 +174,8 @@
       <li><span class="dot">✦</span> PDF import with AI metadata extraction (title, authors, abstract)</li>
       <li><span class="dot">✦</span> DBLP + arXiv search with automatic BibTeX fetching</li>
       <li><span class="dot">✦</span> Semantic IDs and <code>@cross-reference</code> annotations</li>
-      <li><span class="dot yellow">✦</span> One-click Related Works generation in LaTeX via Ollama</li>
+      <li><span class="dot yellow">✦</span> One-click Related Works generation in LaTeX via AI</li>
+      <li><span class="dot">✦</span> Multiple AI backends — Ollama (local) and Google Gemini</li>
       <li><span class="dot green">✦</span> Full Terminal UI — keyboard-driven, works over SSH</li>
       <li><span class="dot">✦</span> Deep link support via <code>relatedworks://</code> URIs</li>
     </ul>
@@ -188,7 +185,10 @@
       <a class="btn btn-secondary" href="https://github.com/snowzjx/RelatedWorks">⌥ View Source</a>
     </div>
 
-    <p class="req">Requires macOS 13+ and <a href="https://ollama.com" target="_blank">Ollama</a> running locally.</p>
+    <p class="req">
+      Requires macOS 13+. Use <a href="https://ollama.com" target="_blank">Ollama</a> locally
+      or a <a href="https://aistudio.google.com/apikey" target="_blank">Gemini API key</a>.
+    </p>
   </div>
 
   <div class="tui-card">
