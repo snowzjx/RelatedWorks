@@ -20,7 +20,7 @@ struct PreferencesView: View {
                 .tag(Tab.ai)
         }
         .padding(20)
-        .frame(width: 460)
+        .frame(width: 500)
     }
 }
 
@@ -32,21 +32,13 @@ struct GeneralSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Font Size")
-                    Spacer()
+                HStack(spacing: 12) {
+                    Text("Font Size").frame(width: 80, alignment: .leading)
                     Slider(value: $settings.fontSize, in: 11...20, step: 1)
-                        .frame(width: 160)
                     Text("\(Int(settings.fontSize)) pt")
                         .monospacedDigit()
-                        .frame(width: 40, alignment: .trailing)
-                }
-                HStack {
-                    Text("Preview")
-                    Spacer()
-                    Text("The quick brown fox")
-                        .font(.system(size: settings.fontSize))
                         .foregroundStyle(.secondary)
+                        .frame(width: 36, alignment: .trailing)
                 }
             } header: { Text("Appearance") }
         }
@@ -61,51 +53,58 @@ struct AISettingsView: View {
     @State private var availableModels: [String] = []
     @State private var isFetchingModels = false
     @State private var connectionStatus: ConnectionStatus = .idle
+    @State private var showingURLEditor = false
 
     enum ConnectionStatus { case idle, ok, failed }
 
     var body: some View {
         Form {
             Section {
-                LabeledContent("Ollama URL") {
-                    TextField("http://localhost:11434", text: $settings.ollamaBaseURL)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 240)
-                        .onSubmit { fetchModels() }
-                }
-                HStack {
+                HStack(spacing: 8) {
+                    Text(settings.ollamaBaseURL)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                     Spacer()
-                    if isFetchingModels {
-                        HStack(spacing: 4) { ProgressView().scaleEffect(0.7); Text("Connecting…") }
-                            .font(.caption).foregroundStyle(.secondary)
-                    } else if connectionStatus == .ok {
-                        Label("Connected — \(availableModels.count) model(s) available", systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(.green).font(.caption)
-                    } else if connectionStatus == .failed {
-                        Label("Cannot connect to Ollama", systemImage: "xmark.circle.fill")
-                            .foregroundStyle(.red).font(.caption)
-                    }
+                    Button("Configure URL") { showingURLEditor = true }
+                        .controlSize(.small)
                     Button("Refresh") { fetchModels() }
                         .disabled(isFetchingModels)
+                        .controlSize(.small)
                 }
+                HStack(spacing: 6) {
+                    if isFetchingModels {
+                        ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
+                        Text("Connecting…").font(.caption).foregroundStyle(.secondary)
+                    } else if connectionStatus == .ok {
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                        Text("\(availableModels.count) model(s) available").font(.caption).foregroundStyle(.secondary)
+                    } else if connectionStatus == .failed {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+                        Text("Cannot connect to Ollama").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                .font(.caption)
             } header: { Text("Ollama") }
 
             Section {
-                LabeledContent("Extraction Model") {
+                HStack(spacing: 8) {
+                    Text("Extraction").frame(width: 80, alignment: .leading)
                     modelPicker(selection: $settings.extractionModel)
+                    Text("PDF metadata").font(.caption).foregroundStyle(.tertiary)
                 }
-                Text("Used for PDF metadata extraction (gemma3:4b recommended)")
-                    .font(.caption).foregroundStyle(.secondary)
-
-                LabeledContent("Generation Model") {
+                HStack(spacing: 8) {
+                    Text("Generation").frame(width: 80, alignment: .leading)
                     modelPicker(selection: $settings.generationModel)
+                    Text("Related Works").font(.caption).foregroundStyle(.tertiary)
                 }
-                Text("Used for Related Works generation (qwen3 recommended)")
-                    .font(.caption).foregroundStyle(.secondary)
             } header: { Text("Models") }
         }
         .formStyle(.grouped)
         .onAppear { fetchModels() }
+        .sheet(isPresented: $showingURLEditor) {
+            URLEditorSheet(url: $settings.ollamaBaseURL) { fetchModels() }
+        }
     }
 
     @ViewBuilder
@@ -113,16 +112,13 @@ struct AISettingsView: View {
         if availableModels.isEmpty {
             TextField("model name", text: selection)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: 240)
         } else {
             Picker("", selection: selection) {
                 ForEach(availableModels, id: \.self) { Text($0).tag($0) }
-                // Keep current value selectable even if not in list
                 if !availableModels.contains(selection.wrappedValue) {
                     Text(selection.wrappedValue).tag(selection.wrappedValue)
                 }
             }
-            .frame(width: 240)
         }
     }
 
@@ -139,11 +135,37 @@ struct AISettingsView: View {
                 return
             }
             let names = models.compactMap { $0["name"] as? String }.sorted()
-            await MainActor.run {
-                availableModels = names
-                connectionStatus = .ok
-                isFetchingModels = false
+            await MainActor.run { availableModels = names; connectionStatus = .ok; isFetchingModels = false }
+        }
+    }
+}
+
+// MARK: - URL Editor Sheet
+
+struct URLEditorSheet: View {
+    @Binding var url: String
+    let onSave: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft = ""
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Configure Ollama URL").font(.headline)
+            TextField("http://localhost:11434", text: $draft)
+                .textFieldStyle(.roundedBorder)
+                .focused($focused)
+            HStack {
+                Spacer()
+                Button("Cancel") { dismiss() }.keyboardShortcut(.escape)
+                Button("Save") { url = draft; onSave(); dismiss() }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.return)
+                    .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
+        .padding(24)
+        .frame(width: 360)
+        .onAppear { draft = url; focused = true }
     }
 }
