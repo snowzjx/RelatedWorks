@@ -48,7 +48,7 @@ func pad(_ s: String, to width: Int) -> String {
 
 // MARK: - Input
 
-enum Key { case up, down, enter, esc, q, ctrlD, other }
+enum Key { case up, down, enter, esc, q, ctrlD, r, other }
 func readKey() -> Key {
     var buf = [UInt8](repeating: 0, count: 4)
     let n = read(STDIN_FILENO, &buf, 4)
@@ -57,6 +57,7 @@ func readKey() -> Key {
         case 13, 10: return .enter
         case 27:     return .esc
         case 113:    return .q
+        case 114:    return .r
         case 4:      return .ctrlD
         default:     return .other
         }
@@ -132,6 +133,11 @@ func menu(title: String, items: [(label: String, disabled: Bool)], footer: Strin
 // MARK: - Pager
 
 func pager(title: String, lines: [String]) {
+    _ = pagerWithKey(title: title, lines: lines)
+}
+
+@discardableResult
+func pagerWithKey(title: String, lines: [String]) -> Key {
     var offset = 0
     while true {
         let (w, h) = termSize()
@@ -146,14 +152,15 @@ func pager(title: String, lines: [String]) {
         }
         while rows.count < pageSize { rows.append("") }
         let scrollInfo = lines.count > pageSize ? " [\(offset+1)-\(min(offset+pageSize, lines.count))/\(lines.count)]" : ""
-        drawBox(title: title + scrollInfo, rows: rows, footer: "↑↓ scroll  q/Enter back", w: w)
+        drawBox(title: title + scrollInfo, rows: rows, footer: "↑↓ scroll  r regenerate  q/Enter back", w: w)
         fflush(stdout)
 
-        switch readKey() {
-        case .up:          offset = max(0, offset - 1)
-        case .down:        offset = min(max(0, lines.count - pageSize), offset + 1)
-        case .q, .esc, .ctrlD, .enter: return
-        default: break
+        let k = readKey()
+        switch k {
+        case .up:   offset = max(0, offset - 1)
+        case .down: offset = min(max(0, lines.count - pageSize), offset + 1)
+        case .q, .esc, .ctrlD, .enter: return k
+        case .r: return .r        default: break
         }
     }
 }
@@ -234,31 +241,47 @@ func paperScreen(paper: Paper, project: Project) {
 }
 
 func generateScreen(project: Project) {
-    cls()
-    let (w, _) = termSize()
-    let bar = String(repeating: "─", count: w - 2)
-    print(bold(cyan("┌\(bar)┐")))
-    print(bold(cyan("│ ")) + pad(bold("Generating Related Works…"), to: w - 4) + bold(cyan(" │")))
-    print(bold(cyan("│ ")) + pad(dim("Calling Ollama, please wait…"), to: w - 4) + bold(cyan(" │")))
-    print(bold(cyan("└\(bar)┘")))
-    fflush(stdout)
+    var projects = (try? store.loadAll()) ?? []
+    guard let pIdx = projects.firstIndex(where: { $0.id == project.id }) else { return }
 
-    let sema = DispatchSemaphore(value: 0)
-    var result = ""
-    DispatchQueue.global().async {
-        let group = DispatchGroup()
-        group.enter()
-        Task {
-            result = await RelatedWorksGenerator.generate(for: project)
-            group.leave()
+    func doGenerate() {
+        cls()
+        let (w, _) = termSize()
+        let bar = String(repeating: "─", count: w - 2)
+        print(bold(cyan("┌\(bar)┐")))
+        print(bold(cyan("│ ")) + pad(bold("Generating Related Works…"), to: w - 4) + bold(cyan(" │")))
+        print(bold(cyan("│ ")) + pad(dim("Calling Ollama, please wait…"), to: w - 4) + bold(cyan(" │")))
+        print(bold(cyan("└\(bar)┘")))
+        fflush(stdout)
+
+        let sema = DispatchSemaphore(value: 0)
+        var result = ""
+        DispatchQueue.global().async {
+            let group = DispatchGroup()
+            group.enter()
+            Task {
+                result = await RelatedWorksGenerator.generate(for: projects[pIdx])
+                group.leave()
+            }
+            group.wait()
+            sema.signal()
         }
-        group.wait()
-        sema.signal()
-    }
-    sema.wait()
+        sema.wait()
 
-    let lines = result.components(separatedBy: "\n")
-    pager(title: yellow("⚡") + " Generated: \(project.name)", lines: lines.isEmpty ? [red("(no output)")] : lines)
+        projects[pIdx].generatedLatex = result
+        projects[pIdx].generationModel = AppSettings.shared.generationModel
+        try? store.save(projects[pIdx])
+    }
+
+    if projects[pIdx].generatedLatex == nil { doGenerate() }
+
+    while true {
+        let latex = projects[pIdx].generatedLatex ?? ""
+        let lines = latex.isEmpty ? [red("(no output)")] : latex.components(separatedBy: "\n")
+        let model = projects[pIdx].generationModel.map { "  " + dim("[\($0)]") } ?? ""
+        let key = pagerWithKey(title: yellow("⚡") + " \(project.name)\(model)", lines: lines)
+        if case .r = key { doGenerate() } else { return }
+    }
 }
 
 // MARK: - Main

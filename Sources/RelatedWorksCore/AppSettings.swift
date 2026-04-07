@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 public class AppSettings: ObservableObject {
-    static let shared = AppSettings()
+    public static let shared = AppSettings()
 
     @Published var fontSize: Double {
         didSet { UserDefaults.standard.set(fontSize, forKey: "fontSize") }
@@ -13,7 +13,7 @@ public class AppSettings: ObservableObject {
     @Published var extractionModel: String {
         didSet { UserDefaults.standard.set(extractionModel, forKey: "extractionModel") }
     }
-    @Published var generationModel: String {
+    @Published public var generationModel: String {
         didSet { UserDefaults.standard.set(generationModel, forKey: "generationModel") }
     }
     @Published var generationPrompt: String {
