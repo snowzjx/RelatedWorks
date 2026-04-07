@@ -15,14 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set version from tag
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          sed -i '' "s/MARKETING_VERSION = [^;]*/MARKETING_VERSION = $VERSION/" RelatedWorksApp.xcodeproj/project.pbxproj
-
       - name: Build
         run: |
+          VERSION=$( [[ "${GITHUB_REF_NAME}" == v* ]] && echo "${GITHUB_REF_NAME#v}" || echo "0.0.0" )
           xcodebuild \
             -project RelatedWorksApp.xcodeproj \
             -scheme RelatedWorksApp \
@@ -31,6 +26,7 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=YES \
             CODE_SIGNING_ALLOWED=YES \
+            MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
 
