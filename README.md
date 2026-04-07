@@ -19,7 +19,52 @@ A native macOS academic literature manager purpose-built for Computer Science re
 - **CLI interface** — agent-friendly command line for LLM automation
 - **Preferences panel** — configure font size, Ollama base URL, and choose extraction/generation models from a live model list
 
-## Requirements
+## Usage
+
+### 1. Create a Project
+
+Each project represents a paper you're writing. Click the **+** button in the sidebar to create a new project and give it a name.
+
+### 2. Add Papers
+
+There are three ways to add papers to a project:
+
+- **Import PDF** — drag a PDF onto the paper list or use the import button. Ollama will automatically extract the title, authors, year, and suggest a semantic ID.
+- **Search DBLP / arXiv** — use the search bar to find a paper by title or keywords. Metadata is fetched automatically; if DBLP has no results it falls back to arXiv.
+- **Manual entry** — enter metadata by hand if the paper isn't indexed online.
+
+### 3. Assign a Semantic ID
+
+Every paper gets a short memorable ID (e.g. `Transformer`, `BERT`, `GPT4`). This ID is unique across all projects and is used to cross-reference papers in your notes.
+
+### 4. Take Notes & Cross-Reference
+
+Open a paper and write your annotation notes in the editor. Use `@SemanticID` syntax to link to other papers — they render as clickable links for quick navigation.
+
+### 5. Generate Related Works
+
+Once you've annotated your papers, click **Generate Related Works** in the project view. RelatedWorks will synthesize your notes and paper metadata into a LaTeX-ready draft using Ollama. The model used is shown alongside the output.
+
+### 6. Export BibTeX
+
+BibTeX entries are fetched from DBLP automatically, or generated from metadata when unavailable. Copy individual entries from the paper detail view, or use the CLI to export all entries for a project.
+
+### CLI
+
+RelatedWorks ships a command-line interface for scripting and LLM automation:
+
+```bash
+# List all projects
+relatedworks list-projects
+
+# List papers in a project
+relatedworks list-papers --project <UUID>
+
+# Generate related works for a project
+relatedworks generate --project <UUID>
+```
+
+
 
 - macOS 13+
 - [Ollama](https://ollama.com) running locally (configure models in Preferences)

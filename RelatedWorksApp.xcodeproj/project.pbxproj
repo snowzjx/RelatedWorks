@@ -36,26 +36,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F001 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/App.swift; sourceTree = "<absolute>"; };
-		F002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/ContentView.swift; sourceTree = "<absolute>"; };
-		F003 /* ProjectSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/ProjectSidebar.swift; sourceTree = "<absolute>"; };
-		F004 /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/ProjectDetailView.swift; sourceTree = "<absolute>"; };
-		F005 /* PaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/PaperDetailView.swift; sourceTree = "<absolute>"; };
-		F006 /* AddPaperSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/AddPaperSheet.swift; sourceTree = "<absolute>"; };
-		F007 /* GenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/GenerateView.swift; sourceTree = "<absolute>"; };
-		F008 /* AnnotationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/AnnotationEditor.swift; sourceTree = "<absolute>"; };
-		F010 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/Models.swift; sourceTree = "<absolute>"; };
-		F011 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/Store.swift; sourceTree = "<absolute>"; };
-		F012 /* DBLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/DBLPService.swift; sourceTree = "<absolute>"; };
-		F013 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/Generator.swift; sourceTree = "<absolute>"; };
-		F014 /* PDFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/PDFImporter.swift; sourceTree = "<absolute>"; };
-		F015 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/DeepLink.swift; sourceTree = "<absolute>"; };
-		F016 /* ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/ArxivService.swift; sourceTree = "<absolute>"; };
-		F017 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/AppSettings.swift; sourceTree = "<absolute>"; };
-		FA001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/Assets.xcassets; sourceTree = "<absolute>"; };
+		F001 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/App.swift; sourceTree = "<absolute>"; };
+		F002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ContentView.swift; sourceTree = "<absolute>"; };
+		F003 /* ProjectSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectSidebar.swift; sourceTree = "<absolute>"; };
+		F004 /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectDetailView.swift; sourceTree = "<absolute>"; };
+		F005 /* PaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PaperDetailView.swift; sourceTree = "<absolute>"; };
+		F006 /* AddPaperSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AddPaperSheet.swift; sourceTree = "<absolute>"; };
+		F007 /* GenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/GenerateView.swift; sourceTree = "<absolute>"; };
+		F008 /* AnnotationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AnnotationEditor.swift; sourceTree = "<absolute>"; };
+		F010 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Models.swift; sourceTree = "<absolute>"; };
+		F011 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Store.swift; sourceTree = "<absolute>"; };
+		F012 /* DBLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/DBLPService.swift; sourceTree = "<absolute>"; };
+		F013 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Generator.swift; sourceTree = "<absolute>"; };
+		F014 /* PDFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/PDFImporter.swift; sourceTree = "<absolute>"; };
+		F015 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/DeepLink.swift; sourceTree = "<absolute>"; };
+		F016 /* ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ArxivService.swift; sourceTree = "<absolute>"; };
+		F017 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AppSettings.swift; sourceTree = "<absolute>"; };
+		FA001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = "<absolute>"; };
 		A019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Assets.xcassets */; };
-		F018 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = "<absolute>"; };
-		TF001 /* RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = "<absolute>"; };
+		F018 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = "<absolute>"; };
+		TF001 /* RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = "<absolute>"; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAPP /* RelatedWorksApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -95,7 +95,7 @@
 				FA001 /* Assets.xcassets */,
 			);
 			name = RelatedWorksApp;
-			path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp;
+			path = Sources/RelatedWorksApp;
 			sourceTree = "<absolute>";
 		};
 		GCORE /* RelatedWorksCore */ = {
@@ -111,7 +111,7 @@
 				F017 /* AppSettings.swift */,
 			);
 			name = RelatedWorksCore;
-			path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore;
+			path = Sources/RelatedWorksCore;
 			sourceTree = "<absolute>";
 		};
 		GTEST /* RelatedWorksTests */ = {
@@ -120,7 +120,7 @@
 				TF001 /* RelatedWorksTests.swift */,
 			);
 			name = RelatedWorksTests;
-			path = /Users/snow/Desktop/git/RelatedWorks/Tests/RelatedWorksTests;
+			path = Tests/RelatedWorksTests;
 			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */
