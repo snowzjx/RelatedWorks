@@ -65,7 +65,7 @@ struct OllamaBanner: View {
 }
 
 extension DeepLink.Destination: Equatable {
-    static func == (lhs: DeepLink.Destination, rhs: DeepLink.Destination) -> Bool {
+    public static func == (lhs: DeepLink.Destination, rhs: DeepLink.Destination) -> Bool {
         switch (lhs, rhs) {
         case (.project(let a), .project(let b)): return a == b
         case (.paper(let a, let b), .paper(let c, let d)): return a == c && b == d

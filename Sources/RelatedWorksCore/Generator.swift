@@ -1,7 +1,7 @@
 import Foundation
 
-struct RelatedWorksGenerator {
-    static func generate(for project: Project) async -> String {
+public struct RelatedWorksGenerator {
+    public static func generate(for project: Project) async -> String {
         let prompt = buildPrompt(project)
         if let output = try? await callOllama(prompt: prompt) {
             return output
@@ -72,7 +72,7 @@ struct RelatedWorksGenerator {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    static func templateDraft(_ project: Project) -> String {
+    public static func templateDraft(_ project: Project) -> String {
         project.papers.map { paper in
             let authors = paper.authors.prefix(2).joined(separator: " and ")
             let suffix = paper.authors.count > 2 ? " et al." : ""

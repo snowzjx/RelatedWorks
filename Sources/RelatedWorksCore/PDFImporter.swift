@@ -3,10 +3,10 @@ import PDFKit
 
 // MARK: - PDF Import & AI Extraction
 
-struct PDFImporter {
+public struct PDFImporter {
 
     /// Extracts metadata using Ollama LLM, falls back to heuristics.
-    static func extractMetadata(from pdfURL: URL, takenIDs: Set<String> = []) async -> ExtractedMetadata {
+    public static func extractMetadata(from pdfURL: URL, takenIDs: Set<String> = []) async -> ExtractedMetadata {
         guard let doc = PDFDocument(url: pdfURL) else { return .empty }
 
         // Extract first ~3 pages of text
@@ -142,11 +142,11 @@ struct PDFImporter {
     }
 }
 
-struct ExtractedMetadata {
-    let title: String
-    let authors: [String]
-    let abstract: String?
-    let suggestedID: String
+public struct ExtractedMetadata {
+    public let title: String
+    public let authors: [String]
+    public let abstract: String?
+    public let suggestedID: String
 
     static let empty = ExtractedMetadata(title: "", authors: [], abstract: nil, suggestedID: "Paper")
 }

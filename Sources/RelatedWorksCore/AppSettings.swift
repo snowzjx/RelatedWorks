@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class AppSettings: ObservableObject {
+public class AppSettings: ObservableObject {
     static let shared = AppSettings()
 
     @Published var fontSize: Double {
@@ -23,7 +23,7 @@ class AppSettings: ObservableObject {
 
     private var pollingTask: Task<Void, Never>?
 
-    init() {
+    public init() {
         fontSize = UserDefaults.standard.double(forKey: "fontSize").nonZero ?? 14
         ollamaBaseURL = UserDefaults.standard.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
         extractionModel = UserDefaults.standard.string(forKey: "extractionModel") ?? "gemma3:4b"
@@ -42,7 +42,7 @@ class AppSettings: ObservableObject {
         Output only the LaTeX paragraph text, nothing else.
         """
 
-    func startPolling() {
+    public func startPolling() {
         pollingTask?.cancel()
         pollingTask = Task {
             while !Task.isCancelled {
@@ -52,7 +52,7 @@ class AppSettings: ObservableObject {
         }
     }
 
-    func checkOllama() async {
+    public func checkOllama() async {
         let urlStr = ollamaBaseURL.trimmingCharacters(in: .init(charactersIn: "/"))
         guard let url = URL(string: "\(urlStr)/api/tags") else { return }
         let reachable = (try? await URLSession.shared.data(from: url)) != nil
@@ -61,5 +61,5 @@ class AppSettings: ObservableObject {
 }
 
 private extension Double {
-    var nonZero: Double? { self == 0 ? nil : self }
+    public var nonZero: Double? { self == 0 ? nil : self }
 }

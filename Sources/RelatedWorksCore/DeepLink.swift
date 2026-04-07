@@ -2,21 +2,21 @@ import Foundation
 
 // MARK: - Deep URI  (relatedworks://open?project=<uuid>&paper=<id>)
 
-struct DeepLink {
-    enum Destination {
+public struct DeepLink {
+    public enum Destination {
         case project(UUID)
         case paper(projectID: UUID, paperID: String)
     }
 
-    static func url(for project: Project) -> URL {
+    public static func url(for project: Project) -> URL {
         URL(string: "relatedworks://open?project=\(project.id.uuidString)")!
     }
 
-    static func url(for paper: Paper, in project: Project) -> URL {
+    public static func url(for paper: Paper, in project: Project) -> URL {
         URL(string: "relatedworks://open?project=\(project.id.uuidString)&paper=\(paper.id)")!
     }
 
-    static func parse(_ url: URL) -> Destination? {
+    public static func parse(_ url: URL) -> Destination? {
         guard url.scheme == "relatedworks",
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let projectStr = components.queryItems?.first(where: { $0.name == "project" })?.value,

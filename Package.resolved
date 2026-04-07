@@ -8,6 +8,15 @@
         "revision" : "626b5b7b2f45e1b0b1c6f4a309296d1d21d7311b",
         "version" : "1.7.1"
       }
+    },
+    {
+      "identity" : "swifttui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rensbreur/SwiftTUI",
+      "state" : {
+        "revision" : "75ae35af4115f87601657957e3332fc9eb5829d5",
+        "version" : "0.1.0"
+      }
     }
   ],
   "version" : 2

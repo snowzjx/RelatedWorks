@@ -2,19 +2,19 @@ import Foundation
 
 // MARK: - Core Models
 
-struct Paper: Codable, Identifiable, Hashable {
-    var id: String
-    var title: String
-    var authors: [String]
-    var year: Int?
-    var venue: String?
-    var dblpKey: String?
-    var abstract: String?
-    var pdfPath: String?
-    var annotation: String
-    var addedAt: Date
+public struct Paper: Codable, Identifiable, Hashable {
+    public var id: String
+    public var title: String
+    public var authors: [String]
+    public var year: Int?
+    public var venue: String?
+    public var dblpKey: String?
+    public var abstract: String?
+    public var pdfPath: String?
+    public var annotation: String
+    public var addedAt: Date
 
-    init(id: String, title: String, authors: [String] = [], year: Int? = nil,
+    public init(id: String, title: String, authors: [String] = [], year: Int? = nil,
                 venue: String? = nil, annotation: String = "") {
         self.id = id
         self.title = title
@@ -26,17 +26,17 @@ struct Paper: Codable, Identifiable, Hashable {
     }
 }
 
-struct Project: Codable, Identifiable, Hashable {
-    var id: UUID
-    var name: String
-    var description: String
-    var papers: [Paper]
-    var createdAt: Date
-    var generatedLatex: String?
-    var generationModel: String?
-    var bibEntries: [String: String]
+public struct Project: Codable, Identifiable, Hashable {
+    public var id: UUID
+    public var name: String
+    public var description: String
+    public var papers: [Paper]
+    public var createdAt: Date
+    public var generatedLatex: String?
+    public var generationModel: String?
+    public var bibEntries: [String: String]
 
-    init(name: String, description: String = "") {
+    public init(name: String, description: String = "") {
         self.id = UUID()
         self.name = name
         self.description = description
@@ -46,7 +46,7 @@ struct Project: Codable, Identifiable, Hashable {
         self.bibEntries = [:]
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id = try c.decode(UUID.self, forKey: .id)
         name = try c.decode(String.self, forKey: .name)
@@ -62,11 +62,11 @@ struct Project: Codable, Identifiable, Hashable {
         papers.append(paper)
     }
 
-    func paper(withID id: String) -> Paper? {
+    public func paper(withID id: String) -> Paper? {
         papers.first { $0.id.lowercased() == id.lowercased() }
     }
 
-    func crossReferences(for paperID: String) -> [Paper] {
+    public func crossReferences(for paperID: String) -> [Paper] {
         guard let source = paper(withID: paperID) else { return [] }
         let refs = extractRefs(from: source.annotation)
         var seen = Set<String>()
@@ -77,7 +77,7 @@ struct Project: Codable, Identifiable, Hashable {
         }
     }
 
-    func extractRefs(from text: String) -> [String] {
+    public func extractRefs(from text: String) -> [String] {
         let pattern = #"@([A-Za-z][A-Za-z0-9_\-]*)"#
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return [] }
         let range = NSRange(text.startIndex..., in: text)

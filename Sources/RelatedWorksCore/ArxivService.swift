@@ -1,15 +1,15 @@
 import Foundation
 
-struct ArxivResult {
-    let title: String
-    let authors: [String]
-    let year: Int?
-    let abstract: String?
-    let arxivID: String?
+public struct ArxivResult {
+    public let title: String
+    public let authors: [String]
+    public let year: Int?
+    public let abstract: String?
+    public let arxivID: String?
 }
 
-struct ArxivService {
-    static func search(query: String) async throws -> [ArxivResult] {
+public struct ArxivService {
+    public static func search(query: String) async throws -> [ArxivResult] {
         var components = URLComponents(string: "https://export.arxiv.org/api/query")!
         components.queryItems = [
             URLQueryItem(name: "search_query", value: "all:\(query)"),

@@ -1,16 +1,16 @@
 import Foundation
 import CryptoKit
 
-class Store: ObservableObject {
-    let projectsDir: URL
-    let pdfsDir: URL
+public class Store: ObservableObject {
+    public let projectsDir: URL
+    public let pdfsDir: URL
     @Published var projects: [Project] = []
 
     // Global registry: paperID -> pdfPath, pdfHash -> paperID
     private(set) var idToPDFPath: [String: String] = [:]
     private(set) var pdfHashToID: [String: String] = [:]
 
-    init() {
+    public init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         projectsDir = appSupport.appendingPathComponent("RelatedWorks/projects", isDirectory: true)
         pdfsDir = appSupport.appendingPathComponent("RelatedWorks/pdfs", isDirectory: true)
@@ -21,7 +21,7 @@ class Store: ObservableObject {
     }
 
     /// Initializer for testing with a custom directory.
-    init(projectsDir: URL) {
+    public init(projectsDir: URL) {
         self.projectsDir = projectsDir
         self.pdfsDir = projectsDir.appendingPathComponent("pdfs")
         try? FileManager.default.createDirectory(at: self.pdfsDir, withIntermediateDirectories: true)
@@ -30,16 +30,16 @@ class Store: ObservableObject {
     }    // MARK: - Global ID / PDF Registry
 
     /// All paper IDs in use across all projects (case-insensitive lookup)
-    var allPaperIDs: Set<String> {
+    public var allPaperIDs: Set<String> {
         Set(projects.flatMap { $0.papers.map { $0.id.lowercased() } })
     }
 
-    func isIDTaken(_ id: String) -> Bool {
+    public func isIDTaken(_ id: String) -> Bool {
         allPaperIDs.contains(id.lowercased())
     }
 
     /// Returns existing paperID if this PDF matches by content hash OR by title (case-insensitive).
-    func existingID(forPDFAt url: URL, title: String? = nil) -> String? {
+    public func existingID(forPDFAt url: URL, title: String? = nil) -> String? {
         // 1. Hash match (most reliable)
         if let hash = sha256(url), let id = pdfHashToID[hash] { return id }
         // 2. Title match fallback
@@ -54,14 +54,14 @@ class Store: ObservableObject {
     }
 
     /// Returns the stored PDF path for a given paperID, if any.
-    func pdfPath(forID id: String) -> String? {
+    public func pdfPath(forID id: String) -> String? {
         idToPDFPath[id.lowercased()]
     }
 
     /// Registers a PDF for a paperID. Copies file only if not already stored.
     /// Returns the stored path.
     @discardableResult
-    func registerPDF(at sourceURL: URL, forID id: String) throws -> String {
+    public func registerPDF(at sourceURL: URL, forID id: String) throws -> String {
         let dest = pdfsDir.appendingPathComponent("\(id).pdf")
         if !FileManager.default.fileExists(atPath: dest.path) {
             try FileManager.default.copyItem(at: sourceURL, to: dest)
@@ -97,7 +97,7 @@ class Store: ObservableObject {
         projectsDir.appendingPathComponent("\(project.id.uuidString).json")
     }
 
-    func save(_ project: Project) throws {
+    public func save(_ project: Project) throws {
         let data = try JSONEncoder().encode(project)
         try data.write(to: url(for: project))
         if let idx = projects.firstIndex(where: { $0.id == project.id }) {
@@ -108,21 +108,21 @@ class Store: ObservableObject {
         rebuildRegistry()
     }
 
-    func loadAll() throws -> [Project] {
+    public func loadAll() throws -> [Project] {
         let files = try FileManager.default.contentsOfDirectory(at: projectsDir, includingPropertiesForKeys: nil)
         return files.filter { $0.pathExtension == "json" }.compactMap {
             try? JSONDecoder().decode(Project.self, from: Data(contentsOf: $0))
         }.sorted { $0.createdAt > $1.createdAt }
     }
 
-    func delete(_ project: Project) throws {
+    public func delete(_ project: Project) throws {
         try FileManager.default.removeItem(at: url(for: project))
         projects.removeAll { $0.id == project.id }
         rebuildRegistry()
     }
 
     /// Removes the PDF file for a paper if no other paper across all projects references it.
-    func cleanupPDFIfUnused(paperID: String, pdfPath: String, excludingProjectID: UUID) {
+    public func cleanupPDFIfUnused(paperID: String, pdfPath: String, excludingProjectID: UUID) {
         let inUse = projects
             .filter { $0.id != excludingProjectID }
             .flatMap { $0.papers }

@@ -1,15 +1,15 @@
 import Foundation
 
-struct DBLPResult {
-    let title: String
-    let authors: [String]
-    let year: Int?
-    let venue: String?
-    let dblpKey: String?
+public struct DBLPResult {
+    public let title: String
+    public let authors: [String]
+    public let year: Int?
+    public let venue: String?
+    public let dblpKey: String?
 }
 
-struct DBLPService {
-    static func search(query: String) async throws -> [DBLPResult] {
+public struct DBLPService {
+    public static func search(query: String) async throws -> [DBLPResult] {
         var components = URLComponents(string: "https://dblp.org/search/publ/api")!
         components.queryItems = [
             URLQueryItem(name: "q", value: query),
@@ -56,7 +56,7 @@ struct DBLPService {
     }
 
     /// Fetch BibTeX string for a DBLP key, e.g. "conf/nips/VaswaniSPUJGKP17"
-    static func fetchBibtex(dblpKey: String) async -> String? {
+    public static func fetchBibtex(dblpKey: String) async -> String? {
         let urlStr = "https://dblp.org/rec/\(dblpKey).bib"
         guard let url = URL(string: urlStr),
               let (data, _) = try? await URLSession.shared.data(from: url),
