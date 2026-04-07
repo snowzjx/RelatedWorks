@@ -228,35 +228,49 @@ func projectScreen(project: Project) {
 }
 
 func paperScreen(paper: Paper, project: Project) {
-    var lines: [String] = []
-    lines.append(bold("Authors: ") + green(paper.authors.joined(separator: ", ")))
-    lines.append(bold("Year: ") + cyan(paper.year.map(String.init) ?? "?") + "   " + bold("Venue: ") + cyan(paper.venue ?? "?"))
-    if let dblpKey = paper.dblpKey {
-        lines.append(bold("DBLP: ") + dim(dblpKey))
-    }
-    if let abstract = paper.abstract, !abstract.isEmpty {
-        lines.append("")
-        lines.append(yellow("── Abstract ──────────────────────────────"))
-        var rem = abstract
-        while !rem.isEmpty {
-            lines.append(String(rem.prefix(76)))
-            rem = String(rem.dropFirst(min(76, rem.count)))
+    while true {
+        var lines: [String] = []
+        lines.append(bold("Authors: ") + green(paper.authors.joined(separator: ", ")))
+        lines.append(bold("Year: ") + cyan(paper.year.map(String.init) ?? "?") + "   " + bold("Venue: ") + cyan(paper.venue ?? "?"))
+        if let dblpKey = paper.dblpKey {
+            lines.append(bold("DBLP: ") + dim(dblpKey))
         }
-    }
-    if !paper.annotation.isEmpty {
-        lines.append("")
-        lines.append(magenta("── Your Notes ────────────────────────────"))
-        lines.append(paper.annotation)
-    }
-    let refs = project.crossReferences(for: paper.id)
-    if !refs.isEmpty {
-        lines.append("")
-        lines.append(blue("── Cross-references ──────────────────────"))
-        for ref in refs {
-            lines.append("  → " + cyan("@\(ref.id)") + ": " + String(ref.title.prefix(55)))
+        if let abstract = paper.abstract, !abstract.isEmpty {
+            lines.append("")
+            lines.append(yellow("── Abstract ──────────────────────────────"))
+            var rem = abstract
+            while !rem.isEmpty {
+                lines.append(String(rem.prefix(76)))
+                rem = String(rem.dropFirst(min(76, rem.count)))
+            }
         }
+        if !paper.annotation.isEmpty {
+            lines.append("")
+            lines.append(magenta("── Your Notes ────────────────────────────"))
+            lines.append(paper.annotation)
+        }
+        let refs = project.crossReferences(for: paper.id)
+        if !refs.isEmpty {
+            lines.append("")
+            lines.append(blue("── Cross-references (press Enter to navigate) ──"))
+            for ref in refs {
+                lines.append("  → " + cyan("@\(ref.id)") + ": " + String(ref.title.prefix(55)))
+            }
+        }
+        pager(title: String(paper.title.prefix(55)), lines: lines)
+
+        // After pager, offer cross-ref navigation if any exist
+        guard !refs.isEmpty else { return }
+        let refItems = refs.map { ref -> (String, Bool) in
+            ("\(cyan("@\(ref.id)"))  \(String(ref.title.prefix(55)))  \(dim("(\(ref.year ?? 0))"))", false)
+        }
+        guard let refIdx = menu(
+            title: "Navigate to cross-reference from @\(paper.id)",
+            items: refItems,
+            footer: "↑↓ navigate  Enter select  q back"
+        ) else { return }
+        paperScreen(paper: refs[refIdx], project: project)
     }
-    pager(title: String(paper.title.prefix(55)), lines: lines)
 }
 
 func generateScreen(project: Project) {
