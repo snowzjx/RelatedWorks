@@ -9,11 +9,122 @@ struct RelatedWorksTUI {
     static func main() {
         let store = Store()
         let projects = (try? store.loadAll()) ?? []
-        Application(rootView: RootView(projects: projects)).start()
+        Application(rootView: AppView(projects: projects)).start()
     }
 }
 
-// MARK: - Identifiable wrappers for SwiftTUI ForEach
+// MARK: - Single flat view with all buttons always in tree
+
+struct AppView: View {
+    let projects: [Project]
+    @State private var projectIdx: Int? = nil
+    @State private var paperIdx: Int? = nil
+    @State private var showGenerated: Bool = false
+    @State private var generated: String = ""
+    @State private var generating: Bool = false
+
+    var selectedProject: Project? { projectIdx.map { projects[$0] } }
+    var selectedPaper: Paper? { paperIdx.flatMap { selectedProject?.papers[$0] } }
+
+    var body: some View {
+        VStack {
+            // ── Header ──────────────────────────────────────────────
+            if let paper = selectedPaper {
+                Text("  \(String(paper.title.prefix(72)))")
+            } else if let project = selectedProject {
+                Text("  \(project.name)\(project.description.isEmpty ? "" : " — \(project.description)")")
+            } else {
+                Text("  RelatedWorks")
+            }
+            Text("")
+
+            // ── Project list ─────────────────────────────────────────
+            if projectIdx == nil {
+                ForEach(projects.enumerated().map { IndexedProject(id: $0.offset, project: $0.element) }) { item in
+                    Button("  [\(item.project.id.uuidString.prefix(8))]  \(item.project.name)  (\(item.project.papers.count) papers)") {
+                        projectIdx = item.id
+                        paperIdx = nil
+                        showGenerated = false
+                    }
+                }
+                if projects.isEmpty {
+                    Text("  No projects. Use: relatedworks project:create <name>")
+                }
+            }
+
+            // ── Paper list ───────────────────────────────────────────
+            if let project = selectedProject, paperIdx == nil, !showGenerated {
+                ForEach(project.papers.enumerated().map { IndexedPaper(id: $0.offset, paper: $0.element) }) { item in
+                    let p = item.paper
+                    Button("  [@\(p.id)]  \(String(p.title.prefix(55)))  (\(p.year ?? 0))") {
+                        paperIdx = item.id
+                    }
+                }
+                if project.papers.isEmpty {
+                    Text("  No papers yet.")
+                }
+                Text("")
+                Button("  [G] Generate Related Works") {
+                    showGenerated = true
+                    generating = true
+                    Task {
+                        generated = await RelatedWorksGenerator.generate(for: project)
+                        generating = false
+                    }
+                }
+            }
+
+            // ── Paper detail ─────────────────────────────────────────
+            if let paper = selectedPaper, let project = selectedProject {
+                Text("  Authors : \(paper.authors.joined(separator: ", "))")
+                Text("  Year    : \(paper.year.map(String.init) ?? "?")   Venue: \(paper.venue ?? "?")")
+                if let abstract = paper.abstract, !abstract.isEmpty {
+                    Text("")
+                    Text("  -- Abstract --")
+                    Text("  \(String(abstract.prefix(400)))")
+                }
+                if !paper.annotation.isEmpty {
+                    Text("")
+                    Text("  -- Notes --")
+                    Text("  \(paper.annotation)")
+                }
+                let refs = project.crossReferences(for: paper.id)
+                if !refs.isEmpty {
+                    Text("")
+                    Text("  -- Cross-references --")
+                    ForEach(refs.enumerated().map { IndexedRef(id: $0.offset, paper: $0.element) }) { ref in
+                        Text("    -> @\(ref.paper.id): \(String(ref.paper.title.prefix(50)))")
+                    }
+                }
+            }
+
+            // ── Generated output ─────────────────────────────────────
+            if showGenerated {
+                if generating {
+                    Text("  Generating, please wait...")
+                } else {
+                    Text(generated)
+                }
+            }
+
+            // ── Navigation buttons (always present) ──────────────────
+            Text("")
+            if paperIdx != nil {
+                Button("  [<] Back to project") { paperIdx = nil }
+            } else if showGenerated {
+                Button("  [<] Back to project") { showGenerated = false }
+            } else if projectIdx != nil {
+                Button("  [<] Back to projects") { projectIdx = nil }
+            }
+
+            Text("")
+            Text("  up/down: navigate   enter/space: select   ctrl+d: quit")
+        }
+        .padding()
+    }
+}
+
+// MARK: - Helpers
 
 struct IndexedProject: Identifiable {
     let id: Int
@@ -25,172 +136,7 @@ struct IndexedPaper: Identifiable {
     let paper: Paper
 }
 
-// MARK: - Root
-
-struct RootView: View {
-    let projects: [Project]
-    @State private var selectedIndex: Int? = nil
-
-    var body: some View {
-        if let idx = selectedIndex, idx < projects.count {
-            ProjectView(project: projects[idx], onBack: { selectedIndex = nil })
-        } else {
-            ProjectListView(projects: projects, onSelect: { selectedIndex = $0 })
-        }
-    }
-}
-
-// MARK: - Project List
-
-struct ProjectListView: View {
-    let projects: [Project]
-    var onSelect: (Int) -> Void
-
-    var indexed: [IndexedProject] { projects.enumerated().map { IndexedProject(id: $0.offset, project: $0.element) } }
-
-    var body: some View {
-        VStack {
-            Text("=== RelatedWorks ===")
-            Text("")
-            if projects.isEmpty {
-                Text("No projects. Use: relatedworks project:create <name>")
-            } else {
-                ForEach(indexed) { item in
-                    Button("  [\(item.project.id.uuidString.prefix(8))]  \(item.project.name)  (\(item.project.papers.count) papers)") {
-                        onSelect(item.id)
-                    }
-                }
-            }
-            Text("")
-            Text("  up/down: navigate   enter/space: select   ctrl+d: quit")
-        }
-        .padding()
-    }
-}
-
-// MARK: - Project View
-
-struct ProjectView: View {
-    let project: Project
-    var onBack: () -> Void
-    @State private var selectedPaperIndex: Int? = nil
-    @State private var showGenerated: Bool = false
-
-    var indexed: [IndexedPaper] { project.papers.enumerated().map { IndexedPaper(id: $0.offset, paper: $0.element) } }
-
-    var body: some View {
-        if let idx = selectedPaperIndex, idx < project.papers.count {
-            PaperView(paper: project.papers[idx], project: project, onBack: { selectedPaperIndex = nil })
-        } else if showGenerated {
-            GeneratingView(project: project, onBack: { showGenerated = false })
-        } else {
-            VStack {
-                Text("=== \(project.name) ===")
-                if !project.description.isEmpty {
-                    Text("    \(project.description)")
-                }
-                Text("")
-                if project.papers.isEmpty {
-                    Text("  No papers yet.")
-                } else {
-                    ForEach(indexed) { item in
-                        let p = item.paper
-                        Button("  [@\(p.id)]  \(String(p.title.prefix(55)))  (\(p.year ?? 0))") {
-                            selectedPaperIndex = item.id
-                        }
-                    }
-                }
-                Text("")
-                Button("  [G] Generate Related Works") { showGenerated = true }
-                Text("")
-                Button("  [<] Back") { onBack() }
-                Text("")
-                Text("  up/down: navigate   enter/space: select   ctrl+d: quit")
-            }
-            .padding()
-        }
-    }
-}
-
-// MARK: - Paper View
-
 struct IndexedRef: Identifiable {
     let id: Int
     let paper: Paper
-}
-
-struct PaperView: View {
-    let paper: Paper
-    let project: Project
-    var onBack: () -> Void
-
-    var refs: [IndexedRef] {
-        project.crossReferences(for: paper.id).enumerated().map { IndexedRef(id: $0.offset, paper: $0.element) }
-    }
-
-    var body: some View {
-        VStack {
-            Text("=== \(String(paper.title.prefix(70))) ===")
-            Text("")
-            Text("  Authors : \(paper.authors.joined(separator: ", "))")
-            Text("  Year    : \(paper.year.map(String.init) ?? "?")   Venue: \(paper.venue ?? "?")")
-            Text("")
-            if let abstract = paper.abstract, !abstract.isEmpty {
-                Text("  -- Abstract --")
-                Text("  \(String(abstract.prefix(400)))")
-                Text("")
-            }
-            if !paper.annotation.isEmpty {
-                Text("  -- Your Notes --")
-                Text("  \(paper.annotation)")
-                Text("")
-            }
-            if !refs.isEmpty {
-                Text("  -- Cross-references --")
-                ForEach(refs) { ref in
-                    Text("    -> @\(ref.paper.id): \(String(ref.paper.title.prefix(50)))")
-                }
-                Text("")
-            }
-            Button("  [<] Back") { onBack() }
-        }
-        .padding()
-    }
-}
-
-// MARK: - Generating View
-
-struct GeneratingView: View {
-    let project: Project
-    var onBack: () -> Void
-    @State private var result: String = ""
-    @State private var done: Bool = false
-    @State private var started: Bool = false
-
-    var body: some View {
-        VStack {
-            Text("=== Generated Related Works: \(project.name) ===")
-            Text("")
-            if done {
-                Text(result)
-                Text("")
-                Button("  [<] Back") { onBack() }
-            } else {
-                Text("  Press Enter on [Generate] to start generation...")
-                Text("")
-                Button("  [Generate]") {
-                    if !started {
-                        started = true
-                        Task {
-                            let r = await RelatedWorksGenerator.generate(for: project)
-                            result = r
-                            done = true
-                        }
-                    }
-                }
-                Button("  [<] Cancel") { onBack() }
-            }
-        }
-        .padding()
-    }
 }
