@@ -130,7 +130,9 @@
       line-height: 1.6;
       overflow-x: auto;
       border: 1px solid #2c2c2e;
+      white-space: pre;
     }
+    .terminal pre { margin: 0; }
 
     .terminal .prompt { color: #30d158; }
     .terminal .cmd    { color: #f0f0f0; }
@@ -193,17 +195,18 @@
     <h2>🖥 Terminal UI</h2>
     <p>RelatedWorks ships a full interactive TUI — perfect for keyboard-driven workflows, SSH sessions, or when you prefer staying in the terminal. The TUI shares all data with the GUI in real time.</p>
 
-    <div class="terminal">
-      <span class="prompt">$</span> <span class="cmd">swift run RelatedWorks</span><br/><br/>
-      <span class="box">┌──────────────────────────────────────────────────────┐</span><br/>
-      <span class="box">│ </span><b>RelatedWorks — Projects</b><span class="box">                              │</span><br/>
-      <span class="box">├──────────────────────────────────────────────────────┤</span><br/>
-      <span class="box">│</span> <span class="sel"> › [a1b2c3d4]  My Survey Paper  (5 papers) </span><span class="box">          │</span><br/>
-      <span class="box">│</span>    <span class="dim">[e5f6a7b8]</span>  <b>LLM Efficiency Study</b>  <span class="green">3 papers</span><span class="box">       │</span><br/>
-      <span class="box">├──────────────────────────────────────────────────────┤</span><br/>
-      <span class="box">│ </span><span class="dim">↑↓ navigate  Enter select  q quit</span><span class="box">                    │</span><br/>
-      <span class="box">└──────────────────────────────────────────────────────┘</span>
-    </div>
+    <div class="terminal"><pre>
+<span class="prompt">$</span> <span class="cmd">swift run RelatedWorks</span>
+
+<span class="box">┌──────────────────────────────────────────────────┐</span>
+<span class="box">│ </span><b>RelatedWorks — Projects</b><span class="box">                          │</span>
+<span class="box">├──────────────────────────────────────────────────┤</span>
+<span class="box">│</span><span class="sel"> › [a1b2c3d4]  My Survey Paper  (5 papers)        </span><span class="box">│</span>
+<span class="box">│</span>   <span class="dim">[e5f6a7b8]</span>  <b>LLM Efficiency Study</b>  <span class="green">3 papers</span>     <span class="box">│</span>
+<span class="box">├──────────────────────────────────────────────────┤</span>
+<span class="box">│ </span><span class="dim">↑↓ navigate  Enter select  q quit               </span><span class="box"> │</span>
+<span class="box">└──────────────────────────────────────────────────┘</span>
+</pre></div>
 
     <div class="keys">
       <span class="key">↑ ↓</span> navigate
