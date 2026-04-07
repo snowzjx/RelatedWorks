@@ -55,19 +55,8 @@ public struct PDFImporter {
         \(text)
         """
 
-        let url = URL(string: "\(AppSettings.shared.ollamaBaseURL)/api/generate")!
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.timeoutInterval = 60
-        let body: [String: Any] = ["model": AppSettings.shared.extractionModel, "prompt": prompt, "stream": false]
-        req.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, _) = try await URLSession.shared.data(for: req)
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let response = json["response"] as? String else {
-            throw URLError(.cannotParseResponse)
-        }
+        let backend = AppSettings.shared.extractionBackendInstance()
+        let response = try await backend.generate(prompt: prompt)
 
         return try parseAIResponse(response)
     }

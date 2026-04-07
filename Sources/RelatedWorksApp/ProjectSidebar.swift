@@ -26,8 +26,8 @@ struct ProjectSidebar: View {
         }
         .navigationTitle("RelatedWorks")
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if !settings.ollamaReachable {
-                OllamaBanner()
+            if !settings.isGenerationConfigured && !settings.isExtractionConfigured {
+                NoModelBanner()
             }
         }
         .toolbar {

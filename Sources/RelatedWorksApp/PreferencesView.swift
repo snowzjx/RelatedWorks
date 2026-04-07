@@ -4,10 +4,7 @@ struct PreferencesView: View {
     @ObservedObject private var settings = AppSettings.shared
     @State private var tab: Tab = .general
 
-    enum Tab: String, CaseIterable {
-        case general = "General"
-        case ai = "AI Backend"
-    }
+    enum Tab { case general, models, backends }
 
     var body: some View {
         TabView(selection: $tab) {
@@ -15,12 +12,16 @@ struct PreferencesView: View {
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(Tab.general)
 
-            AISettingsView(settings: settings)
-                .tabItem { Label("AI Backend", systemImage: "cpu") }
-                .tag(Tab.ai)
+            ModelsSettingsView(settings: settings)
+                .tabItem { Label("Models", systemImage: "slider.horizontal.3") }
+                .tag(Tab.models)
+
+            BackendsSettingsView(settings: settings)
+                .tabItem { Label("AI Backends", systemImage: "cpu") }
+                .tag(Tab.backends)
         }
         .padding(20)
-        .frame(width: 500)
+        .frame(width: 540)
     }
 }
 
@@ -36,9 +37,7 @@ struct GeneralSettingsView: View {
                     Text("Font Size").frame(width: 80, alignment: .leading)
                     Slider(value: $settings.fontSize, in: 11...20, step: 1)
                     Text("\(Int(settings.fontSize)) pt")
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-                        .frame(width: 36, alignment: .trailing)
+                        .monospacedDigit().foregroundStyle(.secondary).frame(width: 36, alignment: .trailing)
                 }
             } header: { Text("Appearance") }
         }
@@ -46,59 +45,49 @@ struct GeneralSettingsView: View {
     }
 }
 
-// MARK: - AI Backend
+// MARK: - Models (extraction + generation model selection per backend)
 
-struct AISettingsView: View {
+struct ModelsSettingsView: View {
     @ObservedObject var settings: AppSettings
-    @State private var availableModels: [String] = []
-    @State private var isFetchingModels = false
-    @State private var connectionStatus: ConnectionStatus = .idle
-    @State private var showingURLEditor = false
+    @State private var ollamaModels: [String] = []
+    @State private var geminiModels: [String] = []
 
-    enum ConnectionStatus { case idle, ok, failed }
+    var availableBackends: [AIBackendType] {
+        var backends: [AIBackendType] = [.none]
+        if settings.ollamaReachable { backends.append(.ollama) }
+        if !settings.geminiAPIKey.isEmpty { backends.append(.gemini) }
+        return backends
+    }
 
     var body: some View {
         Form {
             Section {
                 HStack(spacing: 8) {
-                    Text(settings.ollamaBaseURL)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                    Spacer()
-                    Button("Configure URL") { showingURLEditor = true }
-                        .controlSize(.small)
-                    Button("Refresh") { fetchModels() }
-                        .disabled(isFetchingModels)
-                        .controlSize(.small)
-                }
-                HStack(spacing: 6) {
-                    if isFetchingModels {
-                        ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
-                        Text("Connecting…").font(.caption).foregroundStyle(.secondary)
-                    } else if connectionStatus == .ok {
-                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                        Text("\(availableModels.count) model(s) available").font(.caption).foregroundStyle(.secondary)
-                    } else if connectionStatus == .failed {
-                        Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
-                        Text("Cannot connect to Ollama").font(.caption).foregroundStyle(.secondary)
+                    Text("Backend").frame(width: 80, alignment: .leading)
+                    Picker("", selection: $settings.extractionBackend) {
+                        ForEach(availableBackends, id: \.self) { Text($0.rawValue).tag($0) }
+                    }.frame(width: 110)
+                    if settings.extractionBackend == .ollama {
+                        modelPicker(models: ollamaModels, selection: $settings.extractionModel, placeholder: "model name")
+                    } else if settings.extractionBackend == .gemini {
+                        modelPicker(models: geminiModels, selection: $settings.geminiExtractionModel, placeholder: "gemini-2.5-flash", isGemini: true)
                     }
                 }
-                .font(.caption)
-            } header: { Text("Ollama") }
+            } header: { Text("PDF Extraction") }
 
             Section {
                 HStack(spacing: 8) {
-                    Text("Extraction").frame(width: 80, alignment: .leading)
-                    modelPicker(selection: $settings.extractionModel)
-                    Text("PDF metadata").font(.caption).foregroundStyle(.tertiary)
+                    Text("Backend").frame(width: 80, alignment: .leading)
+                    Picker("", selection: $settings.generationBackend) {
+                        ForEach(availableBackends, id: \.self) { Text($0.rawValue).tag($0) }
+                    }.frame(width: 110)
+                    if settings.generationBackend == .ollama {
+                        modelPicker(models: ollamaModels, selection: $settings.generationModel, placeholder: "model name")
+                    } else if settings.generationBackend == .gemini {
+                        modelPicker(models: geminiModels, selection: $settings.geminiGenerationModel, placeholder: "gemini-2.5-flash", isGemini: true)
+                    }
                 }
-                HStack(spacing: 8) {
-                    Text("Generation").frame(width: 80, alignment: .leading)
-                    modelPicker(selection: $settings.generationModel)
-                    Text("Related Works").font(.caption).foregroundStyle(.tertiary)
-                }
-            } header: { Text("Models") }
+            } header: { Text("Related Works Generation") }
 
             Section {
                 VStack(alignment: .leading, spacing: 6) {
@@ -109,56 +98,239 @@ struct AISettingsView: View {
                         .background(Color(nsColor: .controlBackgroundColor))
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                         .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
-                    Button("Reset to Default") {
-                        settings.generationPrompt = AppSettings.defaultGenerationPrompt
-                    }
-                    .controlSize(.small)
-                    .buttonStyle(.borderless)
-                    .foregroundStyle(.blue)
+                    Button("Reset to Default") { settings.generationPrompt = AppSettings.defaultGenerationPrompt }
+                        .controlSize(.small).buttonStyle(.borderless).foregroundStyle(.blue)
                 }
-            } header: { Text("Generation Prompt Instructions") }
+            } header: { Text("Generation Prompt") }
         }
         .formStyle(.grouped)
         .onAppear { fetchModels() }
-        .sheet(isPresented: $showingURLEditor) {
-            URLEditorSheet(url: $settings.ollamaBaseURL) { fetchModels() }
+        .onChange(of: settings.ollamaReachable) { reachable in
+            if !reachable {
+                if settings.extractionBackend == .ollama { settings.extractionBackend = .none }
+                if settings.generationBackend == .ollama { settings.generationBackend = .none }
+            } else {
+                fetchOllamaModels()
+            }
         }
     }
 
     @ViewBuilder
-    private func modelPicker(selection: Binding<String>) -> some View {
-        if availableModels.isEmpty {
-            TextField("model name", text: selection)
-                .textFieldStyle(.roundedBorder)
+    private func modelPicker(models: [String], selection: Binding<String>, placeholder: String, isGemini: Bool = false) -> some View {
+        if models.isEmpty {
+            TextField(placeholder, text: selection).textFieldStyle(.roundedBorder)
         } else {
             Picker("", selection: selection) {
-                ForEach(availableModels, id: \.self) { Text($0).tag($0) }
-                if !availableModels.contains(selection.wrappedValue) {
+                ForEach(models, id: \.self) { model in
+                    let incompatible = isGemini && AppSettings.incompatibleGeminiModels.contains(model)
+                    if incompatible {
+                        Text(model).strikethrough().foregroundStyle(.secondary).tag(model)
+                    } else {
+                        Text(model).tag(model)
+                    }
+                }
+                if !models.contains(selection.wrappedValue) {
                     Text(selection.wrappedValue).tag(selection.wrappedValue)
+                }
+            }
+            .onChange(of: selection.wrappedValue) { newVal in
+                if isGemini && AppSettings.incompatibleGeminiModels.contains(newVal) {
+                    // Revert to first compatible model
+                    if let first = models.first(where: { !AppSettings.incompatibleGeminiModels.contains($0) }) {
+                        selection.wrappedValue = first
+                    }
                 }
             }
         }
     }
 
     private func fetchModels() {
-        isFetchingModels = true
-        connectionStatus = .idle
+        fetchOllamaModels()
+        fetchGeminiModels()
+    }
+
+    private func fetchOllamaModels() {
         Task {
             let urlStr = settings.ollamaBaseURL.trimmingCharacters(in: .init(charactersIn: "/"))
             guard let url = URL(string: "\(urlStr)/api/tags"),
                   let (data, _) = try? await URLSession.shared.data(from: url),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let models = json["models"] as? [[String: Any]] else {
-                await MainActor.run { connectionStatus = .failed; isFetchingModels = false }
+                await MainActor.run { settings.ollamaReachable = false }
                 return
             }
             let names = models.compactMap { $0["name"] as? String }.sorted()
-            await MainActor.run { availableModels = names; connectionStatus = .ok; isFetchingModels = false }
+            await MainActor.run { ollamaModels = names; settings.ollamaReachable = true }
+        }
+    }
+
+    private func fetchGeminiModels() {
+        let key = settings.geminiAPIKey
+        guard !key.isEmpty else { return }
+        Task {
+            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models?key=\(key)"),
+                  let (data, _) = try? await URLSession.shared.data(from: url),
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let models = json["models"] as? [[String: Any]] else { return }
+            let names = models.compactMap { m -> String? in
+                guard let name = m["name"] as? String,
+                      let methods = m["supportedGenerationMethods"] as? [String],
+                      methods.contains("generateContent") else { return nil }
+                return name.replacingOccurrences(of: "models/", with: "")
+            }.sorted()
+            await MainActor.run { geminiModels = names }
         }
     }
 }
 
-// MARK: - URL Editor Sheet
+// MARK: - AI Backends (Ollama + Gemini config)
+
+struct BackendsSettingsView: View {
+    @ObservedObject var settings: AppSettings
+    @State private var ollamaModelCount: Int = 0
+    @State private var showingURLEditor = false
+    @State private var showingGeminiKeyEditor = false
+    @State private var geminiTestStatus: TestStatus = .idle
+    @State private var geminiModels: [String] = []
+    @State private var isFetchingGemini = false
+
+    enum TestStatus { case idle, testing, ok, failed(String) }
+
+    var body: some View {
+        Form {
+            // ── Ollama ───────────────────────────────────────────────
+            Section {
+                HStack(spacing: 8) {
+                    Text(settings.ollamaBaseURL).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                    Spacer()
+                    Button("Configure") { showingURLEditor = true }.controlSize(.small)
+                    Button("Refresh") { Task { await settings.checkOllama() } }.controlSize(.small)
+                }
+                HStack(spacing: 6) {
+                    if settings.ollamaReachable {
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                        Text("Ollama is running").font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+                        Text("Cannot connect to Ollama").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+            } header: { Text("Ollama") }
+
+            // ── Gemini ───────────────────────────────────────────────
+            Section {
+                HStack(spacing: 8) {
+                    Text(settings.geminiAPIKey.isEmpty ? "No API key set" : "••••••••••••••••")
+                        .foregroundStyle(.secondary).lineLimit(1)
+                    Spacer()
+                    Button("Configure") { showingGeminiKeyEditor = true }.controlSize(.small)
+                    Button("Refresh") { fetchGeminiModels() }
+                        .disabled(settings.geminiAPIKey.isEmpty)
+                        .controlSize(.small)
+                    Button("Delete", role: .destructive) { settings.deleteGeminiConfig() }
+                        .controlSize(.small).foregroundStyle(.red)
+                }
+                if !settings.geminiAPIKey.isEmpty {
+                    Label("API key stored in Keychain", systemImage: "lock.fill")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+                HStack(spacing: 6) {
+                    if isFetchingGemini {
+                        ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
+                        Text("Fetching models…").font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        switch geminiTestStatus {
+                        case .idle: EmptyView()
+                        case .testing:
+                            ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
+                            Text("Testing…").font(.caption).foregroundStyle(.secondary)
+                        case .ok:
+                            Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                            Text("\(geminiModels.count) model(s) available").font(.caption).foregroundStyle(.secondary)
+                        case .failed(let msg):
+                            Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+                            Text(msg).font(.caption).foregroundStyle(.red).lineLimit(2)
+                        }
+                    }
+                }
+            } header: { Text("Gemini") }
+        }
+        .formStyle(.grouped)
+        .onAppear { Task { await settings.checkOllama() }; fetchGeminiModels() }
+        .sheet(isPresented: $showingURLEditor) {
+            URLEditorSheet(url: $settings.ollamaBaseURL) { Task { await settings.checkOllama() } }
+        }
+        .sheet(isPresented: $showingGeminiKeyEditor) {
+            GeminiKeyEditorSheet(settings: settings) { fetchGeminiModels() }
+        }
+    }
+
+
+    private func fetchGeminiModels() {
+        let key = settings.geminiAPIKey
+        guard !key.isEmpty else { return }
+        isFetchingGemini = true
+        geminiTestStatus = .idle
+        Task {
+            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models?key=\(key)"),
+                  let (data, response) = try? await URLSession.shared.data(from: url) else {
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Network error") }
+                return
+            }
+            if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+                let msg = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])
+                    .flatMap { ($0["error"] as? [String: Any])?["message"] as? String } ?? "HTTP \(http.statusCode)"
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed(msg) }
+                return
+            }
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let models = json["models"] as? [[String: Any]] else {
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Could not parse response") }
+                return
+            }
+            // Only include models that support generateContent
+            let names = models.compactMap { m -> String? in
+                guard let name = m["name"] as? String,
+                      let methods = m["supportedGenerationMethods"] as? [String],
+                      methods.contains("generateContent") else { return nil }
+                return name.replacingOccurrences(of: "models/", with: "")
+            }.sorted()
+            await MainActor.run {
+                geminiModels = names
+                isFetchingGemini = false
+                geminiTestStatus = .ok
+            }
+        }
+    }
+}
+
+// MARK: - Gemini Key Editor Sheet
+
+struct GeminiKeyEditorSheet: View {
+    let settings: AppSettings
+    let onSave: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft = ""
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Configure Gemini API Key").font(.headline)
+            SecureField("AIza...", text: $draft)
+                .textFieldStyle(.roundedBorder)
+                .focused($focused)
+            HStack {
+                Spacer()
+                Button("Cancel") { dismiss() }.keyboardShortcut(.escape)
+                Button("Save") { settings.geminiAPIKey = draft; onSave(); dismiss() }
+                    .buttonStyle(.borderedProminent).keyboardShortcut(.return)
+                    .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+        .padding(24).frame(width: 400)
+        .onAppear { draft = settings.geminiAPIKey; focused = true }
+    }
+}
 
 struct URLEditorSheet: View {
     @Binding var url: String
@@ -170,20 +342,16 @@ struct URLEditorSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Configure Ollama URL").font(.headline)
-            TextField("http://localhost:11434", text: $draft)
-                .textFieldStyle(.roundedBorder)
-                .focused($focused)
+            TextField("http://localhost:11434", text: $draft).textFieldStyle(.roundedBorder).focused($focused)
             HStack {
                 Spacer()
                 Button("Cancel") { dismiss() }.keyboardShortcut(.escape)
                 Button("Save") { url = draft; onSave(); dismiss() }
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.return)
+                    .buttonStyle(.borderedProminent).keyboardShortcut(.return)
                     .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
-        .padding(24)
-        .frame(width: 360)
+        .padding(24).frame(width: 360)
         .onAppear { draft = url; focused = true }
     }
 }

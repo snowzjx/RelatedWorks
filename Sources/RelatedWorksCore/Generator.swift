@@ -3,10 +3,12 @@ import Foundation
 public struct RelatedWorksGenerator {
     public static func generate(for project: Project) async -> String {
         let prompt = buildPrompt(project)
-        if let output = try? await callOllama(prompt: prompt) {
-            return output
+        do {
+            return try await callOllama(prompt: prompt)
+        } catch {
+            let nsErr = error as NSError
+            return "⚠️ Generation failed [\(nsErr.domain) \(nsErr.code)]: \(error.localizedDescription)\n\n" + templateDraft(project)
         }
-        return templateDraft(project)
     }
 
     private static func buildPrompt(_ project: Project) -> String {
@@ -35,7 +37,7 @@ public struct RelatedWorksGenerator {
                 lines.append("Notes: \(annotation)")
             }
             if let abstract = paper.abstract, !abstract.isEmpty {
-                lines.append("Abstract (excerpt): \(String(abstract.prefix(300)))")
+                lines.append("Abstract: \(abstract)")
             }
             lines.append("")
         }
@@ -47,19 +49,8 @@ public struct RelatedWorksGenerator {
     }
 
     private static func callOllama(prompt: String) async throws -> String {
-        let url = URL(string: "\(AppSettings.shared.ollamaBaseURL)/api/generate")!
-        var req = URLRequest(url: url)
-        req.httpMethod = "POST"
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.timeoutInterval = 120
-        let body: [String: Any] = ["model": AppSettings.shared.generationModel, "prompt": prompt, "stream": false,
-                                    "options": ["temperature": 0.7]]
-        req.httpBody = try JSONSerialization.data(withJSONObject: body)
-        let (data, _) = try await URLSession.shared.data(for: req)
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let response = json["response"] as? String else {
-            throw URLError(.cannotParseResponse)
-        }
+        let backend = AppSettings.shared.generationBackendInstance()
+        var response = try await backend.generate(prompt: prompt)
         return stripThinkingBlocks(response).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 

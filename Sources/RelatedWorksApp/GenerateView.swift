@@ -10,8 +10,8 @@ struct GenerateButton: View {
         Button(action: { showingSheet = true }) {
             Label("Related Works", systemImage: "text.badge.star")
         }
-        .disabled(project.papers.isEmpty)
-        .help("View or generate Related Works section")
+        .disabled(project.papers.isEmpty || !AppSettings.shared.isGenerationConfigured)
+        .help(project.papers.isEmpty ? "Add papers first" : (!AppSettings.shared.isGenerationConfigured ? "Configure an AI model in Settings" : "View or generate Related Works section"))
         .sheet(isPresented: $showingSheet) {
             GeneratedOutputSheet(project: $project, isGenerating: $isGenerating) {
                 regenerate()
@@ -28,7 +28,7 @@ struct GenerateButton: View {
             let output = await RelatedWorksGenerator.generate(for: project)
             await MainActor.run {
                 project.generatedLatex = output
-                project.generationModel = AppSettings.shared.generationModel
+                project.generationModel = AppSettings.shared.activeGenerationModelName
                 try? store.save(project)
                 isGenerating = false
             }

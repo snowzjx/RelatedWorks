@@ -399,11 +399,15 @@ struct PDFDropZone: View {
                     ProgressView().scaleEffect(0.8)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Extracting metadata with AI…")
-                        Text("Using \(AppSettings.shared.extractionModel) via Ollama")
+                        Text("Using \(AppSettings.shared.activeExtractionModelName) via \(AppSettings.shared.extractionBackend.rawValue)")
                             .font(.caption2).foregroundStyle(.tertiary)
                     }
                     .foregroundStyle(.secondary)
                 }
+            } else if !AppSettings.shared.isExtractionConfigured {
+                Label("No AI extraction model configured — open Settings to configure one. PDF metadata will not be extracted automatically.", systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption2).foregroundStyle(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
             } else if let url = pdfURL {
                 HStack(spacing: 10) {
                     Image(systemName: "doc.fill").foregroundStyle(.red)

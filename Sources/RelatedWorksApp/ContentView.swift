@@ -44,19 +44,16 @@ struct ContentView: View {
     }
 }
 
-struct OllamaBanner: View {
+struct NoModelBanner: View {
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-                .font(.caption)
-            Text("Ollama not running")
+            Image(systemName: "cpu.fill")
+                .foregroundStyle(.red).font(.caption)
+            Text("No AI model configured")
                 .font(.caption).foregroundStyle(.primary)
             Spacer()
             Button("Settings") { openAppSettings() }
-            .font(.caption)
-            .buttonStyle(.borderless)
-            .foregroundStyle(.blue)
+                .font(.caption).buttonStyle(.borderless).foregroundStyle(.blue)
         }
         .padding(.horizontal, 12).padding(.vertical, 8)
         .background(.bar)
