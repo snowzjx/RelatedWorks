@@ -50,7 +50,7 @@ func pad(_ s: String, to width: Int) -> String {
 
 // MARK: - Input
 
-enum Key { case up, down, enter, esc, q, ctrlD, r, other }
+enum Key { case up, down, enter, esc, q, ctrlD, r, slash, backspace, char(Character), other }
 func readKey() -> Key {
     var buf = [UInt8](repeating: 0, count: 4)
     let n = read(STDIN_FILENO, &buf, 4)
@@ -61,7 +61,11 @@ func readKey() -> Key {
         case 113:    return .q
         case 114:    return .r
         case 4:      return .ctrlD
-        default:     return .other
+        case 47:     return .slash
+        case 127:    return .backspace
+        default:
+            if buf[0] >= 32 && buf[0] < 127 { return .char(Character(UnicodeScalar(buf[0]))) }
+            return .other
         }
     }
     if n >= 3 && buf[0] == 27 && buf[1] == 91 {
@@ -209,9 +213,30 @@ func projectListScreen(projects: [Project]) {
     }
 }
 
+func filterPapers(_ papers: [Paper], query: String) -> [Paper] {
+    let q = query.lowercased()
+    guard !q.isEmpty else { return papers }
+    return papers.filter { p in
+        p.id.lowercased().contains(q) ||
+        p.title.lowercased().contains(q) ||
+        p.authors.joined(separator: " ").lowercased().contains(q) ||
+        (p.venue?.lowercased().contains(q) ?? false) ||
+        (p.year.map { String($0) }?.contains(q) ?? false) ||
+        (p.abstract?.lowercased().contains(q) ?? false) ||
+        p.annotation.lowercased().contains(q)
+    }
+}
+
 func projectScreen(project: Project) {
+    var filterQuery = ""
+    var searching = false
+    var sel = 0
+
     while true {
-        var items: [(String, Bool)] = project.papers.map { p in
+        let filtered = filterPapers(project.papers, query: filterQuery)
+
+        // Build menu items from filtered papers + Generate action
+        var items: [(String, Bool)] = filtered.map { p in
             let id = cyan("[@\(p.id)]")
             let title = String(p.title.prefix(50))
             let year = dim("(\(p.year ?? 0))")
@@ -220,11 +245,89 @@ func projectScreen(project: Project) {
         let hasPapers = !project.papers.isEmpty
         items.append((yellow("⚡") + " Generate Related Works" + (hasPapers ? "" : dim("  (no papers)")), !hasPapers))
 
-        guard let idx = menu(title: "\(bold(project.name))\(project.description.isEmpty ? "" : "  " + dim(project.description))", items: items) else { return }
-        if idx == project.papers.count {
-            generateScreen(project: project)
-        } else {
-            paperScreen(paper: project.papers[idx], project: project)
+        // Clamp selection
+        sel = min(sel, items.count - 1)
+        if sel < 0 { sel = 0 }
+        // Skip disabled
+        if sel < items.count && items[sel].1 {
+            sel = items.firstIndex(where: { !$0.1 }) ?? sel
+        }
+
+        // Render
+        let (w, _) = termSize()
+        cls()
+        let filterSuffix = filterQuery.isEmpty ? "" : "  " + yellow("[/\(filterQuery)_]")
+        let titleStr = "\(bold(project.name))\(project.description.isEmpty ? "" : "  " + dim(project.description))\(filterSuffix)"
+        let footer = searching
+            ? "type to filter  Esc clear  Enter/↑↓ navigate"
+            : "↑↓ navigate  Enter select  / search  q back"
+        var rows: [String] = []
+        for (i, item) in items.enumerated() {
+            if item.1 {
+                rows.append(dim("   \(item.0)"))
+            } else if i == sel {
+                rows.append(inv(bold(" › ")) + inv(" \(item.0) "))
+            } else {
+                rows.append("   \(item.0)")
+            }
+        }
+        drawBox(title: titleStr, rows: rows, footer: footer, w: w)
+        fflush(stdout)
+
+        let key = readKey()
+
+        if searching {
+            switch key {
+            case .char(let c):
+                filterQuery.append(c)
+                sel = 0
+            case .backspace:
+                if filterQuery.isEmpty {
+                    searching = false
+                } else {
+                    filterQuery.removeLast()
+                    sel = 0
+                }
+            case .esc:
+                filterQuery = ""
+                searching = false
+            case .up:
+                var next = sel - 1
+                while next >= 0 && items[next].1 { next -= 1 }
+                if next >= 0 { sel = next }
+            case .down:
+                var next = sel + 1
+                while next < items.count && items[next].1 { next += 1 }
+                if next < items.count { sel = next }
+            case .enter:
+                searching = false
+                fallthrough
+            default: break
+            }
+            continue
+        }
+
+        // Normal navigation
+        switch key {
+        case .slash:
+            searching = true
+        case .up:
+            var next = sel - 1
+            while next >= 0 && items[next].1 { next -= 1 }
+            if next >= 0 { sel = next }
+        case .down:
+            var next = sel + 1
+            while next < items.count && items[next].1 { next += 1 }
+            if next < items.count { sel = next }
+        case .enter:
+            if sel == filtered.count {
+                generateScreen(project: project)
+            } else {
+                paperScreen(paper: filtered[sel], project: project)
+            }
+        case .q, .esc, .ctrlD:
+            return
+        default: break
         }
     }
 }
