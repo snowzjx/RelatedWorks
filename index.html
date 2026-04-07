@@ -178,6 +178,7 @@
       <li><span class="dot">✦</span> Multiple AI backends — Ollama (local) and Google Gemini</li>
       <li><span class="dot">✦</span> Export &amp; import projects as <code>.relatedworks</code> files</li>
       <li><span class="dot green">✦</span> Full Terminal UI — keyboard-driven, works over SSH</li>
+      <li><span class="dot">✦</span> Live search &amp; filter — search by ID, title, authors, venue, year, abstract, or annotation with match highlighting</li>
       <li><span class="dot">✦</span> Deep link support via <code>relatedworks://</code> URIs</li>
     </ul>
 
@@ -207,11 +208,23 @@
 <span class="box">├──────────────────────────────────────────────────┤</span>
 <span class="box">│ </span><span class="dim">↑↓ navigate  Enter select  q quit               </span><span class="box"> │</span>
 <span class="box">└──────────────────────────────────────────────────┘</span>
+
+<span class="dim"># Press / to search papers live inside a project</span>
+
+<span class="box">┌──────────────────────────────────────────────────┐</span>
+<span class="box">│ </span><b>My Survey Paper</b>  <span class="green">[/bert_]</span><span class="box">                         │</span>
+<span class="box">├──────────────────────────────────────────────────┤</span>
+<span class="box">│</span><span class="sel"> › [@BERT]  BERT: Pre-training of Deep...  (2019) </span><span class="box">│</span>
+<span class="box">│</span>   <span class="dim">[@RoBERTa]</span>  RoBERTa: A Robustly Optimized…     <span class="box">│</span>
+<span class="box">├──────────────────────────────────────────────────┤</span>
+<span class="box">│ </span><span class="dim">type to filter  Esc clear  Enter/↑↓ navigate    </span><span class="box"> │</span>
+<span class="box">└──────────────────────────────────────────────────┘</span>
 </pre></div>
 
     <div class="keys">
       <span class="key">↑ ↓</span> navigate/scroll
       <span class="key">Enter</span> select / navigate cross-refs
+      <span class="key">/</span> live search
       <span class="key">r</span> regenerate (output view)
       <span class="key">q</span> back
       <span class="key">Ctrl+D</span> quit
