@@ -33,6 +33,23 @@ jobs:
       - name: Build TUI
         run: swift build -c release --product RelatedWorks
 
+  build-ios:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build iOS
+        run: |
+          xcodebuild \
+            -project RelatedWorksApp.xcodeproj \
+            -scheme RelatedWorksIOS \
+            -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
       - name: Remove quarantine & re-sign
         if: startsWith(github.ref, 'refs/tags/')
         run: |
