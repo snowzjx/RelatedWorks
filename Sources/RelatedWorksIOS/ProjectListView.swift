@@ -1,0 +1,81 @@
+import SwiftUI
+import UniformTypeIdentifiers
+
+struct ProjectListView: View {
+    @EnvironmentObject var store: Store
+    @State private var showImporter = false
+    @State private var importError: String?
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(store.projects) { project in
+                    NavigationLink(destination: PaperListView(projectID: project.id)) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(project.name)
+                                .font(.headline)
+                            HStack(spacing: 4) {
+                                Image(systemName: "doc.text")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text("\(project.papers.count)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            if !project.description.isEmpty {
+                                Text(project.description)
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                                    .lineLimit(1)
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+                }
+                .onDelete(perform: deleteProjects)
+            }
+            .navigationTitle("Projects")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showImporter = true
+                    } label: {
+                        Label("Import", systemImage: "square.and.arrow.down")
+                    }
+                }
+            }
+            .fileImporter(
+                isPresented: $showImporter,
+                allowedContentTypes: [UTType(filenameExtension: "relatedworks") ?? .data]
+            ) { result in
+                handleImport(result)
+            }
+            .alert("Import Failed", isPresented: .constant(importError != nil), actions: {
+                Button("OK") { importError = nil }
+            }, message: {
+                Text(importError ?? "")
+            })
+        }
+    }
+
+    private func deleteProjects(at offsets: IndexSet) {
+        for index in offsets {
+            try? store.delete(store.projects[index])
+        }
+    }
+
+    private func handleImport(_ result: Result<URL, Error>) {
+        switch result {
+        case .failure(let error):
+            importError = error.localizedDescription
+        case .success(let url):
+            let accessing = url.startAccessingSecurityScopedResource()
+            defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+            do {
+                try IOSProjectImporter.import(from: url, into: store)
+            } catch {
+                importError = error.localizedDescription
+            }
+        }
+    }
+}

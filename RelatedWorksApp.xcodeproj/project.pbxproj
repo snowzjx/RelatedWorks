@@ -7,133 +7,226 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A001 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001 /* App.swift */; };
-		A002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* ContentView.swift */; };
-		A003 /* ProjectSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* ProjectSidebar.swift */; };
-		A004 /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004 /* ProjectDetailView.swift */; };
-		A005 /* PaperDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F005 /* PaperDetailView.swift */; };
-		A006 /* AddPaperSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006 /* AddPaperSheet.swift */; };
-		A007 /* GenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F007 /* GenerateView.swift */; };
-		A008 /* AnnotationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F008 /* AnnotationEditor.swift */; };
-		A010 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Models.swift */; };
-		A011 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Store.swift */; };
-		A012 /* DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* DBLPService.swift */; };
-		A013 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Generator.swift */; };
-		A014 /* PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* PDFImporter.swift */; };
-		A015 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* DeepLink.swift */; };
-		A016 /* ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* ArxivService.swift */; };
-		A017 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* AppSettings.swift */; };
-		A019b /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* AIBackend.swift */; };
-		A021 /* ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* ProjectExporter.swift */; };
-		A020 /* BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* BlacklistedModels.plist */; };
-		A018 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* PreferencesView.swift */; };
-		A022 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* HelpView.swift */; };
-		T001 /* RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* RelatedWorksTests.swift */; };
-		TC010 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Models.swift */; };
-		TC011 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Store.swift */; };
-		TC012 /* DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* DBLPService.swift */; };
-		TC013 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Generator.swift */; };
-		TC014 /* PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* PDFImporter.swift */; };
-		TC015 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* DeepLink.swift */; };
-		TC016 /* ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* ArxivService.swift */; };
-		TC017 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* AppSettings.swift */; };
-		TC019b /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* AIBackend.swift */; };
+		A001 /* Sources/RelatedWorksApp/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001 /* Sources/RelatedWorksApp/App.swift */; };
+		A002 /* Sources/RelatedWorksApp/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* Sources/RelatedWorksApp/ContentView.swift */; };
+		A003 /* Sources/RelatedWorksApp/ProjectSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* Sources/RelatedWorksApp/ProjectSidebar.swift */; };
+		A004 /* Sources/RelatedWorksApp/ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004 /* Sources/RelatedWorksApp/ProjectDetailView.swift */; };
+		A005 /* Sources/RelatedWorksApp/PaperDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F005 /* Sources/RelatedWorksApp/PaperDetailView.swift */; };
+		A006 /* Sources/RelatedWorksApp/AddPaperSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006 /* Sources/RelatedWorksApp/AddPaperSheet.swift */; };
+		A007 /* Sources/RelatedWorksApp/GenerateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F007 /* Sources/RelatedWorksApp/GenerateView.swift */; };
+		A008 /* Sources/RelatedWorksApp/AnnotationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F008 /* Sources/RelatedWorksApp/AnnotationEditor.swift */; };
+		A010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
+		A011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
+		A012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* Sources/RelatedWorksCore/DBLPService.swift */; };
+		A013 /* Sources/RelatedWorksCore/Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Sources/RelatedWorksCore/Generator.swift */; };
+		A014 /* Sources/RelatedWorksCore/PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* Sources/RelatedWorksCore/PDFImporter.swift */; };
+		A015 /* Sources/RelatedWorksCore/DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* Sources/RelatedWorksCore/DeepLink.swift */; };
+		A016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* Sources/RelatedWorksCore/ArxivService.swift */; };
+		A017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
+		A018 /* Sources/RelatedWorksApp/PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* Sources/RelatedWorksApp/PreferencesView.swift */; };
+		A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Sources/RelatedWorksApp/Assets.xcassets */; };
+		A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
+		A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
+		A021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
+		A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* Sources/RelatedWorksApp/HelpView.swift */; };
+		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
+		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
+		IOS003 /* Sources/RelatedWorksIOS/PaperListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */; };
+		IOS004 /* Sources/RelatedWorksIOS/PaperDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */; };
+		IOS005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */; };
+		IOS010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
+		IOS011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
+		IOS012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* Sources/RelatedWorksCore/DBLPService.swift */; };
+		IOS013 /* Sources/RelatedWorksCore/Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Sources/RelatedWorksCore/Generator.swift */; };
+		IOS014 /* Sources/RelatedWorksCore/PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* Sources/RelatedWorksCore/PDFImporter.swift */; };
+		IOS015 /* Sources/RelatedWorksCore/DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* Sources/RelatedWorksCore/DeepLink.swift */; };
+		IOS016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* Sources/RelatedWorksCore/ArxivService.swift */; };
+		IOS017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
+		IOS019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
+		IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
+		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
+		IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */; };
+		T001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */; };
+		TC010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
+		TC011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
+		TC012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* Sources/RelatedWorksCore/DBLPService.swift */; };
+		TC013 /* Sources/RelatedWorksCore/Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Sources/RelatedWorksCore/Generator.swift */; };
+		TC014 /* Sources/RelatedWorksCore/PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* Sources/RelatedWorksCore/PDFImporter.swift */; };
+		TC015 /* Sources/RelatedWorksCore/DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* Sources/RelatedWorksCore/DeepLink.swift */; };
+		TC016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* Sources/RelatedWorksCore/ArxivService.swift */; };
+		TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
+		TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F001 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/App.swift; sourceTree = "<absolute>"; };
-		F002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ContentView.swift; sourceTree = "<absolute>"; };
-		F003 /* ProjectSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectSidebar.swift; sourceTree = "<absolute>"; };
-		F004 /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectDetailView.swift; sourceTree = "<absolute>"; };
-		F005 /* PaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PaperDetailView.swift; sourceTree = "<absolute>"; };
-		F006 /* AddPaperSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AddPaperSheet.swift; sourceTree = "<absolute>"; };
-		F007 /* GenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/GenerateView.swift; sourceTree = "<absolute>"; };
-		F008 /* AnnotationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AnnotationEditor.swift; sourceTree = "<absolute>"; };
-		F010 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Models.swift; sourceTree = "<absolute>"; };
-		F011 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Store.swift; sourceTree = "<absolute>"; };
-		F012 /* DBLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/DBLPService.swift; sourceTree = "<absolute>"; };
-		F013 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Generator.swift; sourceTree = "<absolute>"; };
-		F014 /* PDFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/PDFImporter.swift; sourceTree = "<absolute>"; };
-		F015 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/DeepLink.swift; sourceTree = "<absolute>"; };
-		F016 /* ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ArxivService.swift; sourceTree = "<absolute>"; };
-		F017 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AppSettings.swift; sourceTree = "<absolute>"; };
-		F019b /* AIBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AIBackend.swift; sourceTree = "<absolute>"; };
-		F021 /* ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ProjectExporter.swift; sourceTree = "<absolute>"; };
-		F020 /* BlacklistedModels.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksCore/BlacklistedModels.plist; sourceTree = "<absolute>"; };
-		FA001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = "<absolute>"; };
-		A019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Assets.xcassets */; };
-		F018 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = "<absolute>"; };
-		F022 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/HelpView.swift; sourceTree = "<absolute>"; };
-		TF001 /* RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = "<absolute>"; };
+		F001 /* Sources/RelatedWorksApp/App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/App.swift; sourceTree = SOURCE_ROOT; };
+		F002 /* Sources/RelatedWorksApp/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ContentView.swift; sourceTree = SOURCE_ROOT; };
+		F003 /* Sources/RelatedWorksApp/ProjectSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectSidebar.swift; sourceTree = SOURCE_ROOT; };
+		F004 /* Sources/RelatedWorksApp/ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectDetailView.swift; sourceTree = SOURCE_ROOT; };
+		F005 /* Sources/RelatedWorksApp/PaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PaperDetailView.swift; sourceTree = SOURCE_ROOT; };
+		F006 /* Sources/RelatedWorksApp/AddPaperSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AddPaperSheet.swift; sourceTree = SOURCE_ROOT; };
+		F007 /* Sources/RelatedWorksApp/GenerateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/GenerateView.swift; sourceTree = SOURCE_ROOT; };
+		F008 /* Sources/RelatedWorksApp/AnnotationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AnnotationEditor.swift; sourceTree = SOURCE_ROOT; };
+		F010 /* Sources/RelatedWorksCore/Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Models.swift; sourceTree = SOURCE_ROOT; };
+		F011 /* Sources/RelatedWorksCore/Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Store.swift; sourceTree = SOURCE_ROOT; };
+		F012 /* Sources/RelatedWorksCore/DBLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/DBLPService.swift; sourceTree = SOURCE_ROOT; };
+		F013 /* Sources/RelatedWorksCore/Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Generator.swift; sourceTree = SOURCE_ROOT; };
+		F014 /* Sources/RelatedWorksCore/PDFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/PDFImporter.swift; sourceTree = SOURCE_ROOT; };
+		F015 /* Sources/RelatedWorksCore/DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/DeepLink.swift; sourceTree = SOURCE_ROOT; };
+		F016 /* Sources/RelatedWorksCore/ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ArxivService.swift; sourceTree = SOURCE_ROOT; };
+		F017 /* Sources/RelatedWorksCore/AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AppSettings.swift; sourceTree = SOURCE_ROOT; };
+		F018 /* Sources/RelatedWorksApp/PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = SOURCE_ROOT; };
+		F019b /* Sources/RelatedWorksCore/AIBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AIBackend.swift; sourceTree = SOURCE_ROOT; };
+		F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksCore/BlacklistedModels.plist; sourceTree = SOURCE_ROOT; };
+		F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
+		F022 /* Sources/RelatedWorksApp/HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/HelpView.swift; sourceTree = SOURCE_ROOT; };
+		FA001 /* Sources/RelatedWorksApp/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		FAPP /* RelatedWorks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorks.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FIOSAPP /* RelatedWorksIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksIOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		IF006 /* IOSProjectImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/IOSProjectImporter.swift; sourceTree = SOURCE_ROOT; };
+		ZF_REF_Archive = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive.swift; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePBackingConfiguration = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+BackingConfiguration.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Deprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePHelpers = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Helpers.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePMemoryFile = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+MemoryFile.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePProgress = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Progress.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePReading = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Reading.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePReadingDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ReadingDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePWriting = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+Writing.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePWritingDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+WritingDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePZIP64 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Archive+ZIP64.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DataPCompression = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Compression.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DataPCompressionDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+CompressionDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DataPSerialization = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Data+Serialization.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DatePZIP = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Date+ZIP.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_Entry = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry.swift; sourceTree = SOURCE_ROOT; };
+		ZF_REF_EntryPSerialization = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+Serialization.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_EntryPZIP64 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/Entry+ZIP64.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_FileManagerPZIP = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIP.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_FileManagerPZIPDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_URLPZIP = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ".build/checkouts/ZIPFoundation/Sources/ZIPFoundation/URL+ZIP.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_BLD_Archive = {isa = PBXBuildFile; fileRef = ZF_REF_Archive; };
+		ZF_BLD_ArchivePBackingConfiguration = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration; };
+		ZF_BLD_ArchivePDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated; };
+		ZF_BLD_ArchivePHelpers = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePHelpers; };
+		ZF_BLD_ArchivePMemoryFile = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePMemoryFile; };
+		ZF_BLD_ArchivePProgress = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePProgress; };
+		ZF_BLD_ArchivePReading = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReading; };
+		ZF_BLD_ArchivePReadingDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReadingDeprecated; };
+		ZF_BLD_ArchivePWriting = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWriting; };
+		ZF_BLD_ArchivePWritingDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWritingDeprecated; };
+		ZF_BLD_ArchivePZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64; };
+		ZF_BLD_DataPCompression = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression; };
+		ZF_BLD_DataPCompressionDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompressionDeprecated; };
+		ZF_BLD_DataPSerialization = {isa = PBXBuildFile; fileRef = ZF_REF_DataPSerialization; };
+		ZF_BLD_DatePZIP = {isa = PBXBuildFile; fileRef = ZF_REF_DatePZIP; };
+		ZF_BLD_Entry = {isa = PBXBuildFile; fileRef = ZF_REF_Entry; };
+		ZF_BLD_EntryPSerialization = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPSerialization; };
+		ZF_BLD_EntryPZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPZIP64; };
+		ZF_BLD_FileManagerPZIP = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP; };
+		ZF_BLD_FileManagerPZIPDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated; };
+		ZF_BLD_URLPZIP = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP; };
+		IOS006_BLD /* IOSProjectImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF006; };
+		IF001 /* Sources/RelatedWorksIOS/App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/App.swift; sourceTree = SOURCE_ROOT; };
+		IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/ProjectListView.swift; sourceTree = SOURCE_ROOT; };
+		IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/PaperListView.swift; sourceTree = SOURCE_ROOT; };
+		IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/PaperDetailView.swift; sourceTree = SOURCE_ROOT; };
+		IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/AnnotationEditor.swift; sourceTree = SOURCE_ROOT; };
+		TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = SOURCE_ROOT; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FAPP /* RelatedWorksApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		GROOT /* / */ = {
+		800ACD0F2F854E5500DC088A /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				GAPP /* RelatedWorksApp */,
-				GCORE /* RelatedWorksCore */,
-				GTEST /* RelatedWorksTests */,
-				GPROD /* Products */,
+				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
 			);
-			sourceTree = "<group>";
-		};
-		GPROD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAPP /* RelatedWorksApp.app */,
-				TPROD /* RelatedWorksTests.xctest */,
-			);
-			name = Products;
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		GAPP /* RelatedWorksApp */ = {
 			isa = PBXGroup;
 			children = (
-				F001 /* App.swift */,
-				F002 /* ContentView.swift */,
-				F003 /* ProjectSidebar.swift */,
-				F004 /* ProjectDetailView.swift */,
-				F005 /* PaperDetailView.swift */,
-				F006 /* AddPaperSheet.swift */,
-				F007 /* GenerateView.swift */,
-				F008 /* AnnotationEditor.swift */,
-				F018 /* PreferencesView.swift */,
-				FA001 /* Assets.xcassets */,
+				F001 /* Sources/RelatedWorksApp/App.swift */,
+				F002 /* Sources/RelatedWorksApp/ContentView.swift */,
+				F003 /* Sources/RelatedWorksApp/ProjectSidebar.swift */,
+				F004 /* Sources/RelatedWorksApp/ProjectDetailView.swift */,
+				F005 /* Sources/RelatedWorksApp/PaperDetailView.swift */,
+				F006 /* Sources/RelatedWorksApp/AddPaperSheet.swift */,
+				F007 /* Sources/RelatedWorksApp/GenerateView.swift */,
+				F008 /* Sources/RelatedWorksApp/AnnotationEditor.swift */,
+				F018 /* Sources/RelatedWorksApp/PreferencesView.swift */,
+				FA001 /* Sources/RelatedWorksApp/Assets.xcassets */,
 			);
 			name = RelatedWorksApp;
 			path = Sources/RelatedWorksApp;
-			sourceTree = "<absolute>";
+			sourceTree = SOURCE_ROOT;
 		};
 		GCORE /* RelatedWorksCore */ = {
 			isa = PBXGroup;
 			children = (
-				F010 /* Models.swift */,
-				F011 /* Store.swift */,
-				F012 /* DBLPService.swift */,
-				F013 /* Generator.swift */,
-				F014 /* PDFImporter.swift */,
-				F015 /* DeepLink.swift */,
-				F016 /* ArxivService.swift */,
-				F017 /* AppSettings.swift */,
-				F019b /* AIBackend.swift */,
-				F021 /* ProjectExporter.swift */,
-				F020 /* BlacklistedModels.plist */,
+				F010 /* Sources/RelatedWorksCore/Models.swift */,
+				F011 /* Sources/RelatedWorksCore/Store.swift */,
+				F012 /* Sources/RelatedWorksCore/DBLPService.swift */,
+				F013 /* Sources/RelatedWorksCore/Generator.swift */,
+				F014 /* Sources/RelatedWorksCore/PDFImporter.swift */,
+				F015 /* Sources/RelatedWorksCore/DeepLink.swift */,
+				F016 /* Sources/RelatedWorksCore/ArxivService.swift */,
+				F017 /* Sources/RelatedWorksCore/AppSettings.swift */,
+				F019b /* Sources/RelatedWorksCore/AIBackend.swift */,
+				F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */,
+				F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */,
 			);
 			name = RelatedWorksCore;
 			path = Sources/RelatedWorksCore;
-			sourceTree = "<absolute>";
+			sourceTree = SOURCE_ROOT;
+		};
+		GIOS /* RelatedWorksIOS */ = {
+			isa = PBXGroup;
+			children = (
+				IF001 /* Sources/RelatedWorksIOS/App.swift */,
+				IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */,
+				IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */,
+				IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */,
+				IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */,
+				FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */,
+			);
+			name = RelatedWorksIOS;
+			path = Sources/RelatedWorksIOS;
+			sourceTree = SOURCE_ROOT;
+		};
+		GPROD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAPP /* RelatedWorks.app */,
+				FIOSAPP /* RelatedWorksIOS.app */,
+				TPROD /* RelatedWorksTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		GROOT = {
+			isa = PBXGroup;
+			children = (
+				GAPP /* RelatedWorksApp */,
+				GIOS /* RelatedWorksIOS */,
+				GCORE /* RelatedWorksCore */,
+				GTEST /* RelatedWorksTests */,
+				GPROD /* Products */,
+				800ACD0F2F854E5500DC088A /* Recovered References */,
+			);
+			sourceTree = "<group>";
 		};
 		GTEST /* RelatedWorksTests */ = {
 			isa = PBXGroup;
 			children = (
-				TF001 /* RelatedWorksTests.swift */,
+				TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */,
 			);
 			name = RelatedWorksTests;
 			path = Tests/RelatedWorksTests;
-			sourceTree = "<absolute>";
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -151,7 +244,23 @@
 			);
 			name = RelatedWorksApp;
 			productName = RelatedWorksApp;
-			productReference = FAPP /* RelatedWorksApp.app */;
+			productReference = FAPP /* RelatedWorks.app */;
+			productType = "com.apple.product-type.application";
+		};
+		TIOS /* RelatedWorksIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCLTIOS /* Build configuration list for PBXNativeTarget "RelatedWorksIOS" */;
+			buildPhases = (
+				BPIOS /* Sources */,
+				BPIOSRES /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RelatedWorksIOS;
+			productName = RelatedWorksIOS;
+			productReference = FIOSAPP /* RelatedWorksIOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		TTEST /* RelatedWorksTests */ = {
@@ -170,11 +279,14 @@
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
+
 /* Begin PBXProject section */
 		PROJ /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2640;
 				ORGANIZATIONNAME = RelatedWorks;
 			};
 			buildConfigurationList = BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */;
@@ -191,70 +303,124 @@
 			projectRoot = "";
 			targets = (
 				TAPP /* RelatedWorksApp */,
+				TIOS /* RelatedWorksIOS */,
 				TTEST /* RelatedWorksTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		BPIOSRES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
+				IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPRES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */,
+				A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		BPIOS /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */,
+				IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */,
+				IOS003 /* Sources/RelatedWorksIOS/PaperListView.swift in Sources */,
+				IOS004 /* Sources/RelatedWorksIOS/PaperDetailView.swift in Sources */,
+				IOS005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift in Sources */,
+				IOS010 /* Sources/RelatedWorksCore/Models.swift in Sources */,
+				IOS011 /* Sources/RelatedWorksCore/Store.swift in Sources */,
+				IOS012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */,
+				IOS013 /* Sources/RelatedWorksCore/Generator.swift in Sources */,
+				IOS014 /* Sources/RelatedWorksCore/PDFImporter.swift in Sources */,
+				IOS015 /* Sources/RelatedWorksCore/DeepLink.swift in Sources */,
+				IOS016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
+				IOS017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
+				IOS019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
+				IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,
+				IOS006_BLD /* IOSProjectImporter.swift in Sources */,
+				ZF_BLD_Archive,
+				ZF_BLD_ArchivePBackingConfiguration,
+				ZF_BLD_ArchivePDeprecated,
+				ZF_BLD_ArchivePHelpers,
+				ZF_BLD_ArchivePMemoryFile,
+				ZF_BLD_ArchivePProgress,
+				ZF_BLD_ArchivePReading,
+				ZF_BLD_ArchivePReadingDeprecated,
+				ZF_BLD_ArchivePWriting,
+				ZF_BLD_ArchivePWritingDeprecated,
+				ZF_BLD_ArchivePZIP64,
+				ZF_BLD_DataPCompression,
+				ZF_BLD_DataPCompressionDeprecated,
+				ZF_BLD_DataPSerialization,
+				ZF_BLD_DatePZIP,
+				ZF_BLD_Entry,
+				ZF_BLD_EntryPSerialization,
+				ZF_BLD_EntryPZIP64,
+				ZF_BLD_FileManagerPZIP,
+				ZF_BLD_FileManagerPZIPDeprecated,
+				ZF_BLD_URLPZIP,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BPSRC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A001 /* App.swift in Sources */,
-				A002 /* ContentView.swift in Sources */,
-				A003 /* ProjectSidebar.swift in Sources */,
-				A004 /* ProjectDetailView.swift in Sources */,
-				A005 /* PaperDetailView.swift in Sources */,
-				A006 /* AddPaperSheet.swift in Sources */,
-				A007 /* GenerateView.swift in Sources */,
-				A008 /* AnnotationEditor.swift in Sources */,
-				A010 /* Models.swift in Sources */,
-				A011 /* Store.swift in Sources */,
-				A012 /* DBLPService.swift in Sources */,
-				A013 /* Generator.swift in Sources */,
-				A014 /* PDFImporter.swift in Sources */,
-				A015 /* DeepLink.swift in Sources */,
-				A016 /* ArxivService.swift in Sources */,
-				A017 /* AppSettings.swift in Sources */,
-				A019b /* AIBackend.swift in Sources */,
-				A021 /* ProjectExporter.swift in Sources */,
-				A018 /* PreferencesView.swift in Sources */,
-				A022 /* HelpView.swift in Sources */,
+				A001 /* Sources/RelatedWorksApp/App.swift in Sources */,
+				A002 /* Sources/RelatedWorksApp/ContentView.swift in Sources */,
+				A003 /* Sources/RelatedWorksApp/ProjectSidebar.swift in Sources */,
+				A004 /* Sources/RelatedWorksApp/ProjectDetailView.swift in Sources */,
+				A005 /* Sources/RelatedWorksApp/PaperDetailView.swift in Sources */,
+				A006 /* Sources/RelatedWorksApp/AddPaperSheet.swift in Sources */,
+				A007 /* Sources/RelatedWorksApp/GenerateView.swift in Sources */,
+				A008 /* Sources/RelatedWorksApp/AnnotationEditor.swift in Sources */,
+				A010 /* Sources/RelatedWorksCore/Models.swift in Sources */,
+				A011 /* Sources/RelatedWorksCore/Store.swift in Sources */,
+				A012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */,
+				A013 /* Sources/RelatedWorksCore/Generator.swift in Sources */,
+				A014 /* Sources/RelatedWorksCore/PDFImporter.swift in Sources */,
+				A015 /* Sources/RelatedWorksCore/DeepLink.swift in Sources */,
+				A016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
+				A017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
+				A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
+				A021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,
+				A018 /* Sources/RelatedWorksApp/PreferencesView.swift in Sources */,
+				A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPTEST /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				T001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift in Sources */,
+				TC010 /* Sources/RelatedWorksCore/Models.swift in Sources */,
+				TC011 /* Sources/RelatedWorksCore/Store.swift in Sources */,
+				TC012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */,
+				TC013 /* Sources/RelatedWorksCore/Generator.swift in Sources */,
+				TC014 /* Sources/RelatedWorksCore/PDFImporter.swift in Sources */,
+				TC015 /* Sources/RelatedWorksCore/DeepLink.swift in Sources */,
+				TC016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
+				TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
+				TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXResourcesBuildPhase section */
-		BPRES /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A019 /* Assets.xcassets in Resources */,
-				A020 /* BlacklistedModels.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-		BPTEST /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				T001 /* RelatedWorksTests.swift in Sources */,
-				TC010 /* Models.swift in Sources */,
-				TC011 /* Store.swift in Sources */,
-				TC012 /* DBLPService.swift in Sources */,
-				TC013 /* Generator.swift in Sources */,
-				TC014 /* PDFImporter.swift in Sources */,
-				TC015 /* DeepLink.swift in Sources */,
-				TC016 /* ArxivService.swift in Sources */,
-				TC017 /* AppSettings.swift in Sources */,
-				TC019b /* AIBackend.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section (Tests) */
 /* Begin XCBuildConfiguration section */
 		BC001 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -264,16 +430,47 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -287,11 +484,39 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -302,17 +527,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGNING_ALLOWED = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/RelatedWorksApp/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableDescription = "RelatedWorks";
+				INFOPLIST_KEY_NSHumanReadableDescription = RelatedWorks;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
@@ -330,11 +559,15 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/RelatedWorksApp/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableDescription = "RelatedWorks";
+				INFOPLIST_KEY_NSHumanReadableDescription = RelatedWorks;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
@@ -344,13 +577,68 @@
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section */
-
-/* Begin XCBuildConfiguration section (Tests) */
+		BCIOS003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = RelatedWorks;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.ios;
+				PRODUCT_NAME = RelatedWorksIOS;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BCIOS004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = RelatedWorks;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.ios;
+				PRODUCT_NAME = RelatedWorksIOS;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		BCT001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.tests;
@@ -364,6 +652,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.tests;
@@ -373,23 +662,23 @@
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section (Tests) */
+/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BC001 /* Debug */,
-				BC002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		BCLT /* Build configuration list for PBXNativeTarget "RelatedWorksApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BC003 /* Debug */,
 				BC004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCLTIOS /* Build configuration list for PBXNativeTarget "RelatedWorksIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCIOS003 /* Debug */,
+				BCIOS004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -403,8 +692,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC001 /* Debug */,
+				BC002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = PROJ /* Project object */;
 }

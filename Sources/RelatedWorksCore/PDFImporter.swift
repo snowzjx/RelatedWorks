@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import PDFKit
 
@@ -139,3 +140,4 @@ public struct ExtractedMetadata {
 
     static let empty = ExtractedMetadata(title: "", authors: [], abstract: nil, suggestedID: "Paper")
 }
+#endif // os(macOS)

@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 
 public struct ProjectExporter {
@@ -106,3 +107,4 @@ extension Project {
         self.bibEntries = source.bibEntries
     }
 }
+#endif // os(macOS)

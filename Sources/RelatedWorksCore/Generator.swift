@@ -50,7 +50,7 @@ public struct RelatedWorksGenerator {
 
     private static func callOllama(prompt: String) async throws -> String {
         let backend = AppSettings.shared.generationBackendInstance()
-        var response = try await backend.generate(prompt: prompt)
+        let response = try await backend.generate(prompt: prompt)
         return stripThinkingBlocks(response).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
