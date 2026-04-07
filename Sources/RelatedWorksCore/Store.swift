@@ -4,7 +4,7 @@ import CryptoKit
 public class Store: ObservableObject {
     public let projectsDir: URL
     public let pdfsDir: URL
-    @Published var projects: [Project] = []
+    @Published public var projects: [Project] = []
 
     // Global registry: paperID -> pdfPath, pdfHash -> paperID
     private(set) var idToPDFPath: [String: String] = [:]

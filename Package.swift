@@ -18,12 +18,6 @@ let package = Package(
             path: "Sources/RelatedWorks",
             exclude: []
         ),
-        .executableTarget(
-            name: "RelatedWorksApp",
-            dependencies: ["RelatedWorksCore"],
-            path: "Sources/RelatedWorksApp",
-            exclude: ["Assets.xcassets", "Info.plist"]
-        ),
         .testTarget(
             name: "RelatedWorksTests",
             dependencies: ["RelatedWorksCore"],

@@ -58,7 +58,7 @@ public struct Project: Codable, Identifiable, Hashable {
         bibEntries = try c.decodeIfPresent([String: String].self, forKey: .bibEntries) ?? [:]
     }
 
-    mutating func addPaper(_ paper: Paper) {
+    public mutating func addPaper(_ paper: Paper) {
         papers.append(paper)
     }
 
