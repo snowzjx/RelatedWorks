@@ -16,6 +16,7 @@ A native macOS academic literature manager purpose-built for Computer Science re
 - **Metadata editing** — right-click any paper to edit title, authors, year, venue, and abstract
 - **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via AI
 - **Multiple AI backends** — supports Ollama (local) and Google Gemini; configure per operation
+- **Project export/import** — export a project (papers, PDFs, annotations) as a `.relatedworks` file; import on any machine
 - **Terminal UI (TUI)** — full interactive TUI for keyboard-driven workflow and SSH/headless use
 - **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
 - **Preferences panel** — configure font size, AI backends, models, and generation prompt
@@ -54,6 +55,10 @@ Click **Generate Related Works** in the project view. RelatedWorks synthesizes y
 ### 6. Export BibTeX
 
 BibTeX entries are fetched from DBLP automatically, or generated from metadata when unavailable.
+
+### 7. Export / Import Project
+
+Right-click a project in the sidebar → **Export…** to save a `.relatedworks` file containing all papers, PDFs, annotations and generated output. Use **File → Import Project…** (`⌘⇧I`) to import on any machine.
 
 ## Terminal UI (TUI)
 
