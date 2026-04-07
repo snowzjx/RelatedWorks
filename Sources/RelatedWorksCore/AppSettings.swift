@@ -61,5 +61,5 @@ public class AppSettings: ObservableObject {
 }
 
 private extension Double {
-    public var nonZero: Double? { self == 0 ? nil : self }
+    var nonZero: Double? { self == 0 ? nil : self }
 }
