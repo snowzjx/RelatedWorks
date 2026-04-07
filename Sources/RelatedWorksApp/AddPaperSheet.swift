@@ -289,9 +289,8 @@ struct AddPaperSheet: View {
             if searchSource == .dblp {
                 let dblp = (try? await DBLPService.search(query: q)) ?? []
                 results = dblp.map { .dblp($0) }
-                // Auto-fallback to arXiv if DBLP empty
+                // Auto-fallback to arXiv if DBLP empty (without changing searchSource to avoid re-trigger)
                 if results.isEmpty {
-                    await MainActor.run { searchSource = .arxiv }
                     let arxiv = (try? await ArxivService.search(query: q)) ?? []
                     results = arxiv.map { .arxiv($0) }
                 }
@@ -385,7 +384,7 @@ struct PDFDropZone: View {
                     ProgressView().scaleEffect(0.8)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Extracting metadata with AI…")
-                        Text("Using gemma3:4b via Ollama")
+                        Text("Using \(AppSettings.shared.extractionModel) via Ollama")
                             .font(.caption2).foregroundStyle(.tertiary)
                     }
                     .foregroundStyle(.secondary)

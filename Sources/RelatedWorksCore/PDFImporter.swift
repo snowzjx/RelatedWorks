@@ -65,7 +65,7 @@ struct PDFImporter {
         // Extract JSON block from response (model may wrap it in markdown)
         let jsonString: String
         if let start = response.range(of: "{"), let end = response.range(of: "}", options: .backwards) {
-            jsonString = String(response[start.lowerBound...end.upperBound])
+            jsonString = String(response[start.lowerBound...end.lowerBound])
         } else {
             jsonString = response
         }
