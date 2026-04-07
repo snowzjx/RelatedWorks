@@ -61,12 +61,14 @@ RelatedWorks ships a full interactive TUI — useful for keyboard-driven workflo
 ### Launch
 
 ```bash
-# From source
-swift run RelatedWorks
+# GUI app
+open RelatedWorks.app
 
-# Or build first for faster startup
-swift build -c release --product RelatedWorks
-.build/release/RelatedWorks
+# TUI (bundled binary in release zip)
+./relatedworks-tui
+
+# Or build from source
+swift run RelatedWorks
 ```
 
 ### Navigation

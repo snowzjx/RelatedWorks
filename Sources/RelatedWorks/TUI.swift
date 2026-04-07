@@ -151,17 +151,16 @@ func wordWrap(_ text: String, width: Int) -> [String] {
 }
 
 func pager(title: String, lines: [String]) {
-    _ = pagerWithKey(title: title, lines: lines)
+    _ = pagerWithKey(title: title, lines: lines, showRegenerate: false)
 }
 
 @discardableResult
-func pagerWithKey(title: String, lines: [String]) -> Key {
+func pagerWithKey(title: String, lines: [String], showRegenerate: Bool = false) -> Key {
     var offset = 0
     while true {
         let (w, h) = termSize()
         let pageSize = max(1, h - 6)
         let inner = w - 4
-        // word-wrap all lines to inner width
         let wrapped = lines.flatMap { wordWrap($0, width: inner) }
         cls()
         var rows: [String] = []
@@ -169,7 +168,8 @@ func pagerWithKey(title: String, lines: [String]) -> Key {
         for line in slice { rows.append(line) }
         while rows.count < pageSize { rows.append("") }
         let scrollInfo = wrapped.count > pageSize ? " [\(offset+1)-\(min(offset+pageSize, wrapped.count))/\(wrapped.count)]" : ""
-        drawBox(title: title + scrollInfo, rows: rows, footer: "↑↓ scroll  r regenerate  q/Enter back", w: w)
+        let footer = showRegenerate ? "\u{2191}\u{2193} scroll  r regenerate  q/Enter back" : "\u{2191}\u{2193} scroll  q/Enter back"
+        drawBox(title: title + scrollInfo, rows: rows, footer: footer, w: w)
         fflush(stdout)
 
         let k = readKey()
@@ -177,11 +177,13 @@ func pagerWithKey(title: String, lines: [String]) -> Key {
         case .up:   offset = max(0, offset - 1)
         case .down: offset = min(max(0, wrapped.count - pageSize), offset + 1)
         case .q, .esc, .ctrlD, .enter: return k
-        case .r: return .r        default: break
+        case .r where showRegenerate: return .r
+        default: break
         }
     }
 }
 
+@discardableResult
 // MARK: - Screens
 
 func projectListScreen(projects: [Project]) {
@@ -296,7 +298,7 @@ func generateScreen(project: Project) {
         let latex = projects[pIdx].generatedLatex ?? ""
         let lines = latex.isEmpty ? [red("(no output)")] : latex.components(separatedBy: "\n")
         let model = projects[pIdx].generationModel.map { "  " + dim("[\($0)]") } ?? ""
-        let key = pagerWithKey(title: yellow("⚡") + " \(project.name)\(model)", lines: lines)
+        let key = pagerWithKey(title: yellow("⚡") + " \(project.name)\(model)", lines: lines, showRegenerate: true)
         if case .r = key { doGenerate() } else { return }
     }
 }
