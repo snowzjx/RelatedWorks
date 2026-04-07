@@ -1,5 +1,9 @@
 # RelatedWorks
 
+<p align="center">
+  <img src="icon.svg" width="120" alt="RelatedWorks icon"/>
+</p>
+
 > ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.
 
 A native macOS academic literature manager purpose-built for Computer Science researchers. Streamlines organizing papers, taking interconnected notes, and automatically drafting Related Works sections.
@@ -18,6 +22,7 @@ A native macOS academic literature manager purpose-built for Computer Science re
 - **Multiple AI backends** — supports Ollama (local) and Google Gemini; configure per operation
 - **Project export/import** — export a project (papers, PDFs, annotations) as a `.relatedworks` file; import on any machine
 - **Terminal UI (TUI)** — full interactive TUI for keyboard-driven workflow and SSH/headless use
+- **Live search / filter** — search papers by ID, title, authors, venue, year, abstract, or annotation with match highlighting (GUI + TUI)
 - **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
 - **Preferences panel** — configure font size, AI backends, models, and generation prompt
 
@@ -83,6 +88,8 @@ swift run RelatedWorks
 |-----|--------|
 | `↑` / `↓` | Navigate items / scroll |
 | `Enter` | Select / navigate to cross-referenced paper |
+| `/` | Enter live search/filter mode (in project view) |
+| `Esc` | Clear search / go back |
 | `r` | Regenerate Related Works (in output view only) |
 | `q` / `Esc` | Go back |
 | `Ctrl+D` | Quit |
