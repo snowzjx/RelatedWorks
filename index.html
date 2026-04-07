@@ -64,12 +64,12 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      word-break: break-word;
-      overflow-wrap: anywhere;
+      min-width: 0;
     }
 
+    .features li span:last-child { min-width: 0; }
+    .features li code { word-break: break-word; }
     .features li .dot { color: #3d8ef0; flex-shrink: 0; margin-top: 1px; }
-    .features li code { word-break: break-all; }
     .features li .dot.green { color: #30d158; }
     .features li .dot.yellow { color: #ffd60a; }
 
@@ -171,16 +171,16 @@
     </p>
 
     <ul class="features">
-      <li><span class="dot">✦</span> Project-based workspaces — one project per paper you're writing</li>
-      <li><span class="dot">✦</span> PDF import with AI metadata extraction (title, authors, abstract)</li>
-      <li><span class="dot">✦</span> DBLP + arXiv search with automatic BibTeX fetching</li>
-      <li><span class="dot">✦</span> Semantic IDs and <code>@cross-reference</code> annotations</li>
-      <li><span class="dot yellow">✦</span> One-click Related Works generation in LaTeX via AI</li>
-      <li><span class="dot">✦</span> Multiple AI backends — Ollama (local) and Google Gemini</li>
-      <li><span class="dot">✦</span> Export &amp; import projects as <code>.relatedworks</code> files</li>
-      <li><span class="dot green">✦</span> Full Terminal UI — keyboard-driven, works over SSH</li>
-      <li><span class="dot">✦</span> Live search &amp; filter — search by ID, title, authors, venue, year, abstract, or annotation with match highlighting</li>
-      <li><span class="dot">✦</span> Deep link support via <code>relatedworks://</code> URIs</li>
+      <li><span class="dot">✦</span> <span>Project-based workspaces — one project per paper you're writing</span></li>
+      <li><span class="dot">✦</span> <span>PDF import with AI metadata extraction (title, authors, abstract)</span></li>
+      <li><span class="dot">✦</span> <span>DBLP + arXiv search with automatic BibTeX fetching</span></li>
+      <li><span class="dot">✦</span> <span>Semantic IDs and <code>@cross-reference</code> annotations</span></li>
+      <li><span class="dot yellow">✦</span> <span>One-click Related Works generation in LaTeX via AI</span></li>
+      <li><span class="dot">✦</span> <span>Multiple AI backends — Ollama (local) and Google Gemini</span></li>
+      <li><span class="dot">✦</span> <span>Export &amp; import projects as <code>.relatedworks</code> files</span></li>
+      <li><span class="dot green">✦</span> <span>Full Terminal UI — keyboard-driven, works over SSH</span></li>
+      <li><span class="dot">✦</span> <span>Live search &amp; filter — search by ID, title, authors, venue, year, abstract, or annotation with match highlighting</span></li>
+      <li><span class="dot">✦</span> <span>Deep link support via <code>relatedworks://</code> URIs</span></li>
     </ul>
 
     <div class="buttons">
