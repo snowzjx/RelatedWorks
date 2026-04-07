@@ -6,6 +6,8 @@
     <string>me.snowzjx.relatedworks</string>
     <key>CFBundleName</key>
     <string>RelatedWorks</string>
+    <key>CFBundleDisplayName</key>
+    <string>RelatedWorks</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>CFBundleShortVersionString</key>
