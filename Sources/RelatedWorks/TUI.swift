@@ -130,7 +130,25 @@ func menu(title: String, items: [(label: String, disabled: Bool)], footer: Strin
     }
 }
 
-// MARK: - Pager
+func wordWrap(_ text: String, width: Int) -> [String] {
+    var result: [String] = []
+    for paragraph in text.components(separatedBy: "\n") {
+        if paragraph.trimmingCharacters(in: .whitespaces).isEmpty { result.append(""); continue }
+        var line = ""
+        for word in paragraph.components(separatedBy: " ") {
+            if line.isEmpty {
+                line = word
+            } else if line.count + 1 + word.count <= width {
+                line += " " + word
+            } else {
+                result.append(line)
+                line = word
+            }
+        }
+        if !line.isEmpty { result.append(line) }
+    }
+    return result
+}
 
 func pager(title: String, lines: [String]) {
     _ = pagerWithKey(title: title, lines: lines)
@@ -142,23 +160,22 @@ func pagerWithKey(title: String, lines: [String]) -> Key {
     while true {
         let (w, h) = termSize()
         let pageSize = max(1, h - 6)
+        let inner = w - 4
+        // word-wrap all lines to inner width
+        let wrapped = lines.flatMap { wordWrap($0, width: inner) }
         cls()
         var rows: [String] = []
-        let slice = lines[offset ..< min(offset + pageSize, lines.count)]
-        for line in slice {
-            let vl = visibleLen(line)
-            let inner = w - 4
-            rows.append(vl > inner ? String(line.prefix(inner - 3)) + "..." : line)
-        }
+        let slice = wrapped[offset ..< min(offset + pageSize, wrapped.count)]
+        for line in slice { rows.append(line) }
         while rows.count < pageSize { rows.append("") }
-        let scrollInfo = lines.count > pageSize ? " [\(offset+1)-\(min(offset+pageSize, lines.count))/\(lines.count)]" : ""
+        let scrollInfo = wrapped.count > pageSize ? " [\(offset+1)-\(min(offset+pageSize, wrapped.count))/\(wrapped.count)]" : ""
         drawBox(title: title + scrollInfo, rows: rows, footer: "↑↓ scroll  r regenerate  q/Enter back", w: w)
         fflush(stdout)
 
         let k = readKey()
         switch k {
         case .up:   offset = max(0, offset - 1)
-        case .down: offset = min(max(0, lines.count - pageSize), offset + 1)
+        case .down: offset = min(max(0, wrapped.count - pageSize), offset + 1)
         case .q, .esc, .ctrlD, .enter: return k
         case .r: return .r        default: break
         }
