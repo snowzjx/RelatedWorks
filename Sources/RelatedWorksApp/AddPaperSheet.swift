@@ -93,6 +93,7 @@ struct AddPaperSheet: View {
                     TextField("e.g. Transformer, BERT, GPT4", text: $semanticID)
                         .textFieldStyle(.roundedBorder)
                         .focused($idFocused)
+                        .disabled(pdfExistsElsewhere)
                         .onChange(of: semanticID) { _ in
                             idConflict = store.isIDTaken(semanticID.trimmingCharacters(in: .whitespaces))
                         }
@@ -166,6 +167,7 @@ struct AddPaperSheet: View {
                             }
                         }
                     }
+                    .disabled(pdfExistsElsewhere)
                 } else {
                     // ── Manual Input ─────────────────────────────────
                     VStack(alignment: .leading, spacing: 8) {
@@ -187,6 +189,7 @@ struct AddPaperSheet: View {
                             TextField("Venue / Conference", text: $manualVenue).textFieldStyle(.roundedBorder)
                         }
                     }
+                    .disabled(pdfExistsElsewhere)
                 }
 
                 // ── Selected result preview ───────────────────────────
@@ -262,7 +265,13 @@ struct AddPaperSheet: View {
                         pdfExistsElsewhere = true
                         semanticID = existingID
                         if let existingPaper = store.projects.flatMap({ $0.papers }).first(where: { $0.id.lowercased() == existingID.lowercased() }) {
-                            if query.isEmpty { query = existingPaper.title }
+                            // Pre-fill metadata from the existing entry
+                            selectedResult = nil
+                            manualTitle = existingPaper.title
+                            manualAuthors = existingPaper.authors.joined(separator: ", ")
+                            manualYear = existingPaper.year.map(String.init) ?? ""
+                            manualVenue = existingPaper.venue ?? ""
+                            searchSource = .manual
                         }
                     }
                 } else {
@@ -310,12 +319,18 @@ struct AddPaperSheet: View {
         if let r = selectedResult {
             paper = Paper(id: id, title: r.title, authors: r.authors, year: r.year, venue: r.venue)
             paper.dblpKey = r.dblpKey
+            // arXiv results have abstract; DBLP doesn't — prefer PDF extraction, then fetch from arXiv
             paper.abstract = r.abstract ?? extractedMeta?.abstract
         } else if showManualInput {
             let authors = manualAuthors.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
             paper = Paper(id: id, title: manualTitle.trimmingCharacters(in: .whitespaces),
                           authors: authors, year: Int(manualYear), venue: manualVenue.isEmpty ? nil : manualVenue)
-            paper.abstract = extractedMeta?.abstract
+            // If duplicate PDF, use the existing paper's abstract rather than re-extracted one
+            if pdfExistsElsewhere {
+                paper.abstract = store.projects.flatMap({ $0.papers }).first(where: { $0.id == id })?.abstract
+            } else {
+                paper.abstract = extractedMeta?.abstract
+            }
         } else {
             let meta = extractedMeta
             paper = Paper(id: id,

@@ -94,6 +94,9 @@ struct ProjectDetailView: View {
         project.papers.removeAll { $0.id == paper.id }
         project.bibEntries.removeValue(forKey: paper.id)
         try? store.save(project)
+        if let path = paper.pdfPath {
+            store.cleanupPDFIfUnused(paperID: paper.id, pdfPath: path, excludingProjectID: project.id)
+        }
     }
 }
 

@@ -14,14 +14,25 @@ struct PDFImporter {
         for i in 0..<min(3, doc.pageCount) {
             rawText += doc.page(at: i)?.string ?? ""
         }
-        let truncated = String(rawText.prefix(3000))
+
+        // Only send title + abstract region to AI (stop before Introduction)
+        let focusedText = extractTitleAndAbstractRegion(from: rawText)
 
         // Try AI extraction first
-        if let meta = try? await extractWithAI(text: truncated, takenIDs: takenIDs) {
+        if let meta = try? await extractWithAI(text: focusedText, takenIDs: takenIDs) {
             return meta
         }
         // Fallback to heuristics
         return extractHeuristic(from: rawText, pdfDoc: doc)
+    }
+
+    /// Extracts just the title+abstract region, stopping at Introduction or body text.
+    private static func extractTitleAndAbstractRegion(from text: String) -> String {
+        let stopPattern = #"(?i)\n\s*\d*\.?\s*(1\.?\s+introduction|introduction\n|related work|ccs concepts|keywords\n)"#
+        if let stopRange = text.range(of: stopPattern, options: .regularExpression) {
+            return String(text[..<stopRange.lowerBound])
+        }
+        return String(text.prefix(2000))
     }
 
     // MARK: - AI Extraction via Ollama
@@ -35,7 +46,7 @@ struct PDFImporter {
         {
           "title": "full paper title",
           "authors": ["Author One", "Author Two"],
-          "abstract": "abstract text",
+          "abstract": "abstract text only, no figure captions or body text, max 3 sentences",
           "suggestedID": "short memorable name (e.g. acronym or system name like BERT, Transformer, ResNet)"
         }
         \(takenNote)
@@ -104,7 +115,15 @@ struct PDFImporter {
     private static func extractAbstract(from text: String) -> String? {
         let lower = text.lowercased()
         guard let start = lower.range(of: "abstract") else { return nil }
-        let after = text[start.upperBound...]
+        let after = String(text[start.upperBound...])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Stop at next section header
+        let sectionPattern = #"(?i)\n\s*\d*\.?\s*(introduction|related work|background|conclusion|references|acknowledgement|1\s+introduction)"#
+        if let stopRange = after.range(of: sectionPattern, options: .regularExpression) {
+            return String(after[..<stopRange.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        // Fallback: cap at 1500 chars
         let cutoff = after.index(after.startIndex, offsetBy: min(1500, after.count))
         return String(after[..<cutoff]).trimmingCharacters(in: .whitespacesAndNewlines)
     }

@@ -120,4 +120,21 @@ class Store: ObservableObject {
         projects.removeAll { $0.id == project.id }
         rebuildRegistry()
     }
+
+    /// Removes the PDF file for a paper if no other paper across all projects references it.
+    func cleanupPDFIfUnused(paperID: String, pdfPath: String, excludingProjectID: UUID) {
+        let inUse = projects
+            .filter { $0.id != excludingProjectID }
+            .flatMap { $0.papers }
+            .contains { $0.pdfPath == pdfPath }
+        || projects
+            .first { $0.id == excludingProjectID }
+            .map { $0.papers.contains { $0.id != paperID && $0.pdfPath == pdfPath } } ?? false
+
+        if !inUse {
+            try? FileManager.default.removeItem(atPath: pdfPath)
+            idToPDFPath.removeValue(forKey: paperID.lowercased())
+            pdfHashToID = pdfHashToID.filter { $0.value.lowercased() != paperID.lowercased() }
+        }
+    }
 }

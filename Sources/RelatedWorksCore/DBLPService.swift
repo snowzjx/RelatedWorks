@@ -26,9 +26,13 @@ struct DBLPService {
               let hits = result["hits"] as? [String: Any],
               let hitList = hits["hit"] as? [[String: Any]] else { return [] }
 
+        var seen = Set<String>()
         return hitList.compactMap { hit -> DBLPResult? in
             guard let info = hit["info"] as? [String: Any],
                   let title = info["title"] as? String else { return nil }
+
+            let normalised = title.lowercased().trimmingCharacters(in: .punctuationCharacters)
+            guard seen.insert(normalised).inserted else { return nil }
 
             let authors: [String]
             if let authorObj = info["authors"] as? [String: Any],
