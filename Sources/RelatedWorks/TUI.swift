@@ -3,6 +3,8 @@ import RelatedWorksCore
 
 // MARK: - Terminal
 
+class ResultBox { var value: String = "" }
+
 func termSize() -> (w: Int, h: Int) {
     var ws = winsize()
     guard ioctl(STDOUT_FILENO, UInt(TIOCGWINSZ), &ws) == 0 else { return (80, 24) }
@@ -184,7 +186,6 @@ func pagerWithKey(title: String, lines: [String], showRegenerate: Bool = false, 
     }
 }
 
-@discardableResult
 // MARK: - Screens
 
 func projectListScreen(projects: [Project]) {
@@ -291,18 +292,20 @@ func generateScreen(project: Project) {
         fflush(stdout)
 
         let sema = DispatchSemaphore(value: 0)
-        var result = ""
+        let box = ResultBox()
+        let projectSnapshot = projects[pIdx]
         DispatchQueue.global().async {
             let group = DispatchGroup()
             group.enter()
             Task {
-                result = await RelatedWorksGenerator.generate(for: projects[pIdx])
+                box.value = await RelatedWorksGenerator.generate(for: projectSnapshot)
                 group.leave()
             }
             group.wait()
             sema.signal()
         }
         sema.wait()
+        let result = box.value
 
         projects[pIdx].generatedLatex = result
         projects[pIdx].generationModel = AppSettings.shared.generationModel
