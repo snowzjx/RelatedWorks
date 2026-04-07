@@ -150,12 +150,14 @@ func wordWrap(_ text: String, width: Int) -> [String] {
     return result
 }
 
-func pager(title: String, lines: [String]) {
-    _ = pagerWithKey(title: title, lines: lines, showRegenerate: false)
+func pager(title: String, lines: [String], footer: String = "\u{2191}\u{2193} scroll  q/Enter back") {
+    _ = pagerWithKey(title: title, lines: lines, showRegenerate: false, footer: footer)
 }
 
 @discardableResult
-func pagerWithKey(title: String, lines: [String], showRegenerate: Bool = false) -> Key {
+func pagerWithKey(title: String, lines: [String], showRegenerate: Bool = false, footer: String? = nil) -> Key {
+    let defaultFooter = showRegenerate ? "\u{2191}\u{2193} scroll  r regenerate  q/Enter back" : "\u{2191}\u{2193} scroll  q/Enter back"
+    let resolvedFooter = footer ?? defaultFooter
     var offset = 0
     while true {
         let (w, h) = termSize()
@@ -168,8 +170,7 @@ func pagerWithKey(title: String, lines: [String], showRegenerate: Bool = false) 
         for line in slice { rows.append(line) }
         while rows.count < pageSize { rows.append("") }
         let scrollInfo = wrapped.count > pageSize ? " [\(offset+1)-\(min(offset+pageSize, wrapped.count))/\(wrapped.count)]" : ""
-        let footer = showRegenerate ? "\u{2191}\u{2193} scroll  r regenerate  q/Enter back" : "\u{2191}\u{2193} scroll  q/Enter back"
-        drawBox(title: title + scrollInfo, rows: rows, footer: footer, w: w)
+        drawBox(title: title + scrollInfo, rows: rows, footer: resolvedFooter, w: w)
         fflush(stdout)
 
         let k = readKey()
@@ -257,10 +258,12 @@ func paperScreen(paper: Paper, project: Project) {
                 lines.append("  → " + cyan("@\(ref.id)") + ": " + String(ref.title.prefix(55)))
             }
         }
-        pager(title: String(paper.title.prefix(55)), lines: lines)
+        let hasRefs = !refs.isEmpty
+        pager(title: String(paper.title.prefix(55)), lines: lines,
+              footer: hasRefs ? "\u{2191}\u{2193} scroll  Enter navigate refs  q back" : "\u{2191}\u{2193} scroll  q back")
 
         // After pager, offer cross-ref navigation if any exist
-        guard !refs.isEmpty else { return }
+        guard hasRefs else { return }
         let refItems = refs.map { ref -> (String, Bool) in
             ("\(cyan("@\(ref.id)"))  \(String(ref.title.prefix(55)))  \(dim("(\(ref.year ?? 0))"))", false)
         }
