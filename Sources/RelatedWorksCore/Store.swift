@@ -20,7 +20,14 @@ class Store: ObservableObject {
         rebuildRegistry()
     }
 
-    // MARK: - Global ID / PDF Registry
+    /// Initializer for testing with a custom directory.
+    init(projectsDir: URL) {
+        self.projectsDir = projectsDir
+        self.pdfsDir = projectsDir.appendingPathComponent("pdfs")
+        try? FileManager.default.createDirectory(at: self.pdfsDir, withIntermediateDirectories: true)
+        projects = (try? loadAll()) ?? []
+        rebuildRegistry()
+    }    // MARK: - Global ID / PDF Registry
 
     /// All paper IDs in use across all projects (case-insensitive lookup)
     var allPaperIDs: Set<String> {

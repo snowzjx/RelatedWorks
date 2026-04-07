@@ -25,5 +25,10 @@ let package = Package(
             dependencies: ["RelatedWorksCore"],
             path: "Sources/RelatedWorksApp"
         ),
+        .testTarget(
+            name: "RelatedWorksTests",
+            dependencies: ["RelatedWorksCore"],
+            path: "Tests/RelatedWorksTests"
+        ),
     ]
 )

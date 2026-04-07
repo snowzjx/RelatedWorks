@@ -69,9 +69,9 @@ struct Project: Codable, Identifiable, Hashable {
     func crossReferences(for paperID: String) -> [Paper] {
         guard let source = paper(withID: paperID) else { return [] }
         let refs = extractRefs(from: source.annotation)
-        // Deduplicate while preserving order
         var seen = Set<String>()
         return refs.compactMap { id -> Paper? in
+            guard id.lowercased() != paperID.lowercased() else { return nil }
             guard seen.insert(id.lowercased()).inserted else { return nil }
             return paper(withID: id)
         }

@@ -24,6 +24,15 @@
 		A016 /* ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* ArxivService.swift */; };
 		A017 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* AppSettings.swift */; };
 		A018 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* PreferencesView.swift */; };
+		T001 /* RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* RelatedWorksTests.swift */; };
+		TC010 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Models.swift */; };
+		TC011 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Store.swift */; };
+		TC012 /* DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* DBLPService.swift */; };
+		TC013 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Generator.swift */; };
+		TC014 /* PDFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* PDFImporter.swift */; };
+		TC015 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* DeepLink.swift */; };
+		TC016 /* ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* ArxivService.swift */; };
+		TC017 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* AppSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +53,8 @@
 		F016 /* ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/ArxivService.swift; sourceTree = "<absolute>"; };
 		F017 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore/AppSettings.swift; sourceTree = "<absolute>"; };
 		F018 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = "<absolute>"; };
+		TF001 /* RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = /Users/snow/Desktop/git/RelatedWorks/Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = "<absolute>"; };
+		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAPP /* RelatedWorksApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -53,6 +64,7 @@
 			children = (
 				GAPP /* RelatedWorksApp */,
 				GCORE /* RelatedWorksCore */,
+				GTEST /* RelatedWorksTests */,
 				GPROD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				FAPP /* RelatedWorksApp.app */,
+				TPROD /* RelatedWorksTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +111,15 @@
 			path = /Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksCore;
 			sourceTree = "<absolute>";
 		};
+		GTEST /* RelatedWorksTests */ = {
+			isa = PBXGroup;
+			children = (
+				TF001 /* RelatedWorksTests.swift */,
+			);
+			name = RelatedWorksTests;
+			path = /Users/snow/Desktop/git/RelatedWorks/Tests/RelatedWorksTests;
+			sourceTree = "<absolute>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -116,8 +138,22 @@
 			productReference = FAPP /* RelatedWorksApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		TTEST /* RelatedWorksTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCLTTEST /* Build configuration list for PBXNativeTarget "RelatedWorksTests" */;
+			buildPhases = (
+				BPTEST /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RelatedWorksTests;
+			productName = RelatedWorksTests;
+			productReference = TPROD /* RelatedWorksTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
-
 /* Begin PBXProject section */
 		PROJ /* Project object */ = {
 			isa = PBXProject;
@@ -139,6 +175,7 @@
 			projectRoot = "";
 			targets = (
 				TAPP /* RelatedWorksApp */,
+				TTEST /* RelatedWorksTests */,
 			);
 		};
 /* End PBXProject section */
@@ -170,6 +207,24 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXSourcesBuildPhase section (Tests) */
+		BPTEST /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				T001 /* RelatedWorksTests.swift in Sources */,
+				TC010 /* Models.swift in Sources */,
+				TC011 /* Store.swift in Sources */,
+				TC012 /* DBLPService.swift in Sources */,
+				TC013 /* Generator.swift in Sources */,
+				TC014 /* PDFImporter.swift in Sources */,
+				TC015 /* DeepLink.swift in Sources */,
+				TC016 /* ArxivService.swift in Sources */,
+				TC017 /* AppSettings.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section (Tests) */
 /* Begin XCBuildConfiguration section */
 		BC001 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -261,6 +316,35 @@
 		};
 /* End XCBuildConfiguration section */
 
+/* Begin XCBuildConfiguration section (Tests) */
+		BCT001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.relatedworks.tests;
+				PRODUCT_NAME = RelatedWorksTests;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		BCT002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.relatedworks.tests;
+				PRODUCT_NAME = RelatedWorksTests;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section (Tests) */
+
 /* Begin XCConfigurationList section */
 		BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */ = {
 			isa = XCConfigurationList;
@@ -276,6 +360,15 @@
 			buildConfigurations = (
 				BC003 /* Debug */,
 				BC004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCLTTEST /* Build configuration list for PBXNativeTarget "RelatedWorksTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCT001 /* Debug */,
+				BCT002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
