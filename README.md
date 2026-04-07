@@ -15,9 +15,14 @@ A native macOS academic literature manager purpose-built for Computer Science re
 - **BibTeX management** — fetched from DBLP when available, auto-generated from metadata otherwise
 - **Metadata editing** — right-click any paper to edit title, authors, year, venue, and abstract; local BibTeX regenerated automatically
 - **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via Ollama; shows which model was used
+- **Terminal UI (TUI)** — full interactive TUI for keyboard-driven workflow and SSH/headless use
 - **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
-- **CLI interface** — agent-friendly command line for LLM automation
 - **Preferences panel** — configure font size, Ollama base URL, and choose extraction/generation models from a live model list
+
+## Requirements
+
+- macOS 13+
+- [Ollama](https://ollama.com) running locally (configure models in Preferences)
 
 ## Usage
 
@@ -47,29 +52,38 @@ Once you've annotated your papers, click **Generate Related Works** in the proje
 
 ### 6. Export BibTeX
 
-BibTeX entries are fetched from DBLP automatically, or generated from metadata when unavailable. Copy individual entries from the paper detail view, or use the CLI to export all entries for a project.
+BibTeX entries are fetched from DBLP automatically, or generated from metadata when unavailable. Copy individual entries from the paper detail view.
 
-### CLI
+## Terminal UI (TUI)
 
-RelatedWorks ships a command-line interface for scripting and LLM automation:
+RelatedWorks ships a full interactive TUI — useful for keyboard-driven workflows, SSH sessions, or when you prefer staying in the terminal.
+
+### Launch
 
 ```bash
-# List all projects
-relatedworks list-projects
+# From source
+swift run RelatedWorks
 
-# List papers in a project
-relatedworks list-papers --project <UUID>
-
-# Generate related works for a project
-relatedworks generate --project <UUID>
+# Or build first for faster startup
+swift build -c release --product RelatedWorks
+.build/release/RelatedWorks
 ```
 
+### Navigation
 
+| Key | Action |
+|-----|--------|
+| `↑` / `↓` | Navigate items |
+| `Enter` / `Space` | Select |
+| `r` | Regenerate Related Works (in output view) |
+| `q` / `Esc` | Go back |
+| `Ctrl+D` | Quit |
 
-- macOS 13+
-- [Ollama](https://ollama.com) running locally (configure models in Preferences)
+The TUI shares the same data as the GUI — generated Related Works, annotations, and paper metadata are all in sync.
 
 ## Building
+
+### GUI (macOS App)
 
 Open `RelatedWorksApp.xcodeproj` in Xcode and build the `RelatedWorksApp` scheme, or:
 
@@ -77,12 +91,18 @@ Open `RelatedWorksApp.xcodeproj` in Xcode and build the `RelatedWorksApp` scheme
 xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp -configuration Release build
 ```
 
+### TUI (Terminal)
+
+```bash
+swift build -c release --product RelatedWorks
+```
+
 ## Preferences
 
 Open via **RelatedWorksApp → Settings…** (`⌘,`):
 
 - **General** — font size slider with live preview
-- **AI Backend** — Ollama base URL, extraction model (for PDF metadata), generation model (for Related Works); model lists are fetched live from Ollama. A status banner appears in the sidebar if Ollama is unreachable and auto-dismisses when it comes back online.
+- **AI Backend** — Ollama base URL, extraction model (for PDF metadata), generation model (for Related Works); model lists are fetched live from Ollama. A status banner appears in the sidebar if Ollama is unreachable and auto-dismisses when it comes back online. Custom generation prompt instructions can be edited here.
 
 ## Deep Links
 
