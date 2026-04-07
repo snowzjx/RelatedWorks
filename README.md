@@ -75,9 +75,9 @@ swift run RelatedWorks
 
 | Key | Action |
 |-----|--------|
-| `↑` / `↓` | Navigate items |
-| `Enter` / `Space` | Select |
-| `r` | Regenerate Related Works (in output view) |
+| `↑` / `↓` | Navigate items / scroll |
+| `Enter` | Select / navigate to cross-referenced paper |
+| `r` | Regenerate Related Works (in output view only) |
 | `q` / `Esc` | Go back |
 | `Ctrl+D` | Quit |
 
