@@ -15,35 +15,30 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 48px 24px;
     }
 
-    .card {
+    .hero {
       background: #1c1c1e;
       border: 1px solid #2c2c2e;
       border-radius: 24px;
       padding: 56px 48px;
-      max-width: 640px;
+      max-width: 680px;
       width: 100%;
       text-align: center;
+      margin-bottom: 24px;
     }
 
     .icon {
-      width: 128px;
-      height: 128px;
-      border-radius: 28px;
-      margin: 0 auto 28px;
+      width: 120px;
+      height: 120px;
+      border-radius: 26px;
+      margin: 0 auto 24px;
       display: block;
       box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
 
-    h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 12px;
-    }
+    h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
 
     .tagline {
       font-size: 1.05rem;
@@ -58,7 +53,7 @@
       background: #2c2c2e;
       border-radius: 14px;
       padding: 20px 24px;
-      margin-bottom: 36px;
+      margin-bottom: 32px;
       display: grid;
       gap: 10px;
     }
@@ -71,12 +66,9 @@
       gap: 10px;
     }
 
-    .features li::before {
-      content: "✦";
-      color: #3d8ef0;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+    .features li .dot { color: #3d8ef0; flex-shrink: 0; margin-top: 1px; }
+    .features li .dot.green { color: #30d158; }
+    .features li .dot.yellow { color: #ffd60a; }
 
     .buttons {
       display: flex;
@@ -97,64 +89,129 @@
       transition: opacity 0.15s;
     }
     .btn:hover { opacity: 0.85; }
+    .btn-primary { background: #3d8ef0; color: #fff; }
+    .btn-secondary { background: #2c2c2e; color: #f0f0f0; border: 1px solid #3a3a3c; }
 
-    .btn-primary {
-      background: #3d8ef0;
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: #2c2c2e;
-      color: #f0f0f0;
-      border: 1px solid #3a3a3c;
-    }
-
-    .req {
-      margin-top: 28px;
-      font-size: 0.8rem;
-      color: #636366;
-    }
-
+    .req { margin-top: 24px; font-size: 0.8rem; color: #636366; }
     .req a { color: #3d8ef0; text-decoration: none; }
     .req a:hover { text-decoration: underline; }
 
-    footer {
-      margin-top: 32px;
-      font-size: 0.78rem;
-      color: #48484a;
+    /* TUI showcase */
+    .tui-card {
+      background: #1c1c1e;
+      border: 1px solid #2c2c2e;
+      border-radius: 24px;
+      padding: 40px 48px;
+      max-width: 680px;
+      width: 100%;
+      margin-bottom: 24px;
     }
+
+    .tui-card h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #f0f0f0;
+    }
+
+    .tui-card p {
+      font-size: 0.92rem;
+      color: #8e8e93;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .terminal {
+      background: #000;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      border: 1px solid #2c2c2e;
+    }
+
+    .terminal .prompt { color: #30d158; }
+    .terminal .cmd    { color: #f0f0f0; }
+    .terminal .box    { color: #3d8ef0; }
+    .terminal .sel    { background: #3d8ef0; color: #fff; padding: 0 2px; border-radius: 2px; }
+    .terminal .dim    { color: #636366; }
+    .terminal .yellow { color: #ffd60a; }
+    .terminal .green  { color: #30d158; }
+
+    .keys {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .key {
+      background: #2c2c2e;
+      border: 1px solid #3a3a3c;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-family: "SF Mono", monospace;
+      color: #d0d0d5;
+    }
+
+    footer { margin-top: 16px; font-size: 0.78rem; color: #48484a; }
   </style>
 </head>
 <body>
-  <div class="card">
+
+  <div class="hero">
     <img src="icon.png" alt="RelatedWorks icon" class="icon"/>
     <h1>RelatedWorks</h1>
     <p class="tagline">
-      A native macOS literature manager built for Computer Science researchers.<br/>
-      Organize papers, annotate with cross-references, and generate Related Works sections — powered by local AI via Ollama.
+      A native macOS literature manager for CS researchers.<br/>
+      Organize papers, annotate with cross-references, and generate<br/>
+      Related Works sections — powered by local AI via Ollama.
     </p>
 
     <ul class="features">
-      <li>Project-based workspaces — one project per paper you're writing</li>
-      <li>PDF import with AI metadata extraction (title, authors, abstract)</li>
-      <li>DBLP + arXiv search with automatic BibTeX fetching</li>
-      <li>Semantic IDs and <code>@cross-reference</code> annotations</li>
-      <li>One-click Related Works generation in LaTeX via Ollama</li>
-      <li>Deep link support via <code>relatedworks://</code> URIs</li>
+      <li><span class="dot">✦</span> Project-based workspaces — one project per paper you're writing</li>
+      <li><span class="dot">✦</span> PDF import with AI metadata extraction (title, authors, abstract)</li>
+      <li><span class="dot">✦</span> DBLP + arXiv search with automatic BibTeX fetching</li>
+      <li><span class="dot">✦</span> Semantic IDs and <code>@cross-reference</code> annotations</li>
+      <li><span class="dot yellow">✦</span> One-click Related Works generation in LaTeX via Ollama</li>
+      <li><span class="dot green">✦</span> Full Terminal UI — keyboard-driven, works over SSH</li>
+      <li><span class="dot">✦</span> Deep link support via <code>relatedworks://</code> URIs</li>
     </ul>
 
     <div class="buttons">
-      <a class="btn btn-primary" href="https://github.com/snowzjx/RelatedWorks/releases/latest">
-        ⬇ Download Latest
-      </a>
-      <a class="btn btn-secondary" href="https://github.com/snowzjx/RelatedWorks">
-        ⌥ View Source
-      </a>
+      <a class="btn btn-primary" href="https://github.com/snowzjx/RelatedWorks/releases/latest">⬇ Download Latest</a>
+      <a class="btn btn-secondary" href="https://github.com/snowzjx/RelatedWorks">⌥ View Source</a>
     </div>
 
-    <p class="req">
-      Requires macOS 13+ and <a href="https://ollama.com" target="_blank">Ollama</a> running locally.
-    </p>
+    <p class="req">Requires macOS 13+ and <a href="https://ollama.com" target="_blank">Ollama</a> running locally.</p>
+  </div>
+
+  <div class="tui-card">
+    <h2>🖥 Terminal UI</h2>
+    <p>RelatedWorks ships a full interactive TUI — perfect for keyboard-driven workflows, SSH sessions, or when you prefer staying in the terminal. The TUI shares all data with the GUI in real time.</p>
+
+    <div class="terminal">
+      <span class="prompt">$</span> <span class="cmd">swift run RelatedWorks</span><br/><br/>
+      <span class="box">┌──────────────────────────────────────────────────────┐</span><br/>
+      <span class="box">│ </span><b>RelatedWorks — Projects</b><span class="box">                              │</span><br/>
+      <span class="box">├──────────────────────────────────────────────────────┤</span><br/>
+      <span class="box">│</span> <span class="sel"> › [a1b2c3d4]  My Survey Paper  (5 papers) </span><span class="box">          │</span><br/>
+      <span class="box">│</span>    <span class="dim">[e5f6a7b8]</span>  <b>LLM Efficiency Study</b>  <span class="green">3 papers</span><span class="box">       │</span><br/>
+      <span class="box">├──────────────────────────────────────────────────────┤</span><br/>
+      <span class="box">│ </span><span class="dim">↑↓ navigate  Enter select  q quit</span><span class="box">                    │</span><br/>
+      <span class="box">└──────────────────────────────────────────────────────┘</span>
+    </div>
+
+    <div class="keys">
+      <span class="key">↑ ↓</span> navigate
+      <span class="key">Enter</span> select
+      <span class="key">r</span> regenerate
+      <span class="key">q</span> back
+      <span class="key">Ctrl+D</span> quit
+    </div>
   </div>
 
   <footer>© 2026 RelatedWorks · MIT License</footer>
