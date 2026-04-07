@@ -1,9 +1,27 @@
 import SwiftUI
 
+/// Returns an AttributedString with all case-insensitive occurrences of `query` highlighted.
+func highlighted(_ string: String, query: String) -> AttributedString {
+    var result = AttributedString(string)
+    let q = query.lowercased()
+    guard !q.isEmpty else { return result }
+    var searchStart = string.startIndex
+    while searchStart < string.endIndex,
+          let range = string.range(of: q, options: .caseInsensitive, range: searchStart ..< string.endIndex) {
+        if let attrRange = Range(range, in: result) {
+            result[attrRange].backgroundColor = .yellow.opacity(0.5)
+        }
+        searchStart = range.upperBound
+    }
+    return result
+}
+
 struct PaperDetailView: View {
     @Binding var paper: Paper
     let project: Project
     var onSelectPaper: (String) -> Void = { _ in }
+    var highlight: String = ""
+    var onClearSearch: (() -> Void)? = nil
     @EnvironmentObject var store: Store
     @EnvironmentObject var settings: AppSettings
     @State private var copiedLink = false
@@ -17,20 +35,20 @@ struct PaperDetailView: View {
 
                 // ── Header ───────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(paper.title)
+                    Text(highlighted(paper.title, query: highlight))
                         .font(.system(size: settings.fontSize + 2)).fontWeight(.semibold)
                         .textSelection(.enabled)
 
                     if !paper.authors.isEmpty {
-                        Text(paper.authors.joined(separator: ", "))
+                        Text(highlighted(paper.authors.joined(separator: ", "), query: highlight))
                             .font(.system(size: settings.fontSize - 1)).foregroundStyle(.secondary)
                             .textSelection(.enabled)
                     }
 
                     HStack(spacing: 6) {
-                        Tag("@\(paper.id)", color: .blue)
-                        if let venue = paper.venue { Tag(venue) }
-                        if let year = paper.year { Tag(String(year)) }
+                        Tag("@\(paper.id)", color: .blue, highlight: highlight)
+                        if let venue = paper.venue { Tag(venue, highlight: highlight) }
+                        if let year = paper.year { Tag(String(year), highlight: highlight) }
                         if let key = paper.dblpKey {
                             Link(destination: URL(string: "https://dblp.org/rec/\(key)")!) {
                                 Tag("DBLP ↗", color: .green)
@@ -66,7 +84,7 @@ struct PaperDetailView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Abstract", systemImage: "text.quote")
                             .font(.caption).fontWeight(.medium).foregroundStyle(.secondary)
-                        Text(abstract)
+                        Text(highlighted(abstract, query: highlight))
                             .font(.system(size: settings.fontSize - 1)).foregroundStyle(.secondary)
                             .textSelection(.enabled)
                     }
@@ -104,11 +122,36 @@ struct PaperDetailView: View {
                     Label("Annotation", systemImage: "note.text")
                         .font(.caption).fontWeight(.medium).foregroundStyle(.secondary)
 
-                    AnnotationEditor(text: $paper.annotation, paperIDs: otherPaperIDs)
-                        .frame(minHeight: 200)
-                        .background(Color(nsColor: .textBackgroundColor))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
+                    if highlight.isEmpty {
+                        AnnotationEditor(text: $paper.annotation, paperIDs: otherPaperIDs)
+                            .frame(minHeight: 200)
+                            .background(Color(nsColor: .textBackgroundColor))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
+                    } else {
+                        Text(highlighted(paper.annotation, query: highlight))
+                            .font(.system(size: settings.fontSize - 1))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
+                            .padding(8)
+                            .background(Color(nsColor: .textBackgroundColor))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
+                            .overlay(alignment: .topTrailing) {
+                                Button {
+                                    onClearSearch?()
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                        .font(.caption)
+                                        .padding(.horizontal, 7).padding(.vertical, 4)
+                                        .background(.regularMaterial)
+                                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                                }
+                                .buttonStyle(.plain)
+                                .padding(6)
+                                .help("Clear search to edit annotation")
+                            }
+                    }
 
                     Text("Tip: type @ to cross-reference other papers in this project")
                         .font(.caption2).foregroundStyle(.tertiary)
@@ -147,9 +190,12 @@ struct PaperDetailView: View {
 struct Tag: View {
     let text: String
     let color: Color
-    init(_ text: String, color: Color = .secondary) { self.text = text; self.color = color }
+    var highlight: String = ""
+    init(_ text: String, color: Color = .secondary, highlight: String = "") {
+        self.text = text; self.color = color; self.highlight = highlight
+    }
     var body: some View {
-        Text(text)
+        Text(highlighted(text, query: highlight))
             .font(.caption).fontWeight(.medium)
             .padding(.horizontal, 7).padding(.vertical, 3)
             .background(color.opacity(0.1))

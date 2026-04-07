@@ -7,17 +7,50 @@ struct ProjectDetailView: View {
     @State private var selectedPaperID: String?
     @State private var showingAddPaper = false
     @State private var editingPaper: Paper?
+    @State private var searchQuery = ""
 
     var selectedIndex: Int? {
         project.papers.firstIndex(where: { $0.id == selectedPaperID })
+    }
+
+    var filteredPapers: [Paper] {
+        let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return project.papers }
+        return project.papers.filter { p in
+            p.id.lowercased().contains(q) ||
+            p.title.lowercased().contains(q) ||
+            p.authors.joined(separator: " ").lowercased().contains(q) ||
+            (p.venue?.lowercased().contains(q) ?? false) ||
+            (p.year.map { String($0) }?.contains(q) ?? false) ||
+            (p.abstract?.lowercased().contains(q) ?? false) ||
+            p.annotation.lowercased().contains(q)
+        }
     }
 
     var body: some View {
         HStack(spacing: 0) {
             // Left: paper list
             VStack(spacing: 0) {
-                List(project.papers, selection: $selectedPaperID) { paper in
-                    PaperRow(paper: paper)
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary).font(.caption)
+                    TextField("Search papers…", text: $searchQuery)
+                        .textFieldStyle(.plain)
+                        .font(.callout)
+                    if !searchQuery.isEmpty {
+                        Button { searchQuery = "" } label: {
+                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color(nsColor: .controlBackgroundColor))
+
+                Divider()
+
+                List(filteredPapers, selection: $selectedPaperID) { paper in
+                    PaperRow(paper: paper, highlight: searchQuery.trimmingCharacters(in: .whitespaces))
                         .tag(paper.id)
                         .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
                         .contextMenu {
@@ -57,7 +90,9 @@ struct ProjectDetailView: View {
             // Right: paper detail
             if let idx = selectedIndex {
                 PaperDetailView(paper: $project.papers[idx], project: project,
-                                onSelectPaper: { id in selectedPaperID = id })
+                                onSelectPaper: { id in selectedPaperID = id },
+                                highlight: searchQuery.trimmingCharacters(in: .whitespaces),
+                                onClearSearch: { searchQuery = "" })
                     .id(project.papers[idx].id)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -107,10 +142,12 @@ struct ProjectDetailView: View {
 
 struct PaperRow: View {
     let paper: Paper
+    var highlight: String = ""
+
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 4) {
-                Text("@\(paper.id)")
+                Text(highlighted("@\(paper.id)", query: highlight))
                     .font(.caption).fontWeight(.medium).foregroundStyle(.blue)
                 if !paper.annotation.isEmpty {
                     Image(systemName: "note.text").font(.caption2).foregroundStyle(.secondary)
@@ -119,10 +156,10 @@ struct PaperRow: View {
                     Image(systemName: "doc.fill").font(.caption2).foregroundStyle(.red.opacity(0.7))
                 }
             }
-            Text(paper.title).font(.callout).lineLimit(2)
+            Text(highlighted(paper.title, query: highlight)).font(.callout).lineLimit(2)
             if let year = paper.year {
                 let venuePrefix = paper.venue.map { "\($0) · " } ?? ""
-                Text(venuePrefix + String(year))
+                Text(highlighted(venuePrefix + String(year), query: highlight))
                     .font(.caption2).foregroundStyle(.secondary)
             }
         }
