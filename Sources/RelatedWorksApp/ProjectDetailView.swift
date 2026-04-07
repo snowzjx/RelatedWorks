@@ -90,13 +90,18 @@ struct ProjectDetailView: View {
     }
 
     private func deletePaper(_ paper: Paper) {
+        let alert = NSAlert()
+        alert.messageText = "Remove \"\(paper.title)\"?"
+        alert.informativeText = "This will remove the paper and its PDF from this project."
+        alert.addButton(withTitle: "Remove")
+        alert.addButton(withTitle: "Cancel")
+        alert.buttons[0].hasDestructiveAction = true
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
         if selectedPaperID == paper.id { selectedPaperID = nil }
         project.papers.removeAll { $0.id == paper.id }
         project.bibEntries.removeValue(forKey: paper.id)
         try? store.save(project)
-        if let path = paper.pdfPath {
-            store.cleanupPDFIfUnused(paperID: paper.id, pdfPath: path, excludingProjectID: project.id)
-        }
+        store.cleanupPDF(paperID: paper.id, projectID: project.id)
     }
 }
 

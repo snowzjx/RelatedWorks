@@ -339,9 +339,7 @@ struct AddPaperSheet: View {
             paper.abstract = meta?.abstract
         }
 
-        if let existingPath = store.pdfPath(forID: id) {
-            paper.pdfPath = existingPath
-        } else if let url = pdfURL, let stored = try? store.registerPDF(at: url, forID: id) {
+        if let url = pdfURL, let stored = try? store.registerPDF(at: url, forID: id, projectID: project.id) {
             paper.pdfPath = stored
         }
 

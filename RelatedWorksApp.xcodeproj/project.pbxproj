@@ -24,6 +24,7 @@
 		A016 /* ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* ArxivService.swift */; };
 		A017 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* AppSettings.swift */; };
 		A019b /* AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* AIBackend.swift */; };
+		A021 /* ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* ProjectExporter.swift */; };
 		A020 /* BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* BlacklistedModels.plist */; };
 		A018 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* PreferencesView.swift */; };
 		T001 /* RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* RelatedWorksTests.swift */; };
@@ -56,6 +57,7 @@
 		F016 /* ArxivService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ArxivService.swift; sourceTree = "<absolute>"; };
 		F017 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AppSettings.swift; sourceTree = "<absolute>"; };
 		F019b /* AIBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AIBackend.swift; sourceTree = "<absolute>"; };
+		F021 /* ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ProjectExporter.swift; sourceTree = "<absolute>"; };
 		F020 /* BlacklistedModels.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksCore/BlacklistedModels.plist; sourceTree = "<absolute>"; };
 		FA001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = "<absolute>"; };
 		A019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Assets.xcassets */; };
@@ -115,6 +117,7 @@
 				F016 /* ArxivService.swift */,
 				F017 /* AppSettings.swift */,
 				F019b /* AIBackend.swift */,
+				F021 /* ProjectExporter.swift */,
 				F020 /* BlacklistedModels.plist */,
 			);
 			name = RelatedWorksCore;
@@ -213,6 +216,7 @@
 				A016 /* ArxivService.swift in Sources */,
 				A017 /* AppSettings.swift in Sources */,
 				A019b /* AIBackend.swift in Sources */,
+				A021 /* ProjectExporter.swift in Sources */,
 				A018 /* PreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -307,7 +311,7 @@
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
 				PRODUCT_NAME = RelatedWorks;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -329,7 +333,7 @@
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
 				PRODUCT_NAME = RelatedWorks;
 				SWIFT_EMIT_LOC_STRINGS = YES;

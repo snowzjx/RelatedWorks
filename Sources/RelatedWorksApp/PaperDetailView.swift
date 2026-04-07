@@ -126,7 +126,7 @@ struct PaperDetailView: View {
         panel.allowedContentTypes = [.pdf]
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let url = panel.url else { return }
-        if let stored = try? store.registerPDF(at: url, forID: paper.id) {
+        if let stored = try? store.registerPDF(at: url, forID: paper.id, projectID: project.id) {
             paper.pdfPath = stored
             try? store.save(project)
         }

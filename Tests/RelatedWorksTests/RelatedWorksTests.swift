@@ -100,6 +100,58 @@ struct StoreTests {
         #expect(id == "BERT")
     }
 
+    @Test func perProjectPDFDirectory() throws {
+        let store = makeTestStore()
+        let project = Project(name: "PDF Test")
+        try store.save(project)
+
+        let pdfsDir = store.pdfsDir(for: project.id)
+        #expect(pdfsDir.path.contains(project.id.uuidString))
+        #expect(pdfsDir.lastPathComponent == "pdfs")
+    }
+
+    @Test func registerAndCleanupPDF() throws {
+        let store = makeTestStore()
+        var project = Project(name: "PDF Project")
+        project.addPaper(Paper(id: "TestPaper", title: "Test"))
+        try store.save(project)
+
+        // Create a dummy PDF file
+        let tmpPDF = FileManager.default.temporaryDirectory.appendingPathComponent("test.pdf")
+        try "dummy".data(using: .utf8)!.write(to: tmpPDF)
+        defer { try? FileManager.default.removeItem(at: tmpPDF) }
+
+        // Register
+        let stored = try store.registerPDF(at: tmpPDF, forID: "TestPaper", projectID: project.id)
+        #expect(FileManager.default.fileExists(atPath: stored))
+        #expect(stored.contains(project.id.uuidString))
+
+        // Cleanup
+        store.cleanupPDF(paperID: "TestPaper", projectID: project.id)
+        #expect(!FileManager.default.fileExists(atPath: stored))
+    }
+
+    @Test func exportAndImportProject() throws {
+        let store = makeTestStore()
+        var project = Project(name: "Export Test")
+        project.addPaper(Paper(id: "BERT", title: "BERT", authors: ["Devlin"], year: 2019))
+        try store.save(project)
+
+        // Export
+        let exportURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ExportTest.relatedworks")
+        defer { try? FileManager.default.removeItem(at: exportURL) }
+        try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: exportURL)
+        #expect(FileManager.default.fileExists(atPath: exportURL.path))
+
+        // Import into a fresh store
+        let store2 = makeTestStore()
+        let imported = try ProjectExporter.import(from: exportURL, into: store2)
+        #expect(imported.name == "Export Test")
+        #expect(imported.papers.first?.id == "BERT")
+        #expect(imported.id != project.id) // new UUID assigned
+    }
+
     private func makeTestStore() -> Store {
         let tmp = FileManager.default.temporaryDirectory
             .appendingPathComponent("RelatedWorksTests-\(UUID().uuidString)")

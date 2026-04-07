@@ -18,12 +18,22 @@ struct RelatedWorksApp: App {
         .handlesExternalEvents(matching: ["*"])
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(after: .newItem) {
+                Button("Import Project…") {
+                    NotificationCenter.default.post(name: .importProject, object: nil)
+                }
+                .keyboardShortcut("i", modifiers: [.command, .shift])
+            }
         }
 
         Settings {
             PreferencesView()
         }
     }
+}
+
+extension Notification.Name {
+    static let importProject = Notification.Name("importProject")
 }
 
 // Globally accessible settings opener

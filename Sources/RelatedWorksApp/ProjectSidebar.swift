@@ -15,8 +15,18 @@ struct ProjectSidebar: View {
                     Button("Edit") {
                         renameTarget = project
                     }
+                    Button("Export…") {
+                        exportProject(project)
+                    }
                     Divider()
                     Button(role: .destructive) {
+                        let alert = NSAlert()
+                        alert.messageText = "Delete \"\(project.name)\"?"
+                        alert.informativeText = "This will permanently delete the project and all its PDFs. This cannot be undone."
+                        alert.addButton(withTitle: "Delete")
+                        alert.addButton(withTitle: "Cancel")
+                        alert.buttons[0].hasDestructiveAction = true
+                        guard alert.runModal() == .alertFirstButtonReturn else { return }
                         if selectedProjectID == project.id { selectedProjectID = nil }
                         try? store.delete(project)
                     } label: {
@@ -38,6 +48,9 @@ struct ProjectSidebar: View {
                 .keyboardShortcut("n", modifiers: .command)
                 .help("New Project (⌘N)")
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .importProject)) { _ in
+            importProject()
         }
         .sheet(isPresented: $showingNewProject) {
             NewProjectSheet(isPresented: $showingNewProject, onCreated: { id in
@@ -61,6 +74,33 @@ struct ProjectSidebar: View {
                         .controlSize(.small)
                 }
             }
+        }
+    }
+
+    private func exportProject(_ project: Project) {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "\(project.name).relatedworks"
+        panel.allowedContentTypes = [.init(filenameExtension: "relatedworks")!]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: url)
+        } catch {
+            let alert = NSAlert(); alert.messageText = "Export Failed"
+            alert.informativeText = error.localizedDescription; alert.runModal()
+        }
+    }
+
+    private func importProject() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.init(filenameExtension: "relatedworks")!]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            let project = try ProjectExporter.import(from: url, into: store)
+            selectedProjectID = project.id
+        } catch {
+            let alert = NSAlert(); alert.messageText = "Import Failed"
+            alert.informativeText = error.localizedDescription; alert.runModal()
         }
     }
 }

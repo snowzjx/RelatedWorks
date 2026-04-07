@@ -3,33 +3,48 @@ import CryptoKit
 
 public class Store: ObservableObject {
     public let projectsDir: URL
-    public let pdfsDir: URL
     @Published public var projects: [Project] = []
-
-    // Global registry: paperID -> pdfPath, pdfHash -> paperID
-    private(set) var idToPDFPath: [String: String] = [:]
-    private(set) var pdfHashToID: [String: String] = [:]
 
     public init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         projectsDir = appSupport.appendingPathComponent("RelatedWorks/projects", isDirectory: true)
-        pdfsDir = appSupport.appendingPathComponent("RelatedWorks/pdfs", isDirectory: true)
         try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
-        try? FileManager.default.createDirectory(at: pdfsDir, withIntermediateDirectories: true)
         projects = (try? loadAll()) ?? []
-        rebuildRegistry()
+        migrateGlobalPDFs()
     }
 
-    /// Initializer for testing with a custom directory.
     public init(projectsDir: URL) {
         self.projectsDir = projectsDir
-        self.pdfsDir = projectsDir.appendingPathComponent("pdfs")
-        try? FileManager.default.createDirectory(at: self.pdfsDir, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
         projects = (try? loadAll()) ?? []
-        rebuildRegistry()
-    }    // MARK: - Global ID / PDF Registry
+    }
 
-    /// All paper IDs in use across all projects (case-insensitive lookup)
+    // MARK: - Per-project PDF directory
+
+    public func pdfsDir(for projectID: UUID) -> URL {
+        projectsDir.appendingPathComponent("\(projectID.uuidString)/pdfs", isDirectory: true)
+    }
+
+    /// Registers a PDF for a paper in a specific project. Copies to project's pdfs folder.
+    @discardableResult
+    public func registerPDF(at sourceURL: URL, forID id: String, projectID: UUID) throws -> String {
+        let dir = pdfsDir(for: projectID)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let dest = dir.appendingPathComponent("\(id).pdf")
+        if !FileManager.default.fileExists(atPath: dest.path) {
+            try FileManager.default.copyItem(at: sourceURL, to: dest)
+        }
+        return dest.path
+    }
+
+    /// Removes the PDF file for a paper when it's deleted from a project.
+    public func cleanupPDF(paperID: String, projectID: UUID) {
+        let path = pdfsDir(for: projectID).appendingPathComponent("\(paperID).pdf").path
+        try? FileManager.default.removeItem(atPath: path)
+    }
+
+    // MARK: - ID Registry (cross-project, for deduplication)
+
     public var allPaperIDs: Set<String> {
         Set(projects.flatMap { $0.papers.map { $0.id.lowercased() } })
     }
@@ -38,11 +53,19 @@ public class Store: ObservableObject {
         allPaperIDs.contains(id.lowercased())
     }
 
-    /// Returns existing paperID if this PDF matches by content hash OR by title (case-insensitive).
+    /// Returns existing paperID if this PDF matches by title within any project.
     public func existingID(forPDFAt url: URL, title: String? = nil) -> String? {
-        // 1. Hash match (most reliable)
-        if let hash = sha256(url), let id = pdfHashToID[hash] { return id }
-        // 2. Title match fallback
+        // Hash match
+        if let hash = sha256(url) {
+            for project in projects {
+                for paper in project.papers {
+                    if let path = paper.pdfPath, let h = sha256(URL(fileURLWithPath: path)), h == hash {
+                        return paper.id
+                    }
+                }
+            }
+        }
+        // Title match fallback
         if let title = title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), !title.isEmpty {
             for project in projects {
                 if let paper = project.papers.first(where: { $0.title.lowercased() == title }) {
@@ -53,44 +76,6 @@ public class Store: ObservableObject {
         return nil
     }
 
-    /// Returns the stored PDF path for a given paperID, if any.
-    public func pdfPath(forID id: String) -> String? {
-        idToPDFPath[id.lowercased()]
-    }
-
-    /// Registers a PDF for a paperID. Copies file only if not already stored.
-    /// Returns the stored path.
-    @discardableResult
-    public func registerPDF(at sourceURL: URL, forID id: String) throws -> String {
-        let dest = pdfsDir.appendingPathComponent("\(id).pdf")
-        if !FileManager.default.fileExists(atPath: dest.path) {
-            try FileManager.default.copyItem(at: sourceURL, to: dest)
-        }
-        let path = dest.path
-        idToPDFPath[id.lowercased()] = path
-        if let hash = sha256(dest) { pdfHashToID[hash] = id }
-        return path
-    }
-
-    private func rebuildRegistry() {
-        idToPDFPath = [:]
-        pdfHashToID = [:]
-        for project in projects {
-            for paper in project.papers {
-                if let path = paper.pdfPath {
-                    idToPDFPath[paper.id.lowercased()] = path
-                    let url = URL(fileURLWithPath: path)
-                    if let hash = sha256(url) { pdfHashToID[hash] = paper.id }
-                }
-            }
-        }
-    }
-
-    private func sha256(_ url: URL) -> String? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
-    }
-
     // MARK: - Persistence
 
     private func url(for project: Project) -> URL {
@@ -98,6 +83,8 @@ public class Store: ObservableObject {
     }
 
     public func save(_ project: Project) throws {
+        // Ensure project pdfs dir exists
+        try? FileManager.default.createDirectory(at: pdfsDir(for: project.id), withIntermediateDirectories: true)
         let data = try JSONEncoder().encode(project)
         try data.write(to: url(for: project))
         if let idx = projects.firstIndex(where: { $0.id == project.id }) {
@@ -105,7 +92,6 @@ public class Store: ObservableObject {
         } else {
             projects.insert(project, at: 0)
         }
-        rebuildRegistry()
     }
 
     public func loadAll() throws -> [Project] {
@@ -116,25 +102,49 @@ public class Store: ObservableObject {
     }
 
     public func delete(_ project: Project) throws {
+        // Delete project JSON
         try FileManager.default.removeItem(at: url(for: project))
+        // Delete project folder (PDFs + anything else)
+        let projectFolder = projectsDir.appendingPathComponent(project.id.uuidString)
+        try? FileManager.default.removeItem(at: projectFolder)
         projects.removeAll { $0.id == project.id }
-        rebuildRegistry()
     }
 
-    /// Removes the PDF file for a paper if no other paper across all projects references it.
-    public func cleanupPDFIfUnused(paperID: String, pdfPath: String, excludingProjectID: UUID) {
-        let inUse = projects
-            .filter { $0.id != excludingProjectID }
-            .flatMap { $0.papers }
-            .contains { $0.pdfPath == pdfPath }
-        || projects
-            .first { $0.id == excludingProjectID }
-            .map { $0.papers.contains { $0.id != paperID && $0.pdfPath == pdfPath } } ?? false
+    // MARK: - Migration from global pdfs/ to per-project
 
-        if !inUse {
-            try? FileManager.default.removeItem(atPath: pdfPath)
-            idToPDFPath.removeValue(forKey: paperID.lowercased())
-            pdfHashToID = pdfHashToID.filter { $0.value.lowercased() != paperID.lowercased() }
+    private func migrateGlobalPDFs() {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let globalPDFsDir = appSupport.appendingPathComponent("RelatedWorks/pdfs")
+        guard FileManager.default.fileExists(atPath: globalPDFsDir.path) else { return }
+
+        var changed = false
+        for i in 0 ..< projects.count {
+            for j in 0 ..< projects[i].papers.count {
+                let paper = projects[i].papers[j]
+                guard let oldPath = paper.pdfPath else { continue }
+                let oldURL = URL(fileURLWithPath: oldPath)
+                // Already in project folder?
+                if oldPath.contains(projects[i].id.uuidString) { continue }
+                // Migrate
+                let newDir = pdfsDir(for: projects[i].id)
+                try? FileManager.default.createDirectory(at: newDir, withIntermediateDirectories: true)
+                let newURL = newDir.appendingPathComponent("\(paper.id).pdf")
+                if FileManager.default.fileExists(atPath: oldURL.path) && !FileManager.default.fileExists(atPath: newURL.path) {
+                    try? FileManager.default.copyItem(at: oldURL, to: newURL)
+                }
+                if FileManager.default.fileExists(atPath: newURL.path) {
+                    projects[i].papers[j].pdfPath = newURL.path
+                    changed = true
+                }
+            }
+            if changed { try? save(projects[i]) }
         }
+    }
+
+    // MARK: - Helpers
+
+    private func sha256(_ url: URL) -> String? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 }
