@@ -27,6 +27,7 @@
 		A021 /* ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* ProjectExporter.swift */; };
 		A020 /* BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* BlacklistedModels.plist */; };
 		A018 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* PreferencesView.swift */; };
+		A022 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* HelpView.swift */; };
 		T001 /* RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* RelatedWorksTests.swift */; };
 		TC010 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Models.swift */; };
 		TC011 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Store.swift */; };
@@ -62,6 +63,7 @@
 		FA001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = "<absolute>"; };
 		A019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Assets.xcassets */; };
 		F018 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = "<absolute>"; };
+		F022 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/HelpView.swift; sourceTree = "<absolute>"; };
 		TF001 /* RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = "<absolute>"; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAPP /* RelatedWorksApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -218,6 +220,7 @@
 				A019b /* AIBackend.swift in Sources */,
 				A021 /* ProjectExporter.swift in Sources */,
 				A018 /* PreferencesView.swift in Sources */,
+				A022 /* HelpView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

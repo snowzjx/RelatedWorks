@@ -4,6 +4,7 @@ import SwiftUI
 struct RelatedWorksApp: App {
     @StateObject private var store = Store()
     @StateObject private var deepLinkHandler = DeepLinkHandler()
+    @State private var showHelp = false
 
     var body: some Scene {
         WindowGroup {
@@ -12,6 +13,8 @@ struct RelatedWorksApp: App {
                 .environmentObject(AppSettings.shared)
                 .onOpenURL { url in deepLinkHandler.handle(url) }
                 .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
+                .sheet(isPresented: $showHelp) { HelpView() }
+                .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
@@ -24,6 +27,12 @@ struct RelatedWorksApp: App {
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
+            CommandGroup(replacing: .help) {
+                Button("RelatedWorks Help") {
+                    NotificationCenter.default.post(name: .showHelp, object: nil)
+                }
+                .keyboardShortcut("?", modifiers: .command)
+            }
         }
 
         Settings {
@@ -34,6 +43,7 @@ struct RelatedWorksApp: App {
 
 extension Notification.Name {
     static let importProject = Notification.Name("importProject")
+    static let showHelp = Notification.Name("showHelp")
 }
 
 // Globally accessible settings opener
