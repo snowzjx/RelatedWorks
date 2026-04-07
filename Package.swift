@@ -15,12 +15,14 @@ let package = Package(
         .executableTarget(
             name: "RelatedWorks",
             dependencies: ["RelatedWorksCore"],
-            path: "Sources/RelatedWorks"
+            path: "Sources/RelatedWorks",
+            exclude: []
         ),
         .executableTarget(
             name: "RelatedWorksApp",
             dependencies: ["RelatedWorksCore"],
-            path: "Sources/RelatedWorksApp"
+            path: "Sources/RelatedWorksApp",
+            exclude: ["Assets.xcassets", "Info.plist"]
         ),
         .testTarget(
             name: "RelatedWorksTests",
