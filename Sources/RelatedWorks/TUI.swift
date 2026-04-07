@@ -235,16 +235,24 @@ func paperScreen(paper: Paper, project: Project) {
 
 func generateScreen(project: Project) {
     cls()
-    print(bold(cyan("┌─────────────────────────────────────────┐")))
-    print(bold(cyan("│ ")) + bold("Generating Related Works…") + bold(cyan("               │")))
-    print(bold(cyan("│ ")) + dim("Calling Ollama, please wait…") + bold(cyan("            │")))
-    print(bold(cyan("└─────────────────────────────────────────┘")))
+    let (w, _) = termSize()
+    let bar = String(repeating: "─", count: w - 2)
+    print(bold(cyan("┌\(bar)┐")))
+    print(bold(cyan("│ ")) + pad(bold("Generating Related Works…"), to: w - 4) + bold(cyan(" │")))
+    print(bold(cyan("│ ")) + pad(dim("Calling Ollama, please wait…"), to: w - 4) + bold(cyan(" │")))
+    print(bold(cyan("└\(bar)┘")))
     fflush(stdout)
 
     let sema = DispatchSemaphore(value: 0)
     var result = ""
-    Task {
-        result = await RelatedWorksGenerator.generate(for: project)
+    DispatchQueue.global().async {
+        let group = DispatchGroup()
+        group.enter()
+        Task {
+            result = await RelatedWorksGenerator.generate(for: project)
+            group.leave()
+        }
+        group.wait()
         sema.signal()
     }
     sema.wait()
