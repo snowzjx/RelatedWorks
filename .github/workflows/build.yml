@@ -28,10 +28,17 @@ jobs:
             -scheme RelatedWorksApp \
             -configuration Release \
             -destination 'platform=macOS' \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES \
             CONFIGURATION_BUILD_DIR=build \
             build
+
+      - name: Remove quarantine & re-sign
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          codesign --force --deep --sign - build/RelatedWorks.app
+          xattr -cr build/RelatedWorks.app
 
       - name: Zip app
         if: startsWith(github.ref, 'refs/tags/')
