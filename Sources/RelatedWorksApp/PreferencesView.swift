@@ -99,6 +99,24 @@ struct AISettingsView: View {
                     Text("Related Works").font(.caption).foregroundStyle(.tertiary)
                 }
             } header: { Text("Models") }
+
+            Section {
+                VStack(alignment: .leading, spacing: 6) {
+                    TextEditor(text: $settings.generationPrompt)
+                        .font(.system(.caption, design: .monospaced))
+                        .frame(minHeight: 140)
+                        .scrollContentBackground(.hidden)
+                        .background(Color(nsColor: .controlBackgroundColor))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
+                    Button("Reset to Default") {
+                        settings.generationPrompt = AppSettings.defaultGenerationPrompt
+                    }
+                    .controlSize(.small)
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.blue)
+                }
+            } header: { Text("Generation Prompt Instructions") }
         }
         .formStyle(.grouped)
         .onAppear { fetchModels() }

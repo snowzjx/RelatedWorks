@@ -12,7 +12,7 @@ struct ProjectSidebar: View {
             ProjectRow(project: project)
                 .tag(project.id)
                 .contextMenu {
-                    Button("Rename") {
+                    Button("Edit") {
                         renameTarget = project
                     }
                     Divider()
@@ -86,20 +86,30 @@ struct RenameProjectSheet: View {
     let project: Project
     @Binding var isPresented: Bool
     @State private var name = ""
+    @State private var description = ""
     @FocusState private var focused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Rename Project").font(.title3).fontWeight(.semibold)
-            TextField("Project name", text: $name)
-                .textFieldStyle(.roundedBorder)
-                .focused($focused)
+            Text("Edit Project").font(.title3).fontWeight(.semibold)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Name").font(.caption).foregroundStyle(.secondary)
+                TextField("Project name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focused)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Description").font(.caption).foregroundStyle(.secondary)
+                TextField("What paper are you writing?", text: $description)
+                    .textFieldStyle(.roundedBorder)
+            }
             HStack {
                 Spacer()
                 Button("Cancel") { isPresented = false }.keyboardShortcut(.escape)
-                Button("Rename") {
+                Button("Save") {
                     var updated = project
                     updated.name = name.trimmingCharacters(in: .whitespaces)
+                    updated.description = description.trimmingCharacters(in: .whitespaces)
                     try? store.save(updated)
                     isPresented = false
                 }
@@ -109,7 +119,7 @@ struct RenameProjectSheet: View {
             }
         }
         .padding(24).frame(width: 360)
-        .onAppear { name = project.name; focused = true }
+        .onAppear { name = project.name; description = project.description; focused = true }
     }
 }
 

@@ -11,7 +11,11 @@ struct RelatedWorksGenerator {
 
     private static func buildPrompt(_ project: Project) -> String {
         var lines: [String] = []
-        lines.append("You are an expert academic writer. Write a Related Works section for a paper titled: \"\(project.name)\".")
+        lines.append("You are an expert academic writer.")
+        lines.append("Write a Related Works section for a paper titled: \"\(project.name)\".")
+        if !project.description.isEmpty {
+            lines.append("Paper description: \(project.description)")
+        }
         lines.append("")
         lines.append("Below are the papers to discuss, with author notes and cross-references between them:")
         lines.append("")
@@ -37,12 +41,7 @@ struct RelatedWorksGenerator {
         }
 
         lines.append("Instructions:")
-        lines.append("- Write 2-3 cohesive paragraphs in formal academic LaTeX style")
-        lines.append("- Group related papers thematically, not just list them one by one")
-        lines.append("- Incorporate the author notes naturally into the discussion")
-        lines.append("- Cite papers using LaTeX \\cite{ID} where ID is the paper's semantic ID (e.g. \\cite{Transformer}, \\cite{BERT})")
-        lines.append("- Do NOT include a section heading, just the paragraphs")
-        lines.append("- Output only the LaTeX paragraph text, nothing else")
+        lines.append(AppSettings.shared.generationPrompt)
 
         return lines.joined(separator: "\n")
     }

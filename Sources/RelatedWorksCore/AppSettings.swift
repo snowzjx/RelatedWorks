@@ -16,6 +16,9 @@ class AppSettings: ObservableObject {
     @Published var generationModel: String {
         didSet { UserDefaults.standard.set(generationModel, forKey: "generationModel") }
     }
+    @Published var generationPrompt: String {
+        didSet { UserDefaults.standard.set(generationPrompt, forKey: "generationPrompt") }
+    }
     @Published var ollamaReachable: Bool = true
 
     private var pollingTask: Task<Void, Never>?
@@ -25,8 +28,19 @@ class AppSettings: ObservableObject {
         ollamaBaseURL = UserDefaults.standard.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
         extractionModel = UserDefaults.standard.string(forKey: "extractionModel") ?? "gemma3:4b"
         generationModel = UserDefaults.standard.string(forKey: "generationModel") ?? "qwen3:latest"
+        generationPrompt = UserDefaults.standard.string(forKey: "generationPrompt") ?? AppSettings.defaultGenerationPrompt
         startPolling()
     }
+
+    static let defaultGenerationPrompt = """
+        Write 2-3 cohesive paragraphs in formal academic LaTeX style for the Related Works section.
+        The paper title and description are provided above — tailor the discussion to highlight how the cited works relate to this specific paper.
+        Group related papers thematically, not just list them one by one.
+        Incorporate the author annotation notes naturally into the discussion.
+        Cite papers using LaTeX \\cite{ID} where ID is the paper's semantic ID (e.g. \\cite{Transformer}, \\cite{BERT}).
+        Do NOT include a section heading, just the paragraphs.
+        Output only the LaTeX paragraph text, nothing else.
+        """
 
     func startPolling() {
         pollingTask?.cancel()
