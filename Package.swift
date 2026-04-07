@@ -6,7 +6,6 @@ let package = Package(
     platforms: [.macOS(.v13)],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-        .package(url: "https://github.com/rensbreur/SwiftTUI", from: "0.1.0"),
     ],
     targets: [
         .target(
@@ -15,10 +14,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "RelatedWorks",
-            dependencies: [
-                "RelatedWorksCore",
-                .product(name: "SwiftTUI", package: "SwiftTUI"),
-            ],
+            dependencies: ["RelatedWorksCore"],
             path: "Sources/RelatedWorks"
         ),
         .executableTarget(
