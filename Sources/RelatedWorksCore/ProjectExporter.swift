@@ -1,5 +1,6 @@
-#if os(macOS)
 import Foundation
+
+#if os(macOS)
 
 public struct ProjectExporter {
 
@@ -95,6 +96,8 @@ public struct ProjectExporter {
     }
 }
 
+#endif // os(macOS)
+
 extension Project {
     public init(importing source: Project, newID: UUID) {
         self.id = newID
@@ -107,4 +110,3 @@ extension Project {
         self.bibEntries = source.bibEntries
     }
 }
-#endif // os(macOS)

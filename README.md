@@ -6,180 +6,111 @@
 
 > ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.
 
-A native macOS & iOS academic literature manager purpose-built for Computer Science researchers. Streamlines organizing papers, taking interconnected notes, and automatically drafting Related Works sections.
+A native macOS & iOS academic literature manager for Computer Science researchers. Organize papers, take interconnected notes, and automatically draft Related Works sections.
 
 ## Features
 
 - **Project-based workspaces** — organize literature per paper you're writing
 - **PDF import with AI metadata extraction** — drop a PDF and let AI extract title, authors, and suggest a semantic ID
-- **Global PDF deduplication** — same PDF shared across projects by content hash and title match, never duplicated
-- **DBLP + arXiv search** — auto-fetches bibliographic metadata; falls back to arXiv if DBLP returns nothing, then to manual entry
-- **Semantic IDs** — each paper gets a short memorable ID (e.g. `Transformer`, `BERT`) unique across the entire system
-- **Cross-reference annotations** — use `@SemanticID` syntax in notes to link papers; cross-references rendered as clickable navigation
-- **BibTeX management** — fetched from DBLP when available, auto-generated from metadata otherwise
-- **Metadata editing** — right-click any paper to edit title, authors, year, venue, and abstract
-- **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via AI
-- **Multiple AI backends** — supports Ollama (local) and Google Gemini; configure per operation
-- **Project export/import** — export a project (papers, PDFs, annotations) as a `.relatedworks` file; import on any machine
-- **iCloud Drive sync** — optionally sync all projects and PDFs across your Mac and iPhone via iCloud Drive
-- **iOS companion app** — full-featured iPhone/iPad app with annotation editing, PDF viewing, and deep link support
-- **Terminal UI (TUI)** — full interactive TUI for keyboard-driven workflow and SSH/headless use
-- **Live search / filter** — search papers by ID, title, authors, venue, year, abstract, or annotation with match highlighting (GUI + TUI)
-- **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
-- **Preferences panel** — configure font size, AI backends, models, and generation prompt
+- **DBLP + arXiv search** — auto-fetches bibliographic metadata
+- **Semantic IDs** — each paper gets a short memorable ID (e.g. `Transformer`, `BERT`)
+- **Cross-reference annotations** — use `@SemanticID` syntax in notes to link papers
+- **BibTeX management** — fetched from DBLP when available, auto-generated otherwise
+- **Automated Related Works generation** — synthesizes annotations into a LaTeX-ready draft via AI
+- **Multiple AI backends** — Ollama (local) and Google Gemini
+- **Project export/import** — `.relatedworks` file containing papers, PDFs, and annotations
+- **iCloud Drive sync** — sync projects across your Mac and iPhone
+- **iOS companion app** — browse, search, and annotate your library on iPhone/iPad
+- **Terminal UI (TUI)** — keyboard-driven workflow for SSH/headless use
+- **Deep link support** — `relatedworks://` URIs for every paper and project
 
 ## Requirements
 
 ### macOS App
 - macOS 13+
-- At least one AI backend configured:
-  - [Ollama](https://ollama.com) running locally (recommended for privacy), **or**
+- At least one AI backend:
+  - [Ollama](https://ollama.com) running locally, **or**
   - [Google Gemini API key](https://aistudio.google.com/apikey)
 
 ### iOS App
 - iOS 17+
-- Same AI backend requirements apply for generation features
+- No AI backend required — the iOS app is focused on reading and annotating
 
-## Usage
+## Quick Start
 
-### 1. Create a Project
+1. **Create a project** — each project represents a paper you're writing
+2. **Add papers** — import a PDF, search DBLP/arXiv, or enter manually
+3. **Annotate** — write notes using `@SemanticID` to cross-reference papers
+4. **Generate** — click **Generate Related Works** for a LaTeX-ready draft
+5. **Export BibTeX** — fetched from DBLP or auto-generated from metadata
 
-Each project represents a paper you're writing. Click the **+** button in the sidebar to create a new project and give it a name.
-
-### 2. Add Papers
-
-- **Import PDF** — drag a PDF onto the paper list. AI will automatically extract title, authors, year, and suggest a semantic ID.
-- **Search DBLP / arXiv** — use the search bar to find a paper by title or keywords.
-- **Manual entry** — enter metadata by hand if the paper isn't indexed online.
-
-### 3. Assign a Semantic ID
-
-Every paper gets a short memorable ID (e.g. `Transformer`, `BERT`, `GPT4`), used to cross-reference papers in your notes.
-
-### 4. Take Notes & Cross-Reference
-
-Write annotation notes in the editor. Use `@SemanticID` syntax to link to other papers — they render as clickable links.
-
-### 5. Generate Related Works
-
-Click **Generate Related Works** in the project view. RelatedWorks synthesizes your notes and paper metadata into a LaTeX-ready draft using your configured AI backend.
-
-### 6. Export BibTeX
-
-BibTeX entries are fetched from DBLP automatically, or generated from metadata when unavailable.
-
-### 7. Export / Import Project
-
-Right-click a project in the sidebar → **Export…** to save a `.relatedworks` file containing all papers, PDFs, annotations and generated output. Use **File → Import Project…** (`⌘⇧I`) to import on any machine.
-
-## iCloud Drive Sync
+## iCloud Sync
 
 Enable in **Settings → General → Sync via iCloud Drive** (macOS) or **Settings → iCloud** (iOS).
 
-When enabled, all projects and PDFs are stored in iCloud Drive and synced automatically across your Mac and iPhone. Requires an Apple Developer account with iCloud capability configured.
-
-> **Note:** Enabling or disabling iCloud sync migrates your existing data to/from the iCloud container. A progress indicator is shown during migration.
+- On **macOS**: existing local data is migrated to iCloud Drive
+- On **iOS**: the app switches to reading from iCloud Drive; local data is not moved
 
 ## iOS App
 
-The iOS companion app provides full read/write access to your literature library on iPhone and iPad.
-
-### Features
-- Browse and search projects and papers
-- Read and edit annotation notes with `@mention` cross-referencing
-- View attached PDFs
-- iCloud Drive sync shared with the macOS app
-- Deep link navigation (`relatedworks://`)
-
-### Building
+Browse projects, read and edit annotations, view PDFs, and navigate via deep links. Shares the same iCloud library as the macOS app when sync is enabled.
 
 ```bash
-xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS -destination 'generic/platform=iOS' -configuration Release build
+xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS \
+  -destination 'generic/platform=iOS' -configuration Release build
 ```
 
 ## Terminal UI (TUI)
 
-RelatedWorks ships a full interactive TUI — useful for keyboard-driven workflows, SSH sessions, or when you prefer staying in the terminal.
-
-### Launch
-
 ```bash
-# GUI app
-open RelatedWorks.app
-
-# TUI (bundled binary in release zip)
-./relatedworks-tui
-
-# Or build from source
+# Build and run
 swift run RelatedWorks
-```
 
-### Navigation
+# Or use the bundled binary
+./relatedworks-tui
+```
 
 | Key | Action |
 |-----|--------|
-| `↑` / `↓` | Navigate items / scroll |
-| `Enter` | Select / navigate to cross-referenced paper |
-| `/` | Enter live search/filter mode (in project view) |
-| `Esc` | Clear search / go back |
-| `r` | Regenerate Related Works (in output view only) |
-| `q` / `Esc` | Go back |
+| `↑` / `↓` | Navigate |
+| `Enter` | Select |
+| `/` | Search |
+| `Esc` | Back |
+| `r` | Regenerate (output view) |
 | `Ctrl+D` | Quit |
-
-The TUI shares the same data as the GUI — generated Related Works, annotations, and paper metadata are all in sync.
-
-## AI Backends
-
-Configure in **Settings → AI Backends** and **Settings → Models**.
-
-| Backend | Setup | Notes |
-|---------|-------|-------|
-| Ollama | Install from [ollama.com](https://ollama.com), run locally | Private, no API key needed |
-| Gemini | Get API key from [Google AI Studio](https://aistudio.google.com/apikey) | Cloud-based, use `gemini-2.5-flash` |
-
-You can configure different backends for PDF extraction and Related Works generation independently.
 
 ## Building
 
-### macOS App
-
 ```bash
-xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp -configuration Release build
-```
+# macOS app
+xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp \
+  -configuration Release build
 
-### iOS App
-
-```bash
-xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS -destination 'generic/platform=iOS' -configuration Release build
-```
-
-### TUI (Terminal)
-
-```bash
+# TUI
 swift build -c release --product RelatedWorks
 ```
 
-## Preferences
+## AI Backends
 
-Open via **RelatedWorksApp → Settings…** (`⌘,`):
+| Backend | Setup |
+|---------|-------|
+| Ollama | Install from [ollama.com](https://ollama.com), run locally |
+| Gemini | API key from [Google AI Studio](https://aistudio.google.com/apikey) |
 
-- **General** — font size; iCloud Drive sync toggle
-- **Models** — choose backend (Ollama/Gemini/None) and model per operation; edit generation prompt
-- **AI Backends** — configure Ollama URL and Gemini API key; test connections
+Configure in **Settings → AI Backends** and **Settings → Models**.
 
 ## Deep Links
-
-Works on both macOS and iOS:
 
 ```
 relatedworks://open?project=<UUID>
 relatedworks://open?project=<UUID>&paper=<SemanticID>
 ```
 
+Works on both macOS and iOS.
+
 ## Data Storage
 
-### Local (iCloud sync disabled)
-- `~/Library/Application Support/RelatedWorks/projects/` — project JSON files and per-project PDF folders
-
-### iCloud (iCloud sync enabled)
-- `~/Library/Mobile Documents/iCloud~me~snowzjx~relatedworks/Documents/projects/` — synced across all devices
+| Mode | Location |
+|------|----------|
+| Local | `~/Library/Application Support/RelatedWorks/projects/` |
+| iCloud | `~/Library/Mobile Documents/iCloud~me~snowzjx~relatedworks/Documents/projects/` |

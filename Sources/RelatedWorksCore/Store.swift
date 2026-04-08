@@ -181,40 +181,41 @@ public class Store: ObservableObject {
     // MARK: - Migration
 
     public func migrateToICloud(progress: @escaping (Double) -> Void) async throws {
-        // Retry up to 5 times — container URL can take a moment to become available
         var icloudDir: URL?
         for _ in 0..<10 {
-            icloudDir = await Task.detached(priority: .userInitiated) {
-                return Store.iCloudProjectsDir()
-            }.value
+            icloudDir = await Task.detached(priority: .userInitiated) { Store.iCloudProjectsDir() }.value
             if icloudDir != nil { break }
-            try await Task.sleep(nanoseconds: 2_000_000_000) // 2s between retries, 20s total
+            try await Task.sleep(nanoseconds: 2_000_000_000)
         }
-        guard let icloudDir else {
-            throw MigrationError.iCloudUnavailable
-        }
-        try FileManager.default.createDirectory(at: icloudDir, withIntermediateDirectories: true)
+        guard let icloudDir else { throw MigrationError.iCloudUnavailable }
+        let fm = FileManager.default
+        try fm.createDirectory(at: icloudDir, withIntermediateDirectories: true)
         let localDir = Store.localProjectsDir()
-        let items = try FileManager.default.contentsOfDirectory(at: localDir, includingPropertiesForKeys: nil)
+        let items = (try? fm.contentsOfDirectory(at: localDir, includingPropertiesForKeys: nil)) ?? []
         for (i, item) in items.enumerated() {
             let dest = icloudDir.appendingPathComponent(item.lastPathComponent)
-            if !FileManager.default.fileExists(atPath: dest.path) {
-                try FileManager.default.copyItem(at: item, to: dest)
+            if fm.fileExists(atPath: dest.path) {
+                try? fm.removeItem(at: dest)
             }
+            try fm.copyItem(at: item, to: dest)
+            try? fm.removeItem(at: item) // remove source after successful copy
             await MainActor.run { progress(Double(i + 1) / Double(items.count)) }
         }
     }
 
     public func migrateToLocal(progress: @escaping (Double) -> Void) async throws {
-        guard let icloudDir = Store.iCloudProjectsDir() else { return }
+        guard let icloudDir = await Task.detached(priority: .userInitiated, operation: { Store.iCloudProjectsDir() }).value else { return }
+        let fm = FileManager.default
         let localDir = Store.localProjectsDir()
-        try FileManager.default.createDirectory(at: localDir, withIntermediateDirectories: true)
-        let items = try FileManager.default.contentsOfDirectory(at: icloudDir, includingPropertiesForKeys: nil)
+        try fm.createDirectory(at: localDir, withIntermediateDirectories: true)
+        let items = (try? fm.contentsOfDirectory(at: icloudDir, includingPropertiesForKeys: nil)) ?? []
         for (i, item) in items.enumerated() {
             let dest = localDir.appendingPathComponent(item.lastPathComponent)
-            if !FileManager.default.fileExists(atPath: dest.path) {
-                try FileManager.default.copyItem(at: item, to: dest)
+            if fm.fileExists(atPath: dest.path) {
+                try? fm.removeItem(at: dest)
             }
+            try fm.copyItem(at: item, to: dest)
+            try? fm.removeItem(at: item) // remove source after successful copy
             await MainActor.run { progress(Double(i + 1) / Double(items.count)) }
         }
     }

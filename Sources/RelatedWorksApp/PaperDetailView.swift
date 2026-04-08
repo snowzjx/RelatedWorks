@@ -29,6 +29,14 @@ struct PaperDetailView: View {
     var crossRefs: [Paper] { project.crossReferences(for: paper.id) }
     var otherPaperIDs: [String] { project.papers.filter { $0.id != paper.id }.map(\.id) }
 
+    var resolvedPDFURL: URL? {
+        guard let path = paper.pdfPath else { return nil }
+        let stored = URL(fileURLWithPath: path)
+        if FileManager.default.fileExists(atPath: stored.path) { return stored }
+        let fallback = store.pdfsDir(for: project.id).appendingPathComponent("\(paper.id).pdf")
+        return FileManager.default.fileExists(atPath: fallback.path) ? fallback : nil
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -57,11 +65,15 @@ struct PaperDetailView: View {
                     }
 
                     HStack(spacing: 8) {
-                        if let path = paper.pdfPath {
-                            Button { NSWorkspace.shared.open(URL(fileURLWithPath: path)) } label: {
+                        if paper.pdfPath != nil {
+                            Button {
+                                let resolved = resolvedPDFURL
+                                if let url = resolved { NSWorkspace.shared.open(url) }
+                            } label: {
                                 Label("Open PDF", systemImage: "doc.fill")
                             }
                             .buttonStyle(.bordered).controlSize(.small)
+                            .disabled(resolvedPDFURL == nil)
                         } else {
                             Button(action: attachPDF) {
                                 Label("Attach PDF", systemImage: "doc.badge.plus")

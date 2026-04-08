@@ -124,6 +124,7 @@ jobs:
 
       - name: Build iOS
         run: |
+          VERSION=$( [[ "${GITHUB_REF_NAME}" == v* ]] && echo "${GITHUB_REF_NAME#v}" || echo "0.0.0" )
           xcodebuild \
             -project RelatedWorksApp.xcodeproj \
             -scheme RelatedWorksIOS \
@@ -132,4 +133,5 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
+            MARKETING_VERSION="$VERSION" \
             build

@@ -18,6 +18,11 @@ struct IOSProjectImporter {
         let jsonData = try Data(contentsOf: bundleDir.appendingPathComponent("project.json"))
         var project = try JSONDecoder().decode(Project.self, from: jsonData)
 
+        // Assign new UUID if a project with this ID already exists
+        if store.projects.contains(where: { $0.id == project.id }) {
+            project = Project(importing: project, newID: UUID())
+        }
+
         let srcPDFs = bundleDir.appendingPathComponent("pdfs")
         let dstPDFs = store.pdfsDir(for: project.id)
         try fm.createDirectory(at: dstPDFs, withIntermediateDirectories: true)

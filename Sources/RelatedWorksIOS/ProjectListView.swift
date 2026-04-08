@@ -16,6 +16,42 @@ struct PaperDestination: Hashable {
     let projectID: UUID
 }
 
+struct ProjectNavDestination: Hashable {
+    let projectID: UUID
+    var autoRename: Bool = false
+}
+
+struct ImportConfirmSheet: View {
+    @Binding var name: String
+    @Binding var description: String
+    let paperCount: Int
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Project Details") {
+                    TextField("Title", text: $name)
+                    TextField("Description", text: $description)
+                }
+                Section {
+                    Label("\(paperCount) paper\(paperCount == 1 ? "" : "s")", systemImage: "doc.text")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .navigationTitle("Import Project")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel", action: onCancel) }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Import", action: onConfirm).disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+    }
+}
+
 struct ProjectListView: View {
     @EnvironmentObject var store: Store
     @Binding var pendingDeepLink: DeepLink.Destination?
@@ -23,12 +59,13 @@ struct ProjectListView: View {
     @State private var importError: String?
     @State private var pendingDeleteOffsets: IndexSet?
     @State private var navPath = NavigationPath()
+    @State private var duplicateProjectID: UUID? = nil
 
     var body: some View {
         NavigationStack(path: $navPath) {
             List {
                 ForEach(store.projects) { project in
-                    NavigationLink(value: project.id) {
+                    NavigationLink(value: ProjectNavDestination(projectID: project.id)) {
                         ProjectRowView(project: project)
                     }
                     .swipeActions(edge: .trailing) {
@@ -42,8 +79,8 @@ struct ProjectListView: View {
                 }
             }
             .navigationTitle("Projects")
-            .navigationDestination(for: UUID.self) { projectID in
-                PaperListView(projectID: projectID)
+            .navigationDestination(for: ProjectNavDestination.self) { dest in
+                PaperListView(projectID: dest.projectID, autoRename: dest.autoRename)
             }
             .navigationDestination(for: PaperDestination.self) { dest in
                 PaperDetailView(paper: dest.paper, projectID: dest.projectID)
@@ -53,9 +90,9 @@ struct ProjectListView: View {
                 navPath.removeLast(navPath.count)
                 switch link {
                 case .project(let id):
-                    navPath.append(id)
+                    navPath.append(ProjectNavDestination(projectID: id))
                 case .paper(let projectID, let paperID):
-                    navPath.append(projectID)
+                    navPath.append(ProjectNavDestination(projectID: projectID))
                     if let project = store.projects.first(where: { $0.id == projectID }),
                        let paper = project.paper(withID: paperID) {
                         navPath.append(PaperDestination(paper: paper, projectID: projectID))
@@ -68,7 +105,7 @@ struct ProjectListView: View {
                     Button {
                         showImporter = true
                     } label: {
-                        Label("Import", systemImage: "square.and.arrow.down")
+                        Label("Import", systemImage: "tray.and.arrow.down")
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -88,6 +125,20 @@ struct ProjectListView: View {
             }, message: {
                 Text(importError ?? "")
             })
+            .alert("Duplicate Project", isPresented: Binding(
+                get: { duplicateProjectID != nil },
+                set: { if !$0 { duplicateProjectID = nil } }
+            )) {
+                Button("Rename") {
+                    if let id = duplicateProjectID {
+                        navPath.append(ProjectNavDestination(projectID: id, autoRename: true))
+                    }
+                    duplicateProjectID = nil
+                }
+                Button("OK", role: .cancel) { duplicateProjectID = nil }
+            } message: {
+                Text("A project with the same name already exists. Please rename one of them to avoid confusion.")
+            }
             .alert("Delete Project", isPresented: Binding(
                 get: { pendingDeleteOffsets != nil },
                 set: { if !$0 { pendingDeleteOffsets = nil } }
@@ -113,7 +164,10 @@ struct ProjectListView: View {
             let accessing = url.startAccessingSecurityScopedResource()
             defer { if accessing { url.stopAccessingSecurityScopedResource() } }
             do {
-                try IOSProjectImporter.import(from: url, into: store)
+                let project = try IOSProjectImporter.import(from: url, into: store)
+                if store.projects.filter({ $0.name == project.name }).count > 1 {
+                    duplicateProjectID = project.id
+                }
             } catch {
                 importError = error.localizedDescription
             }
@@ -131,7 +185,7 @@ struct ProjectRowView: View {
                 Text("\(project.papers.count)").font(.caption).foregroundStyle(.secondary)
             }
             if !project.description.isEmpty {
-                Text(project.description).font(.caption).foregroundStyle(.tertiary).lineLimit(1)
+                Text(project.description).font(.caption).foregroundStyle(.tertiary)
             }
         }
         .padding(.vertical, 2)

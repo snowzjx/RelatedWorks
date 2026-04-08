@@ -2,9 +2,13 @@ import SwiftUI
 
 struct PaperListView: View {
     let projectID: UUID
+    var autoRename: Bool = false
     @EnvironmentObject var store: Store
     @State private var searchQuery = ""
     @State private var pendingDeleteOffsets: IndexSet?
+    @State private var showRename = false
+    @State private var editName = ""
+    @State private var editDescription = ""
 
     var project: Project? { store.projects.first(where: { $0.id == projectID }) }
 
@@ -42,6 +46,53 @@ struct PaperListView: View {
         .navigationTitle(project?.name ?? "Papers")
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchQuery, prompt: "Search papers…")
+        .onAppear {
+            if autoRename {
+                editName = project?.name ?? ""
+                editDescription = project?.description ?? ""
+                showRename = true
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button { 
+                    editName = project?.name ?? ""
+                    editDescription = project?.description ?? ""
+                    showRename = true
+                } label: {
+                    Image(systemName: "pencil")
+                }
+            }
+        }
+        .sheet(isPresented: $showRename) {
+            NavigationStack {
+                Form {
+                    TextField("Name", text: $editName)
+                    Section("Description") {
+                        TextEditor(text: $editDescription)
+                            .frame(minHeight: 100)
+                    }
+                }
+                .navigationTitle("Edit Project")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { showRename = false } }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            guard var proj = project,
+                                  let idx = store.projects.firstIndex(where: { $0.id == projectID }) else { return }
+                            proj.name = editName.trimmingCharacters(in: .whitespaces)
+                            proj.description = editDescription
+                            store.projects[idx] = proj
+                            try? store.save(proj)
+                            showRename = false
+                        }
+                        .disabled(editName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
         .alert("Delete Paper", isPresented: Binding(
             get: { pendingDeleteOffsets != nil },
             set: { if !$0 { pendingDeleteOffsets = nil } }

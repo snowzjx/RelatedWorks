@@ -2,7 +2,8 @@ import SwiftUI
 
 @main
 struct RelatedWorksApp: App {
-    @StateObject private var store = Store()
+    @State private var store = Store()
+    @StateObject private var settings = AppSettings.shared
     @StateObject private var deepLinkHandler = DeepLinkHandler()
     @State private var showHelp = false
 
@@ -10,11 +11,14 @@ struct RelatedWorksApp: App {
         WindowGroup {
             ContentView(deepLinkHandler: deepLinkHandler)
                 .environmentObject(store)
-                .environmentObject(AppSettings.shared)
+                .environmentObject(settings)
                 .onOpenURL { url in deepLinkHandler.handle(url) }
                 .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
                 .sheet(isPresented: $showHelp) { HelpView() }
                 .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
+                .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
+                    store = Store()
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
@@ -45,6 +49,7 @@ struct RelatedWorksApp: App {
 extension Notification.Name {
     static let importProject = Notification.Name("importProject")
     static let showHelp = Notification.Name("showHelp")
+    static let iCloudSyncChanged = Notification.Name("iCloudSyncChanged")
 }
 
 // Globally accessible settings opener
