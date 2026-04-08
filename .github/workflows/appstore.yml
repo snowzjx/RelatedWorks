@@ -17,6 +17,8 @@ jobs:
         env:
           CERTIFICATE_P12: ${{ secrets.APPSTORE_CERTIFICATE_P12 }}
           CERTIFICATE_PASSWORD: ${{ secrets.APPSTORE_CERTIFICATE_PASSWORD }}
+          INSTALLER_P12: ${{ secrets.APPSTORE_INSTALLER_CERTIFICATE_P12 }}
+          INSTALLER_PASSWORD: ${{ secrets.APPSTORE_INSTALLER_CERTIFICATE_PASSWORD }}
         run: |
           KEYCHAIN_PATH=$RUNNER_TEMP/appstore.keychain
           security create-keychain -p "" "$KEYCHAIN_PATH"
@@ -24,6 +26,8 @@ jobs:
           security unlock-keychain -p "" "$KEYCHAIN_PATH"
           echo "$CERTIFICATE_P12" | base64 --decode > $RUNNER_TEMP/dist.p12
           security import $RUNNER_TEMP/dist.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          echo "$INSTALLER_P12" | base64 --decode > $RUNNER_TEMP/installer.p12
+          security import $RUNNER_TEMP/installer.p12 -k "$KEYCHAIN_PATH" -P "$INSTALLER_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productbuild
           security list-keychain -d user -s "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
 
