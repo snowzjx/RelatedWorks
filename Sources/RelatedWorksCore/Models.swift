@@ -62,6 +62,17 @@ public struct Project: Codable, Identifiable, Hashable {
         papers.append(paper)
     }
 
+    public init(importing source: Project, newID: UUID) {
+        self.id = newID
+        self.name = source.name
+        self.description = source.description
+        self.papers = source.papers
+        self.createdAt = Date()
+        self.generatedLatex = source.generatedLatex
+        self.generationModel = source.generationModel
+        self.bibEntries = source.bibEntries
+    }
+
     public func paper(withID id: String) -> Paper? {
         papers.first { $0.id.lowercased() == id.lowercased() }
     }

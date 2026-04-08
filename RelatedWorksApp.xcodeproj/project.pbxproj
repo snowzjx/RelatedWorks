@@ -28,6 +28,29 @@
 		A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
 		A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		A021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
+		A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */; };
+		MAC_ZF_Archive = {isa = PBXBuildFile; fileRef = ZF_REF_Archive; };
+		MAC_ZF_BackingConfig = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration; };
+		MAC_ZF_Deprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated; };
+		MAC_ZF_Helpers = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePHelpers; };
+		MAC_ZF_MemoryFile = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePMemoryFile; };
+		MAC_ZF_Progress = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePProgress; };
+		MAC_ZF_Reading = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReading; };
+		MAC_ZF_ReadingDep = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReadingDeprecated; };
+		MAC_ZF_Writing = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWriting; };
+		MAC_ZF_WritingDep = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWritingDeprecated; };
+		MAC_ZF_ZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64; };
+		MAC_ZF_DataComp = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression; };
+		MAC_ZF_DataCompDep = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompressionDeprecated; };
+		MAC_ZF_DataSer = {isa = PBXBuildFile; fileRef = ZF_REF_DataPSerialization; };
+		MAC_ZF_Date = {isa = PBXBuildFile; fileRef = ZF_REF_DatePZIP; };
+		MAC_ZF_Entry = {isa = PBXBuildFile; fileRef = ZF_REF_Entry; };
+		MAC_ZF_EntrySer = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPSerialization; };
+		MAC_ZF_EntryZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPZIP64; };
+		MAC_ZF_FMgr = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP; };
+		MAC_ZF_FMgrDep = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated; };
+		MAC_ZF_URL = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP; };
+		F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
 		A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* Sources/RelatedWorksApp/HelpView.swift */; };
 		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
 		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
@@ -145,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
+				F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */,
 				IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */,
 				ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */,
 				ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */,
@@ -424,9 +448,30 @@
 				A016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
 				A017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
-				A021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,
+				A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */,
 				A018 /* Sources/RelatedWorksApp/PreferencesView.swift in Sources */,
 				A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */,
+				MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */,
+				MAC_ZF_BackingConfig /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */,
+				MAC_ZF_Deprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift in Sources */,
+				MAC_ZF_Helpers /* Sources/ZIPFoundation/Archive+Helpers.swift in Sources */,
+				MAC_ZF_MemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift in Sources */,
+				MAC_ZF_Progress /* Sources/ZIPFoundation/Archive+Progress.swift in Sources */,
+				MAC_ZF_Reading /* Sources/ZIPFoundation/Archive+Reading.swift in Sources */,
+				MAC_ZF_ReadingDep /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift in Sources */,
+				MAC_ZF_Writing /* Sources/ZIPFoundation/Archive+Writing.swift in Sources */,
+				MAC_ZF_WritingDep /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift in Sources */,
+				MAC_ZF_ZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift in Sources */,
+				MAC_ZF_DataComp /* Sources/ZIPFoundation/Data+Compression.swift in Sources */,
+				MAC_ZF_DataCompDep /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift in Sources */,
+				MAC_ZF_DataSer /* Sources/ZIPFoundation/Data+Serialization.swift in Sources */,
+				MAC_ZF_Date /* Sources/ZIPFoundation/Date+ZIP.swift in Sources */,
+				MAC_ZF_Entry /* Sources/ZIPFoundation/Entry.swift in Sources */,
+				MAC_ZF_EntrySer /* Sources/ZIPFoundation/Entry+Serialization.swift in Sources */,
+				MAC_ZF_EntryZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift in Sources */,
+				MAC_ZF_FMgr /* Sources/ZIPFoundation/FileManager+ZIP.swift in Sources */,
+				MAC_ZF_FMgrDep /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift in Sources */,
+				MAC_ZF_URL /* Sources/ZIPFoundation/URL+ZIP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
