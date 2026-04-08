@@ -4,6 +4,10 @@
 <dict>
     <key>CFBundleIdentifier</key>
     <string>me.snowzjx.relatedworks</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
     <key>CFBundleName</key>
     <string>RelatedWorks</string>
     <key>CFBundleDisplayName</key>
@@ -16,6 +20,8 @@
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
