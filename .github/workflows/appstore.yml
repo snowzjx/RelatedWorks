@@ -131,6 +131,8 @@ jobs:
             <true/>
             <key>uploadBitcode</key>
             <false/>
+            <key>destination</key>
+            <string>upload</string>
           </dict>
           </plist>
           EOF
