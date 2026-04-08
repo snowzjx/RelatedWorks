@@ -110,13 +110,20 @@ jobs:
           APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
           APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
-          echo "$APPSTORE_API_KEY_P8" | base64 --decode > /tmp/AuthKey.p8
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
           PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
           echo "Uploading: $PKG"
-          # Install Transporter via homebrew cask
-          brew install --cask transporter
-          /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter \
-            -m upload \
-            -f "$PKG" \
-            -apiKey "$APPSTORE_API_KEY_ID" \
-            -apiIssuer "$APPSTORE_API_ISSUER_ID"
+          # Use Xcode 16's altool which works correctly (Xcode 26 altool is broken for pkg upload)
+          ALTOOL=$(find /Applications/Xcode_16*.app -name "altool" 2>/dev/null | head -1)
+          if [ -n "$ALTOOL" ]; then
+            echo "Using altool from: $ALTOOL"
+            "$ALTOOL" --upload-app -f "$PKG" --type macos \
+              --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
+          else
+            echo "Available Xcode versions:"
+            ls /Applications/Xcode*.app 2>/dev/null
+            # Fall back to current altool
+            xcrun altool --upload-app -f "$PKG" --type macos \
+              --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
+          fi
