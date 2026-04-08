@@ -86,6 +86,13 @@ jobs:
             -archivePath /tmp/RelatedWorks.xcarchive \
             -exportPath /tmp/appstore_export \
             -exportOptionsPlist /tmp/ExportOptions.plist
+          echo "=== Archive contents ==="
+          find /tmp/RelatedWorks.xcarchive -name "Info.plist" | head -5
+          echo "=== Export contents ==="
+          ls -la /tmp/appstore_export/
+          echo "=== PKG contents ==="
+          pkgutil --expand /tmp/appstore_export/RelatedWorks.pkg /tmp/pkg_expanded || true
+          find /tmp/pkg_expanded -name "Info.plist" | head -5
 
       - name: Upload pkg artifact
         uses: actions/upload-artifact@v4
