@@ -56,6 +56,11 @@ jobs:
             MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
+          # Re-sign without get-task-allow (strips debug entitlement injected by dev profile)
+          codesign --force --options runtime --timestamp \
+            --entitlements RelatedWorksApp/RelatedWorksApp.entitlements \
+            --sign "Developer ID Application" \
+            build/RelatedWorks.app
 
       - name: Build (unsigned, non-release)
         if: "!startsWith(github.ref, 'refs/tags/')"
