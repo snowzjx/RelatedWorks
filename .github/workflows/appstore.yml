@@ -122,6 +122,12 @@ jobs:
           echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
           PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
           echo "Uploading: $PKG"
+          # Use validate first to confirm pkg is readable, then upload
+          xcrun altool --validate-app -f "$PKG" --type macos \
+            --apiKey "$APPSTORE_API_KEY_ID" \
+            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
+            --output-format xml
           xcrun altool --upload-app -f "$PKG" --type macos \
             --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID"
+            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
+            --output-format xml
