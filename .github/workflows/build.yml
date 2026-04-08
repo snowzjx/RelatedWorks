@@ -51,6 +51,8 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
             PROVISIONING_PROFILE_SPECIFIER="RelatedWorks" \
+            ENABLE_HARDENED_RUNTIME=YES \
+            OTHER_CODE_SIGN_FLAGS="--timestamp" \
             MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
