@@ -4,6 +4,7 @@ struct PaperListView: View {
     let projectID: UUID
     @EnvironmentObject var store: Store
     @State private var searchQuery = ""
+    @State private var pendingDeleteOffsets: IndexSet?
 
     var project: Project? { store.projects.first(where: { $0.id == projectID }) }
 
@@ -28,15 +29,36 @@ struct PaperListView: View {
                 NavigationLink(destination: PaperDetailView(paper: paper, projectID: projectID)) {
                     PaperRowView(paper: paper)
                 }
+                .swipeActions(edge: .trailing) {
+                    Button {
+                        pendingDeleteOffsets = IndexSet([filteredPapers.firstIndex(of: paper)!])
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .tint(.red)
+                }
             }
-            .onDelete(perform: deletePapers)
         }
         .navigationTitle(project?.name ?? "Papers")
         .navigationBarTitleDisplayMode(.large)
         .searchable(text: $searchQuery, prompt: "Search papers…")
+        .alert("Delete Paper", isPresented: Binding(
+            get: { pendingDeleteOffsets != nil },
+            set: { if !$0 { pendingDeleteOffsets = nil } }
+        )) {
+            Button("Delete", role: .destructive) {
+                if let offsets = pendingDeleteOffsets {
+                    performDelete(at: offsets)
+                    pendingDeleteOffsets = nil
+                }
+            }
+            Button("Cancel", role: .cancel) { pendingDeleteOffsets = nil }
+        } message: {
+            Text("This paper will be permanently removed from the project.")
+        }
     }
 
-    private func deletePapers(at offsets: IndexSet) {
+    private func performDelete(at offsets: IndexSet) {
         guard var proj = project,
               let storeIdx = store.projects.firstIndex(where: { $0.id == projectID }) else { return }
         let papersToDelete = offsets.map { filteredPapers[$0] }

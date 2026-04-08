@@ -74,7 +74,7 @@ struct PaperDetailView: View {
                                     TagChip("DBLP ↗", color: .green)
                                 }
                             }
-                            if let path = paper.pdfPath {
+                            if paper.pdfPath != nil {
                                 Button {
                                     pdfURL = resolvedPDFURL
                                 } label: {

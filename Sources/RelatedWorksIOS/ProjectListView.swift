@@ -5,6 +5,7 @@ struct ProjectListView: View {
     @EnvironmentObject var store: Store
     @State private var showImporter = false
     @State private var importError: String?
+    @State private var pendingDeleteOffsets: IndexSet?
 
     var body: some View {
         NavigationStack {
@@ -31,8 +32,15 @@ struct ProjectListView: View {
                         }
                         .padding(.vertical, 2)
                     }
+                    .swipeActions(edge: .trailing) {
+                        Button {
+                            pendingDeleteOffsets = IndexSet([store.projects.firstIndex(of: project)!])
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .tint(.red)
+                    }
                 }
-                .onDelete(perform: deleteProjects)
             }
             .navigationTitle("Projects")
             .toolbar {
@@ -55,12 +63,20 @@ struct ProjectListView: View {
             }, message: {
                 Text(importError ?? "")
             })
-        }
-    }
-
-    private func deleteProjects(at offsets: IndexSet) {
-        for index in offsets {
-            try? store.delete(store.projects[index])
+            .alert("Delete Project", isPresented: Binding(
+                get: { pendingDeleteOffsets != nil },
+                set: { if !$0 { pendingDeleteOffsets = nil } }
+            )) {
+                Button("Delete", role: .destructive) {
+                    if let offsets = pendingDeleteOffsets {
+                        for index in offsets { try? store.delete(store.projects[index]) }
+                        pendingDeleteOffsets = nil
+                    }
+                }
+                Button("Cancel", role: .cancel) { pendingDeleteOffsets = nil }
+            } message: {
+                Text("This project and all its papers will be permanently deleted.")
+            }
         }
     }
 
