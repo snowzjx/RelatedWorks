@@ -55,8 +55,58 @@ jobs:
             -archivePath /tmp/RelatedWorks.xcarchive \
             archive
 
-      - name: Export
+      - name: Upload archive artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appstore-archive
+          path: /tmp/RelatedWorks.xcarchive
+          retention-days: 1
+
+  upload:
+    needs: build
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import certificates
+        env:
+          CERTIFICATE_P12: ${{ secrets.APPSTORE_CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPSTORE_CERTIFICATE_PASSWORD }}
+          INSTALLER_P12: ${{ secrets.APPSTORE_INSTALLER_CERTIFICATE_P12 }}
+          INSTALLER_PASSWORD: ${{ secrets.APPSTORE_INSTALLER_CERTIFICATE_PASSWORD }}
         run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/appstore.keychain
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "" "$KEYCHAIN_PATH"
+          echo "$CERTIFICATE_P12" | base64 --decode > $RUNNER_TEMP/dist.p12
+          security import $RUNNER_TEMP/dist.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          echo "$INSTALLER_P12" | base64 --decode > $RUNNER_TEMP/installer.p12
+          security import $RUNNER_TEMP/installer.p12 -k "$KEYCHAIN_PATH" -P "$INSTALLER_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/bin/pkgbuild
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
+
+      - name: Install provisioning profile
+        env:
+          PROVISIONING_PROFILE: ${{ secrets.APPSTORE_PROVISIONING_PROFILE }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksAppStore.provisionprofile
+
+      - name: Download archive artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: appstore-archive
+          path: /tmp/RelatedWorks.xcarchive
+
+      - name: Export and Upload
+        env:
+          APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
           cat > /tmp/ExportOptions.plist << EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -79,55 +129,16 @@ jobs:
             <string>3rd Party Mac Developer Installer</string>
             <key>uploadSymbols</key>
             <true/>
+            <key>uploadBitcode</key>
+            <false/>
           </dict>
           </plist>
           EOF
           xcodebuild -exportArchive \
             -archivePath /tmp/RelatedWorks.xcarchive \
             -exportPath /tmp/appstore_export \
-            -exportOptionsPlist /tmp/ExportOptions.plist
-          echo "=== Archive contents ==="
-          find /tmp/RelatedWorks.xcarchive -name "Info.plist" | head -5
-          echo "=== Export contents ==="
-          ls -la /tmp/appstore_export/
-          echo "=== Packaging.log ==="
-          cat /tmp/appstore_export/Packaging.log
-          echo "=== PKG contents ==="
-          xar -tf /tmp/appstore_export/RelatedWorks.pkg 2>/dev/null | head -20 || true
-
-      - name: Upload pkg artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: appstore-pkg
-          path: /tmp/appstore_export/*.pkg
-          retention-days: 1
-
-  upload:
-    needs: build
-    runs-on: macos-15
-    steps:
-      - name: Download pkg artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: appstore-pkg
-          path: /tmp/appstore_export
-
-      - name: Upload to App Store Connect
-        env:
-          APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
-        run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
-          PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
-          echo "Uploading: $PKG"
-          # Use validate first to confirm pkg is readable, then upload
-          xcrun altool --validate-app -f "$PKG" --type macos \
-            --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
-            --output-format xml
-          xcrun altool --upload-app -f "$PKG" --type macos \
-            --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
-            --output-format xml
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8 \
+            -authenticationKeyID "$APPSTORE_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID"
