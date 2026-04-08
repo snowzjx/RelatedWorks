@@ -1,0 +1,94 @@
+name: App Store iOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.6.4)'
+        required: true
+
+jobs:
+  submit:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import certificate
+        env:
+          CERTIFICATE_P12: ${{ secrets.APPSTORE_CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPSTORE_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/appstore.keychain
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "" "$KEYCHAIN_PATH"
+          echo "$CERTIFICATE_P12" | base64 --decode > $RUNNER_TEMP/dist.p12
+          security import $RUNNER_TEMP/dist.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
+
+      - name: Install provisioning profile
+        env:
+          PROVISIONING_PROFILE: ${{ secrets.APPSTORE_IOS_PROVISIONING_PROFILE }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksIOSAppStore.mobileprovision
+
+      - name: Archive
+        run: |
+          xcodebuild \
+            -project RelatedWorksApp.xcodeproj \
+            -scheme RelatedWorksIOS \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
+            PROVISIONING_PROFILE_SPECIFIER="RelatedWorksIOSAppStore" \
+            ENABLE_HARDENED_RUNTIME=YES \
+            OTHER_CODE_SIGN_FLAGS="--timestamp" \
+            MARKETING_VERSION="${{ github.event.inputs.version }}" \
+            -archivePath /tmp/RelatedWorksIOS.xcarchive \
+            archive
+
+      - name: Export and Upload
+        env:
+          APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+          cat > /tmp/ExportOptionsIOS.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>${{ secrets.MACOS_TEAM_ID }}</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>me.snowzjx.relatedworks</key>
+              <string>RelatedWorksIOSAppStore</string>
+            </dict>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath /tmp/RelatedWorksIOS.xcarchive \
+            -exportPath /tmp/appstore_export_ios \
+            -exportOptionsPlist /tmp/ExportOptionsIOS.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8 \
+            -authenticationKeyID "$APPSTORE_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_API_ISSUER_ID"

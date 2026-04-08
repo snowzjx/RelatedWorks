@@ -51,6 +51,8 @@
             </array>
         </dict>
     </array>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
     <key>NSUbiquitousContainers</key>
     <dict>
         <key>iCloud.me.snowzjx.relatedworks</key>
