@@ -29,7 +29,7 @@ jobs:
 
       - name: Install provisioning profile
         env:
-          PROVISIONING_PROFILE: ${{ secrets.APPSTORE_IOS_PROVISIONING_PROFILE }}
+          PROVISIONING_PROFILE: ${{ secrets.APPSTORE_PROVISIONING_PROFILE }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksIOSAppStore.mobileprovision
@@ -44,7 +44,7 @@ jobs:
             CODE_SIGN_IDENTITY="Apple Distribution" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
-            PROVISIONING_PROFILE_SPECIFIER="RelatedWorksIOSAppStore" \
+            PROVISIONING_PROFILE_SPECIFIER="RelatedWorks" \
             ENABLE_HARDENED_RUNTIME=YES \
             OTHER_CODE_SIGN_FLAGS="--timestamp" \
             MARKETING_VERSION="${{ github.event.inputs.version }}" \
@@ -71,7 +71,7 @@ jobs:
             <key>provisioningProfiles</key>
             <dict>
               <key>me.snowzjx.relatedworks</key>
-              <string>RelatedWorksIOSAppStore</string>
+              <string>RelatedWorks</string>
             </dict>
             <key>signingStyle</key>
             <string>manual</string>
