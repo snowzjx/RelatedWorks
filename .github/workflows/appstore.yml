@@ -114,8 +114,11 @@ jobs:
           echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
           PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
           echo "Uploading: $PKG"
-          xcrun altool --upload-app \
+          # iTMSTransporter is bundled inside Xcode and supports API key auth
+          TRANSPORTER=$(find /Applications/Xcode*.app -name "iTMSTransporter" 2>/dev/null | head -1)
+          echo "Using: $TRANSPORTER"
+          "$TRANSPORTER" \
+            -m upload \
             -f "$PKG" \
-            --type macos \
-            --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID"
+            -apiKey "$APPSTORE_API_KEY_ID" \
+            -apiIssuer "$APPSTORE_API_ISSUER_ID"
