@@ -16,5 +16,10 @@
     <array>
         <string>iCloud.me.snowzjx.relatedworks</string>
     </array>
+    <key>com.apple.developer.icloud-container-environment</key>
+    <array>
+        <string>Development</string>
+        <string>Production</string>
+    </array>
 </dict>
 </plist>
