@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  build:
+  submit:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
@@ -55,50 +55,6 @@ jobs:
             -archivePath /tmp/RelatedWorks.xcarchive \
             archive
 
-      - name: Upload archive artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: appstore-archive
-          path: /tmp/RelatedWorks.xcarchive
-          retention-days: 1
-
-  upload:
-    needs: build
-    runs-on: macos-26
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Import certificates
-        env:
-          CERTIFICATE_P12: ${{ secrets.APPSTORE_CERTIFICATE_P12 }}
-          CERTIFICATE_PASSWORD: ${{ secrets.APPSTORE_CERTIFICATE_PASSWORD }}
-          INSTALLER_P12: ${{ secrets.APPSTORE_INSTALLER_CERTIFICATE_P12 }}
-          INSTALLER_PASSWORD: ${{ secrets.APPSTORE_INSTALLER_CERTIFICATE_PASSWORD }}
-        run: |
-          KEYCHAIN_PATH=$RUNNER_TEMP/appstore.keychain
-          security create-keychain -p "" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "" "$KEYCHAIN_PATH"
-          echo "$CERTIFICATE_P12" | base64 --decode > $RUNNER_TEMP/dist.p12
-          security import $RUNNER_TEMP/dist.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          echo "$INSTALLER_P12" | base64 --decode > $RUNNER_TEMP/installer.p12
-          security import $RUNNER_TEMP/installer.p12 -k "$KEYCHAIN_PATH" -P "$INSTALLER_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/bin/pkgbuild
-          security list-keychain -d user -s "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
-
-      - name: Install provisioning profile
-        env:
-          PROVISIONING_PROFILE: ${{ secrets.APPSTORE_PROVISIONING_PROFILE }}
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksAppStore.provisionprofile
-
-      - name: Download archive artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: appstore-archive
-          path: /tmp/RelatedWorks.xcarchive
-
       - name: Export and Upload
         env:
           APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
@@ -127,12 +83,10 @@ jobs:
             <string>Apple Distribution</string>
             <key>installerSigningCertificate</key>
             <string>3rd Party Mac Developer Installer</string>
-            <key>uploadSymbols</key>
-            <true/>
-            <key>uploadBitcode</key>
-            <false/>
             <key>destination</key>
             <string>upload</string>
+            <key>uploadSymbols</key>
+            <true/>
           </dict>
           </plist>
           EOF
