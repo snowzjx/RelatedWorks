@@ -110,14 +110,12 @@ jobs:
           APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
           APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
         run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+          echo "$APPSTORE_API_KEY_P8" | base64 --decode > /tmp/AuthKey.p8
           PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
           echo "Uploading: $PKG"
-          # iTMSTransporter is bundled inside Xcode and supports API key auth
-          TRANSPORTER=$(find /Applications/Xcode*.app -name "iTMSTransporter" 2>/dev/null | head -1)
-          echo "Using: $TRANSPORTER"
-          "$TRANSPORTER" \
+          # Install Transporter via homebrew cask
+          brew install --cask transporter
+          /Applications/Transporter.app/Contents/itms/bin/iTMSTransporter \
             -m upload \
             -f "$PKG" \
             -apiKey "$APPSTORE_API_KEY_ID" \
