@@ -90,9 +90,10 @@ jobs:
           find /tmp/RelatedWorks.xcarchive -name "Info.plist" | head -5
           echo "=== Export contents ==="
           ls -la /tmp/appstore_export/
+          echo "=== Packaging.log ==="
+          cat /tmp/appstore_export/Packaging.log
           echo "=== PKG contents ==="
-          pkgutil --expand /tmp/appstore_export/RelatedWorks.pkg /tmp/pkg_expanded || true
-          find /tmp/pkg_expanded -name "Info.plist" | head -5
+          xar -tf /tmp/appstore_export/RelatedWorks.pkg 2>/dev/null | head -20 || true
 
       - name: Upload pkg artifact
         uses: actions/upload-artifact@v4
