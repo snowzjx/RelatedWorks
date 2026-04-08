@@ -61,6 +61,10 @@ public class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(generationPrompt, forKey: "generationPrompt") }
     }
 
+    @Published public var iCloudSyncEnabled: Bool {
+        didSet { UserDefaults.standard.set(iCloudSyncEnabled, forKey: "iCloudSyncEnabled") }
+    }
+
     @Published public var ollamaReachable: Bool = true
     private var pollingTask: Task<Void, Never>?
 
@@ -74,6 +78,7 @@ public class AppSettings: ObservableObject {
         geminiExtractionModel = UserDefaults.standard.string(forKey: "geminiExtractionModel") ?? "gemini-2.5-flash"
         geminiGenerationModel = UserDefaults.standard.string(forKey: "geminiGenerationModel") ?? "gemini-2.5-flash"
         generationPrompt = UserDefaults.standard.string(forKey: "generationPrompt") ?? AppSettings.defaultGenerationPrompt
+        iCloudSyncEnabled = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
         startPolling()
     }
 
@@ -114,6 +119,7 @@ public class AppSettings: ObservableObject {
     }
 
     public func startPolling() {
+        #if !os(iOS)
         pollingTask?.cancel()
         pollingTask = Task {
             while !Task.isCancelled {
@@ -121,6 +127,7 @@ public class AppSettings: ObservableObject {
                 try? await Task.sleep(nanoseconds: 10_000_000_000)
             }
         }
+        #endif
     }
 
     public func checkOllama() async {

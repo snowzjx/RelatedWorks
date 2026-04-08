@@ -15,9 +15,49 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build
+      - name: Import signing certificate
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
         run: |
-          VERSION=$( [[ "${GITHUB_REF_NAME}" == v* ]] && echo "${GITHUB_REF_NAME#v}" || echo "0.0.0" )
+          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "" "$KEYCHAIN_PATH"
+          echo "$CERTIFICATE_P12" | base64 --decode > $RUNNER_TEMP/cert.p12
+          security import $RUNNER_TEMP/cert.p12 -k "$KEYCHAIN_PATH" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
+
+      - name: Install provisioning profile
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          PROVISIONING_PROFILE: ${{ secrets.MACOS_PROVISIONING_PROFILE }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile
+
+      - name: Build (signed)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          xcodebuild \
+            -project RelatedWorksApp.xcodeproj \
+            -scheme RelatedWorksApp \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
+            PROVISIONING_PROFILE_SPECIFIER="RelatedWorks" \
+            MARKETING_VERSION="$VERSION" \
+            CONFIGURATION_BUILD_DIR=build \
+            build
+
+      - name: Build (unsigned, non-release)
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        run: |
           xcodebuild \
             -project RelatedWorksApp.xcodeproj \
             -scheme RelatedWorksApp \
@@ -26,12 +66,40 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=YES \
             CODE_SIGNING_ALLOWED=YES \
-            MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
 
       - name: Build TUI
         run: swift build -c release --product RelatedWorks
+
+      - name: Notarize
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
+        run: |
+          ditto -c -k --keepParent build/RelatedWorks.app build/RelatedWorks.zip
+          xcrun notarytool submit build/RelatedWorks.zip \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$MACOS_TEAM_ID" \
+            --wait
+          xcrun stapler staple build/RelatedWorks.app
+
+      - name: Package release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          mkdir -p release
+          cp -r build/RelatedWorks.app release/
+          cp .build/release/RelatedWorks release/relatedworks-tui
+          zip -r RelatedWorks.zip release/
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RelatedWorks.zip
 
   build-ios:
     runs-on: macos-26
@@ -49,24 +117,3 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             build
-
-      - name: Remove quarantine & re-sign
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          codesign --force --deep --sign - build/RelatedWorks.app
-          xattr -cr build/RelatedWorks.app
-          codesign --force --sign - .build/release/RelatedWorks
-
-      - name: Zip app
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          mkdir -p release
-          cp -r build/RelatedWorks.app release/
-          cp .build/release/RelatedWorks release/relatedworks-tui
-          zip -r RelatedWorks.zip release/
-
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: RelatedWorks.zip

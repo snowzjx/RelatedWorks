@@ -47,13 +47,12 @@ struct PaperDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-
-                // Header card
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Header card
                 VStack(alignment: .leading, spacing: 8) {
                     Text(paper.title)
-                        .font(.title3)
                         .fontWeight(.semibold)
                         .textSelection(.enabled)
 
@@ -152,11 +151,20 @@ struct PaperDetailView: View {
                 }
                 .padding()
                 .glassEffect(in: .rect(cornerRadius: 16))
+                .id("annotation")
             }
             .padding()
         }
         .navigationTitle(paper.id)
         .navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.interactively)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { n in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation { proxy.scrollTo("annotation", anchor: .bottom) }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in }
+        } // ScrollViewReader
         .sheet(item: $pdfURL) { url in
             NavigationStack {
                 PDFViewer(url: url)

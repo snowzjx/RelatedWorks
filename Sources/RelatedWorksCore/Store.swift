@@ -5,12 +5,28 @@ public class Store: ObservableObject {
     public let projectsDir: URL
     @Published public var projects: [Project] = []
 
+    private var metadataQuery: NSMetadataQuery?
+
+    // MARK: - Init
+
     public init() {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        projectsDir = appSupport.appendingPathComponent("RelatedWorks/projects", isDirectory: true)
+        let useICloud = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
+        if useICloud {
+            var icloudURL: URL? = nil
+            let sem = DispatchSemaphore(value: 0)
+            DispatchQueue.global().async {
+                icloudURL = Store.iCloudProjectsDir()
+                sem.signal()
+            }
+            sem.wait()
+            projectsDir = icloudURL ?? Store.localProjectsDir()
+        } else {
+            projectsDir = Store.localProjectsDir()
+        }
         try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
         projects = (try? loadAll()) ?? []
         migrateGlobalPDFs()
+        startMetadataQuery()
     }
 
     public init(projectsDir: URL) {
@@ -19,13 +35,30 @@ public class Store: ObservableObject {
         projects = (try? loadAll()) ?? []
     }
 
+    // MARK: - iCloud URL resolution
+
+    public static func iCloudProjectsDir() -> URL? {
+        FileManager.default.url(forUbiquityContainerIdentifier: "iCloud.me.snowzjx.relatedworks")?
+            .appendingPathComponent("Documents/projects", isDirectory: true)
+    }
+
+    public static func localProjectsDir() -> URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return appSupport.appendingPathComponent("RelatedWorks/projects", isDirectory: true)
+    }
+
+    private static func resolveProjectsDir() -> URL {
+        let useICloud = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
+        if useICloud, let icloud = iCloudProjectsDir() { return icloud }
+        return localProjectsDir()
+    }
+
     // MARK: - Per-project PDF directory
 
     public func pdfsDir(for projectID: UUID) -> URL {
         projectsDir.appendingPathComponent("\(projectID.uuidString)/pdfs", isDirectory: true)
     }
 
-    /// Registers a PDF for a paper in a specific project. Copies to project's pdfs folder.
     @discardableResult
     public func registerPDF(at sourceURL: URL, forID id: String, projectID: UUID) throws -> String {
         let dir = pdfsDir(for: projectID)
@@ -37,13 +70,12 @@ public class Store: ObservableObject {
         return dest.path
     }
 
-    /// Removes the PDF file for a paper when it's deleted from a project.
     public func cleanupPDF(paperID: String, projectID: UUID) {
         let path = pdfsDir(for: projectID).appendingPathComponent("\(paperID).pdf").path
         try? FileManager.default.removeItem(atPath: path)
     }
 
-    // MARK: - ID Registry (cross-project, for deduplication)
+    // MARK: - ID Registry
 
     public var allPaperIDs: Set<String> {
         Set(projects.flatMap { $0.papers.map { $0.id.lowercased() } })
@@ -53,9 +85,7 @@ public class Store: ObservableObject {
         allPaperIDs.contains(id.lowercased())
     }
 
-    /// Returns existing paperID if this PDF matches by title within any project.
     public func existingID(forPDFAt url: URL, title: String? = nil) -> String? {
-        // Hash match
         if let hash = sha256(url) {
             for project in projects {
                 for paper in project.papers {
@@ -65,7 +95,6 @@ public class Store: ObservableObject {
                 }
             }
         }
-        // Title match fallback
         if let title = title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), !title.isEmpty {
             for project in projects {
                 if let paper = project.papers.first(where: { $0.title.lowercased() == title }) {
@@ -76,17 +105,23 @@ public class Store: ObservableObject {
         return nil
     }
 
-    // MARK: - Persistence
+    // MARK: - Persistence (NSFileCoordinator-aware)
 
     private func url(for project: Project) -> URL {
         projectsDir.appendingPathComponent("\(project.id.uuidString).json")
     }
 
     public func save(_ project: Project) throws {
-        // Ensure project pdfs dir exists
         try? FileManager.default.createDirectory(at: pdfsDir(for: project.id), withIntermediateDirectories: true)
+        let fileURL = url(for: project)
         let data = try JSONEncoder().encode(project)
-        try data.write(to: url(for: project))
+        var coordinatorError: NSError?
+        var writeError: Error?
+        let coordinator = NSFileCoordinator()
+        coordinator.coordinate(writingItemAt: fileURL, options: .forReplacing, error: &coordinatorError) { url in
+            do { try data.write(to: url) } catch { writeError = error }
+        }
+        if let e = coordinatorError ?? writeError { throw e }
         if let idx = projects.firstIndex(where: { $0.id == project.id }) {
             projects[idx] = project
         } else {
@@ -96,36 +131,114 @@ public class Store: ObservableObject {
 
     public func loadAll() throws -> [Project] {
         let files = try FileManager.default.contentsOfDirectory(at: projectsDir, includingPropertiesForKeys: nil)
-        return files.filter { $0.pathExtension == "json" }.compactMap {
-            try? JSONDecoder().decode(Project.self, from: Data(contentsOf: $0))
+        return files.filter { $0.pathExtension == "json" }.compactMap { fileURL -> Project? in
+            var result: Project?
+            var coordinatorError: NSError?
+            let coordinator = NSFileCoordinator()
+            coordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &coordinatorError) { url in
+                result = try? JSONDecoder().decode(Project.self, from: Data(contentsOf: url))
+            }
+            return result
         }.sorted { $0.createdAt > $1.createdAt }
     }
 
     public func delete(_ project: Project) throws {
-        // Delete project JSON
-        try FileManager.default.removeItem(at: url(for: project))
-        // Delete project folder (PDFs + anything else)
+        let fileURL = url(for: project)
+        var coordinatorError: NSError?
+        let coordinator = NSFileCoordinator()
+        coordinator.coordinate(writingItemAt: fileURL, options: .forDeleting, error: &coordinatorError) { url in
+            try? FileManager.default.removeItem(at: url)
+        }
+        if let e = coordinatorError { throw e }
         let projectFolder = projectsDir.appendingPathComponent(project.id.uuidString)
         try? FileManager.default.removeItem(at: projectFolder)
         projects.removeAll { $0.id == project.id }
     }
 
-    // MARK: - Migration from global pdfs/ to per-project
+    // MARK: - Reload (called by metadata query on remote changes)
+
+    public func reload() {
+        projects = (try? loadAll()) ?? []
+    }
+
+    // MARK: - NSMetadataQuery (iCloud remote change detection)
+
+    private func startMetadataQuery() {
+        guard UserDefaults.standard.bool(forKey: "iCloudSyncEnabled") else { return }
+        let query = NSMetadataQuery()
+        query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
+        query.predicate = NSPredicate(format: "%K LIKE '*.json'", NSMetadataItemFSNameKey)
+        NotificationCenter.default.addObserver(self, selector: #selector(metadataQueryDidUpdate),
+                                               name: .NSMetadataQueryDidUpdate, object: query)
+        query.start()
+        metadataQuery = query
+    }
+
+    @objc private func metadataQueryDidUpdate() {
+        DispatchQueue.main.async { self.reload() }
+    }
+
+    // MARK: - Migration
+
+    public func migrateToICloud(progress: @escaping (Double) -> Void) async throws {
+        // Retry up to 5 times — container URL can take a moment to become available
+        var icloudDir: URL?
+        for _ in 0..<10 {
+            icloudDir = await Task.detached(priority: .userInitiated) {
+                return Store.iCloudProjectsDir()
+            }.value
+            if icloudDir != nil { break }
+            try await Task.sleep(nanoseconds: 2_000_000_000) // 2s between retries, 20s total
+        }
+        guard let icloudDir else {
+            throw MigrationError.iCloudUnavailable
+        }
+        try FileManager.default.createDirectory(at: icloudDir, withIntermediateDirectories: true)
+        let localDir = Store.localProjectsDir()
+        let items = try FileManager.default.contentsOfDirectory(at: localDir, includingPropertiesForKeys: nil)
+        for (i, item) in items.enumerated() {
+            let dest = icloudDir.appendingPathComponent(item.lastPathComponent)
+            if !FileManager.default.fileExists(atPath: dest.path) {
+                try FileManager.default.copyItem(at: item, to: dest)
+            }
+            await MainActor.run { progress(Double(i + 1) / Double(items.count)) }
+        }
+    }
+
+    public func migrateToLocal(progress: @escaping (Double) -> Void) async throws {
+        guard let icloudDir = Store.iCloudProjectsDir() else { return }
+        let localDir = Store.localProjectsDir()
+        try FileManager.default.createDirectory(at: localDir, withIntermediateDirectories: true)
+        let items = try FileManager.default.contentsOfDirectory(at: icloudDir, includingPropertiesForKeys: nil)
+        for (i, item) in items.enumerated() {
+            let dest = localDir.appendingPathComponent(item.lastPathComponent)
+            if !FileManager.default.fileExists(atPath: dest.path) {
+                try FileManager.default.copyItem(at: item, to: dest)
+            }
+            await MainActor.run { progress(Double(i + 1) / Double(items.count)) }
+        }
+    }
+
+    public enum MigrationError: LocalizedError {
+        case iCloudUnavailable
+        public var errorDescription: String? {
+            "iCloud Drive is not available. Make sure you are signed in to iCloud and iCloud Drive is enabled."
+        }
+    }
+
+    // MARK: - Legacy migration (global pdfs → per-project)
 
     private func migrateGlobalPDFs() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let globalPDFsDir = appSupport.appendingPathComponent("RelatedWorks/pdfs")
         guard FileManager.default.fileExists(atPath: globalPDFsDir.path) else { return }
-
         var changed = false
         for i in 0 ..< projects.count {
             for j in 0 ..< projects[i].papers.count {
                 let paper = projects[i].papers[j]
                 guard let oldPath = paper.pdfPath else { continue }
                 let oldURL = URL(fileURLWithPath: oldPath)
-                // Already in project folder?
                 if oldPath.contains(projects[i].id.uuidString) { continue }
-                // Migrate
                 let newDir = pdfsDir(for: projects[i].id)
                 try? FileManager.default.createDirectory(at: newDir, withIntermediateDirectories: true)
                 let newURL = newDir.appendingPathComponent("\(paper.id).pdf")

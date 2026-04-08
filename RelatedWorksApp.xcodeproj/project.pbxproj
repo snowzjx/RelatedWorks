@@ -34,6 +34,8 @@
 		IOS003 /* Sources/RelatedWorksIOS/PaperListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */; };
 		IOS004 /* Sources/RelatedWorksIOS/PaperDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */; };
 		IOS005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */; };
+		IOS006_BLD /* Sources/RelatedWorksIOS/IOSProjectImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */; };
+		IOS007_BLD /* Sources/RelatedWorksIOS/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */; };
 		IOS010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
 		IOS011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
 		IOS012 /* Sources/RelatedWorksCore/DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* Sources/RelatedWorksCore/DBLPService.swift */; };
@@ -56,6 +58,27 @@
 		TC016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* Sources/RelatedWorksCore/ArxivService.swift */; };
 		TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
 		TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
+		ZF_BLD_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
+		ZF_BLD_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */; };
+		ZF_BLD_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */; };
+		ZF_BLD_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift */; };
+		ZF_BLD_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift */; };
+		ZF_BLD_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift */; };
+		ZF_BLD_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift */; };
+		ZF_BLD_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift */; };
+		ZF_BLD_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift */; };
+		ZF_BLD_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift */; };
+		ZF_BLD_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */; };
+		ZF_BLD_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */; };
+		ZF_BLD_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift */; };
+		ZF_BLD_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift */; };
+		ZF_BLD_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift */; };
+		ZF_BLD_Entry /* Sources/ZIPFoundation/Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Entry /* Sources/ZIPFoundation/Entry.swift */; };
+		ZF_BLD_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift */; };
+		ZF_BLD_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift */; };
+		ZF_BLD_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */; };
+		ZF_BLD_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */; };
+		ZF_BLD_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,57 +107,37 @@
 		FAPP /* RelatedWorks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOSAPP /* RelatedWorksIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksIOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
-		IF006 /* IOSProjectImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/IOSProjectImporter.swift; sourceTree = SOURCE_ROOT; };
-		ZF_REF_Archive = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Archive.swift; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePBackingConfiguration = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+BackingConfiguration.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Deprecated.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePHelpers = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Helpers.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePMemoryFile = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+MemoryFile.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePProgress = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Progress.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePReading = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Reading.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePReadingDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+ReadingDeprecated.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePWriting = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Writing.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePWritingDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+WritingDeprecated.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_ArchivePZIP64 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+ZIP64.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_DataPCompression = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Data+Compression.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_DataPCompressionDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Data+CompressionDeprecated.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_DataPSerialization = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Data+Serialization.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_DatePZIP = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Date+ZIP.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_Entry = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Entry.swift; sourceTree = SOURCE_ROOT; };
-		ZF_REF_EntryPSerialization = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Entry+Serialization.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_EntryPZIP64 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Entry+ZIP64.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_FileManagerPZIP = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/FileManager+ZIP.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_FileManagerPZIPDeprecated = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_REF_URLPZIP = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/URL+ZIP.swift"; sourceTree = SOURCE_ROOT; };
-		ZF_BLD_Archive = {isa = PBXBuildFile; fileRef = ZF_REF_Archive; };
-		ZF_BLD_ArchivePBackingConfiguration = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration; };
-		ZF_BLD_ArchivePDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated; };
-		ZF_BLD_ArchivePHelpers = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePHelpers; };
-		ZF_BLD_ArchivePMemoryFile = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePMemoryFile; };
-		ZF_BLD_ArchivePProgress = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePProgress; };
-		ZF_BLD_ArchivePReading = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReading; };
-		ZF_BLD_ArchivePReadingDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReadingDeprecated; };
-		ZF_BLD_ArchivePWriting = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWriting; };
-		ZF_BLD_ArchivePWritingDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWritingDeprecated; };
-		ZF_BLD_ArchivePZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64; };
-		ZF_BLD_DataPCompression = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression; };
-		ZF_BLD_DataPCompressionDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompressionDeprecated; };
-		ZF_BLD_DataPSerialization = {isa = PBXBuildFile; fileRef = ZF_REF_DataPSerialization; };
-		ZF_BLD_DatePZIP = {isa = PBXBuildFile; fileRef = ZF_REF_DatePZIP; };
-		ZF_BLD_Entry = {isa = PBXBuildFile; fileRef = ZF_REF_Entry; };
-		ZF_BLD_EntryPSerialization = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPSerialization; };
-		ZF_BLD_EntryPZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPZIP64; };
-		ZF_BLD_FileManagerPZIP = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP; };
-		ZF_BLD_FileManagerPZIPDeprecated = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated; };
-		ZF_BLD_URLPZIP = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP; };
-		IOS006_BLD /* IOSProjectImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF006; };
 		IF001 /* Sources/RelatedWorksIOS/App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/App.swift; sourceTree = SOURCE_ROOT; };
 		IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/ProjectListView.swift; sourceTree = SOURCE_ROOT; };
 		IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/PaperListView.swift; sourceTree = SOURCE_ROOT; };
 		IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/PaperDetailView.swift; sourceTree = SOURCE_ROOT; };
 		IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/AnnotationEditor.swift; sourceTree = SOURCE_ROOT; };
+		IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/IOSProjectImporter.swift; sourceTree = SOURCE_ROOT; };
+		IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/SettingsView.swift; sourceTree = SOURCE_ROOT; };
+		IF008 /* Sources/RelatedWorksIOS/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksIOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = SOURCE_ROOT; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Archive.swift; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+BackingConfiguration.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Deprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Helpers.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+MemoryFile.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Progress.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Reading.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+ReadingDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+Writing.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+WritingDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+ZIP64.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Data+Compression.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Data+CompressionDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Data+Serialization.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Date+ZIP.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_Entry /* Sources/ZIPFoundation/Entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Entry.swift; sourceTree = SOURCE_ROOT; };
+		ZF_REF_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Entry+Serialization.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Entry+ZIP64.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/FileManager+ZIP.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift"; sourceTree = SOURCE_ROOT; };
+		ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/URL+ZIP.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -142,6 +145,28 @@
 			isa = PBXGroup;
 			children = (
 				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
+				IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */,
+				ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */,
+				ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */,
+				ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */,
+				ZF_REF_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift */,
+				ZF_REF_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift */,
+				ZF_REF_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift */,
+				ZF_REF_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift */,
+				ZF_REF_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift */,
+				ZF_REF_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift */,
+				ZF_REF_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift */,
+				ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */,
+				ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */,
+				ZF_REF_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift */,
+				ZF_REF_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift */,
+				ZF_REF_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift */,
+				ZF_REF_Entry /* Sources/ZIPFoundation/Entry.swift */,
+				ZF_REF_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift */,
+				ZF_REF_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift */,
+				ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */,
+				ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */,
+				ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -191,6 +216,8 @@
 				IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */,
 				IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */,
 				IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */,
+				IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */,
+				IF008 /* Sources/RelatedWorksIOS/Info.plist */,
 				FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */,
 			);
 			name = RelatedWorksIOS;
@@ -350,28 +377,29 @@
 				IOS017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				IOS019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 				IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,
-				IOS006_BLD /* IOSProjectImporter.swift in Sources */,
-				ZF_BLD_Archive,
-				ZF_BLD_ArchivePBackingConfiguration,
-				ZF_BLD_ArchivePDeprecated,
-				ZF_BLD_ArchivePHelpers,
-				ZF_BLD_ArchivePMemoryFile,
-				ZF_BLD_ArchivePProgress,
-				ZF_BLD_ArchivePReading,
-				ZF_BLD_ArchivePReadingDeprecated,
-				ZF_BLD_ArchivePWriting,
-				ZF_BLD_ArchivePWritingDeprecated,
-				ZF_BLD_ArchivePZIP64,
-				ZF_BLD_DataPCompression,
-				ZF_BLD_DataPCompressionDeprecated,
-				ZF_BLD_DataPSerialization,
-				ZF_BLD_DatePZIP,
-				ZF_BLD_Entry,
-				ZF_BLD_EntryPSerialization,
-				ZF_BLD_EntryPZIP64,
-				ZF_BLD_FileManagerPZIP,
-				ZF_BLD_FileManagerPZIPDeprecated,
-				ZF_BLD_URLPZIP,
+				IOS006_BLD /* Sources/RelatedWorksIOS/IOSProjectImporter.swift in Sources */,
+				IOS007_BLD /* Sources/RelatedWorksIOS/SettingsView.swift in Sources */,
+				ZF_BLD_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */,
+				ZF_BLD_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */,
+				ZF_BLD_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift in Sources */,
+				ZF_BLD_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift in Sources */,
+				ZF_BLD_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift in Sources */,
+				ZF_BLD_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift in Sources */,
+				ZF_BLD_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift in Sources */,
+				ZF_BLD_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift in Sources */,
+				ZF_BLD_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift in Sources */,
+				ZF_BLD_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift in Sources */,
+				ZF_BLD_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift in Sources */,
+				ZF_BLD_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift in Sources */,
+				ZF_BLD_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift in Sources */,
+				ZF_BLD_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift in Sources */,
+				ZF_BLD_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift in Sources */,
+				ZF_BLD_Entry /* Sources/ZIPFoundation/Entry.swift in Sources */,
+				ZF_BLD_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift in Sources */,
+				ZF_BLD_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift in Sources */,
+				ZF_BLD_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift in Sources */,
+				ZF_BLD_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift in Sources */,
+				ZF_BLD_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,13 +555,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksApp/RelatedWorksApp.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/RelatedWorksApp/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableDescription = RelatedWorks;
@@ -546,6 +574,7 @@
 				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
 				PRODUCT_NAME = RelatedWorks;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -556,10 +585,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksApp/RelatedWorksApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/RelatedWorksApp/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableDescription = RelatedWorks;
@@ -581,9 +613,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/RelatedWorksIOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RelatedWorks;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -596,7 +631,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
 				PRODUCT_NAME = RelatedWorksIOS;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -609,9 +644,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/RelatedWorksIOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RelatedWorks;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -624,7 +662,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
 				PRODUCT_NAME = RelatedWorksIOS;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;

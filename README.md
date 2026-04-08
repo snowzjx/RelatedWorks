@@ -6,7 +6,7 @@
 
 > ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.
 
-A native macOS academic literature manager purpose-built for Computer Science researchers. Streamlines organizing papers, taking interconnected notes, and automatically drafting Related Works sections.
+A native macOS & iOS academic literature manager purpose-built for Computer Science researchers. Streamlines organizing papers, taking interconnected notes, and automatically drafting Related Works sections.
 
 ## Features
 
@@ -21,6 +21,8 @@ A native macOS academic literature manager purpose-built for Computer Science re
 - **Automated Related Works generation** — synthesizes your annotations and metadata into a LaTeX-ready draft via AI
 - **Multiple AI backends** — supports Ollama (local) and Google Gemini; configure per operation
 - **Project export/import** — export a project (papers, PDFs, annotations) as a `.relatedworks` file; import on any machine
+- **iCloud Drive sync** — optionally sync all projects and PDFs across your Mac and iPhone via iCloud Drive
+- **iOS companion app** — full-featured iPhone/iPad app with annotation editing, PDF viewing, and deep link support
 - **Terminal UI (TUI)** — full interactive TUI for keyboard-driven workflow and SSH/headless use
 - **Live search / filter** — search papers by ID, title, authors, venue, year, abstract, or annotation with match highlighting (GUI + TUI)
 - **Deep link support** — every paper and project has a `relatedworks://` URI for integration with tools like Hookmark
@@ -28,10 +30,15 @@ A native macOS academic literature manager purpose-built for Computer Science re
 
 ## Requirements
 
+### macOS App
 - macOS 13+
 - At least one AI backend configured:
   - [Ollama](https://ollama.com) running locally (recommended for privacy), **or**
   - [Google Gemini API key](https://aistudio.google.com/apikey)
+
+### iOS App
+- iOS 17+
+- Same AI backend requirements apply for generation features
 
 ## Usage
 
@@ -64,6 +71,31 @@ BibTeX entries are fetched from DBLP automatically, or generated from metadata w
 ### 7. Export / Import Project
 
 Right-click a project in the sidebar → **Export…** to save a `.relatedworks` file containing all papers, PDFs, annotations and generated output. Use **File → Import Project…** (`⌘⇧I`) to import on any machine.
+
+## iCloud Drive Sync
+
+Enable in **Settings → General → Sync via iCloud Drive** (macOS) or **Settings → iCloud** (iOS).
+
+When enabled, all projects and PDFs are stored in iCloud Drive and synced automatically across your Mac and iPhone. Requires an Apple Developer account with iCloud capability configured.
+
+> **Note:** Enabling or disabling iCloud sync migrates your existing data to/from the iCloud container. A progress indicator is shown during migration.
+
+## iOS App
+
+The iOS companion app provides full read/write access to your literature library on iPhone and iPad.
+
+### Features
+- Browse and search projects and papers
+- Read and edit annotation notes with `@mention` cross-referencing
+- View attached PDFs
+- iCloud Drive sync shared with the macOS app
+- Deep link navigation (`relatedworks://`)
+
+### Building
+
+```bash
+xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS -destination 'generic/platform=iOS' -configuration Release build
+```
 
 ## Terminal UI (TUI)
 
@@ -109,10 +141,16 @@ You can configure different backends for PDF extraction and Related Works genera
 
 ## Building
 
-### GUI (macOS App)
+### macOS App
 
 ```bash
 xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp -configuration Release build
+```
+
+### iOS App
+
+```bash
+xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS -destination 'generic/platform=iOS' -configuration Release build
 ```
 
 ### TUI (Terminal)
@@ -125,11 +163,13 @@ swift build -c release --product RelatedWorks
 
 Open via **RelatedWorksApp → Settings…** (`⌘,`):
 
-- **General** — font size
+- **General** — font size; iCloud Drive sync toggle
 - **Models** — choose backend (Ollama/Gemini/None) and model per operation; edit generation prompt
 - **AI Backends** — configure Ollama URL and Gemini API key; test connections
 
 ## Deep Links
+
+Works on both macOS and iOS:
 
 ```
 relatedworks://open?project=<UUID>
@@ -138,6 +178,8 @@ relatedworks://open?project=<UUID>&paper=<SemanticID>
 
 ## Data Storage
 
-All data is stored in `~/Library/Application Support/RelatedWorks/`:
-- `projects/` — project JSON files
-- `pdfs/` — deduplicated PDF library
+### Local (iCloud sync disabled)
+- `~/Library/Application Support/RelatedWorks/projects/` — project JSON files and per-project PDF folders
+
+### iCloud (iCloud sync enabled)
+- `~/Library/Mobile Documents/iCloud~me~snowzjx~relatedworks/Documents/projects/` — synced across all devices

@@ -26,7 +26,7 @@ struct PaperListView: View {
     var body: some View {
         List {
             ForEach(filteredPapers) { paper in
-                NavigationLink(destination: PaperDetailView(paper: paper, projectID: projectID)) {
+                NavigationLink(value: PaperDestination(paper: paper, projectID: projectID)) {
                     PaperRowView(paper: paper)
                 }
                 .swipeActions(edge: .trailing) {

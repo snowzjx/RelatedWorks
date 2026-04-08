@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PreferencesView: View {
     @ObservedObject private var settings = AppSettings.shared
+    @EnvironmentObject var store: Store
     @State private var tab: Tab = .general
 
     enum Tab { case general, models, backends }
@@ -29,6 +30,10 @@ struct PreferencesView: View {
 
 struct GeneralSettingsView: View {
     @ObservedObject var settings: AppSettings
+    @EnvironmentObject var store: Store
+    @State private var migrationProgress: Double? = nil
+    @State private var migrationLabel = ""
+    @State private var migrationError: String?
 
     var body: some View {
         Form {
@@ -40,8 +45,54 @@ struct GeneralSettingsView: View {
                         .monospacedDigit().foregroundStyle(.secondary).frame(width: 36, alignment: .trailing)
                 }
             } header: { Text("Appearance") }
+
+            Section {
+                Toggle("Sync via iCloud Drive", isOn: Binding(
+                    get: { settings.iCloudSyncEnabled },
+                    set: { newValue in Task { await toggleICloud(newValue) } }
+                ))
+                Text("Stores all projects and PDFs in iCloud Drive, synced across your Mac and iPhone.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let progress = migrationProgress {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(migrationLabel).font(.caption).foregroundStyle(.secondary)
+                        ProgressView(value: progress).progressViewStyle(.linear)
+                    }
+                }
+            } header: { Text("iCloud") }
         }
         .formStyle(.grouped)
+        .alert("Migration Failed", isPresented: Binding(
+            get: { migrationError != nil },
+            set: { if !$0 { migrationError = nil } }
+        )) {
+            Button("OK") { migrationError = nil }
+        } message: { Text(migrationError ?? "") }
+    }
+
+    private func toggleICloud(_ enable: Bool) async {
+        await MainActor.run {
+            migrationProgress = 0
+            migrationLabel = enable ? "Copying to iCloud Drive…" : "Copying to local storage…"
+        }
+        do {
+            if enable {
+                try await store.migrateToICloud { p in Task { @MainActor in migrationProgress = p } }
+            } else {
+                try await store.migrateToLocal { p in Task { @MainActor in migrationProgress = p } }
+            }
+            await MainActor.run {
+                settings.iCloudSyncEnabled = enable
+                migrationProgress = nil
+                store.reload()
+            }
+        } catch {
+            await MainActor.run {
+                migrationProgress = nil
+                migrationError = error.localizedDescription
+            }
+        }
     }
 }
 

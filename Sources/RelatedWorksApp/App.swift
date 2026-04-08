@@ -37,6 +37,7 @@ struct RelatedWorksApp: App {
 
         Settings {
             PreferencesView()
+                .environmentObject(store)
         }
     }
 }
