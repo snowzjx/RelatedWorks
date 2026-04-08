@@ -112,12 +112,10 @@ jobs:
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
           echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
-          echo "Export contents:"
-          ls -la /tmp/appstore_export/
           PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
-          echo "Using pkg: $PKG"
-          xcrun altool --upload-package "$PKG" \
+          echo "Uploading: $PKG"
+          xcrun altool --upload-app \
+            -f "$PKG" \
             --type macos \
             --apiKey "$APPSTORE_API_KEY_ID" \
-            --apiIssuer "$APPSTORE_API_ISSUER_ID" \
-            --show-progress
+            --apiIssuer "$APPSTORE_API_ISSUER_ID"
