@@ -79,12 +79,21 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
         run: |
-          ditto -c -k --keepParent build/RelatedWorks.app build/RelatedWorks.zip
-          xcrun notarytool submit build/RelatedWorks.zip \
+          ditto -c -k --keepParent build/RelatedWorks.app build/RelatedWorks-notarize.zip
+          xcrun notarytool submit build/RelatedWorks-notarize.zip \
             --apple-id "$APPLE_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --team-id "$MACOS_TEAM_ID" \
-            --wait
+            --wait \
+            --output-format json > notary_result.json
+          cat notary_result.json
+          SUBMISSION_ID=$(jq -r '.id' notary_result.json)
+          STATUS=$(jq -r '.status' notary_result.json)
+          xcrun notarytool log "$SUBMISSION_ID" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$MACOS_TEAM_ID" || true
+          if [ "$STATUS" != "Accepted" ]; then exit 1; fi
           xcrun stapler staple build/RelatedWorks.app
 
       - name: Package release
