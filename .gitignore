@@ -10,3 +10,5 @@ DerivedData/
 .build/
 *.xcuserstate
 xcuserdata/
+build/
+build_sandbox/
