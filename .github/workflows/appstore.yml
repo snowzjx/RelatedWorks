@@ -8,12 +8,12 @@ on:
         required: true
 
 jobs:
-  submit:
+  build:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
 
-      - name: Import Distribution certificate
+      - name: Import certificates
         env:
           CERTIFICATE_P12: ${{ secrets.APPSTORE_CERTIFICATE_P12 }}
           CERTIFICATE_PASSWORD: ${{ secrets.APPSTORE_CERTIFICATE_PASSWORD }}
@@ -38,24 +38,7 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksAppStore.provisionprofile
 
-      - name: Build
-        run: |
-          xcodebuild \
-            -project RelatedWorksApp.xcodeproj \
-            -scheme RelatedWorksApp \
-            -configuration Release \
-            -destination 'platform=macOS' \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
-            PROVISIONING_PROFILE_SPECIFIER="RelatedWorksAppStore" \
-            ENABLE_HARDENED_RUNTIME=YES \
-            OTHER_CODE_SIGN_FLAGS="--timestamp" \
-            MARKETING_VERSION="${{ github.event.inputs.version }}" \
-            CONFIGURATION_BUILD_DIR=/tmp/appstore_build \
-            build
-
-      - name: Package for App Store
+      - name: Archive
         run: |
           xcodebuild \
             -project RelatedWorksApp.xcodeproj \
@@ -72,7 +55,7 @@ jobs:
             -archivePath /tmp/RelatedWorks.xcarchive \
             archive
 
-      - name: Export and Package
+      - name: Export
         run: |
           cat > /tmp/ExportOptions.plist << EOF
           <?xml version="1.0" encoding="UTF-8"?>
@@ -104,6 +87,23 @@ jobs:
             -exportPath /tmp/appstore_export \
             -exportOptionsPlist /tmp/ExportOptions.plist
 
+      - name: Upload pkg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appstore-pkg
+          path: /tmp/appstore_export/*.pkg
+          retention-days: 1
+
+  upload:
+    needs: build
+    runs-on: macos-15
+    steps:
+      - name: Download pkg artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: appstore-pkg
+          path: /tmp/appstore_export
+
       - name: Upload to App Store Connect
         env:
           APPSTORE_API_KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
@@ -114,16 +114,6 @@ jobs:
           echo "$APPSTORE_API_KEY_P8" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
           PKG=$(find /tmp/appstore_export -name "*.pkg" | head -1)
           echo "Uploading: $PKG"
-          # Use Xcode 16's altool which works correctly (Xcode 26 altool is broken for pkg upload)
-          ALTOOL=$(find /Applications/Xcode_16*.app -name "altool" 2>/dev/null | head -1)
-          if [ -n "$ALTOOL" ]; then
-            echo "Using altool from: $ALTOOL"
-            "$ALTOOL" --upload-app -f "$PKG" --type macos \
-              --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
-          else
-            echo "Available Xcode versions:"
-            ls /Applications/Xcode*.app 2>/dev/null
-            # Fall back to current altool
-            xcrun altool --upload-app -f "$PKG" --type macos \
-              --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
-          fi
+          xcrun altool --upload-app -f "$PKG" --type macos \
+            --apiKey "$APPSTORE_API_KEY_ID" \
+            --apiIssuer "$APPSTORE_API_ISSUER_ID"
