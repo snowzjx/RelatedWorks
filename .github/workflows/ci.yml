@@ -81,15 +81,23 @@ jobs:
             -scheme RelatedWorksTUI \
             -configuration Release \
             -destination 'platform=macOS' \
-            CODE_SIGN_IDENTITY="Developer ID Application" \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
-            ENABLE_HARDENED_RUNTIME=YES \
-            OTHER_CODE_SIGN_FLAGS="--timestamp" \
-            CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
+          codesign --force --options runtime --timestamp \
+            --entitlements RelatedWorksTUI/RelatedWorksTUI.entitlements \
+            --sign "Developer ID Application" \
+            --provisioning-profile ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile \
+            build/relatedworks-tui
+          # Re-sign with provisioning profile to enable iCloud entitlements
+          codesign --force --options runtime --timestamp \
+            --entitlements RelatedWorksTUI/RelatedWorksTUI.entitlements \
+            --sign "Developer ID Application" \
+            --provisioning-profile ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile \
+            build/relatedworks-tui
 
       - name: Build TUI (unsigned)
         if: "!startsWith(github.ref, 'refs/tags/')"
