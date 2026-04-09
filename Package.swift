@@ -10,7 +10,8 @@ let package = Package(
     targets: [
         .target(
             name: "RelatedWorksCore",
-            path: "Sources/RelatedWorksCore"
+            path: "Sources/RelatedWorksCore",
+            resources: [.process("BlacklistedModels.plist")]
         ),
         .executableTarget(
             name: "RelatedWorksTUI",

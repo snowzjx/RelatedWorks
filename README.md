@@ -64,10 +64,16 @@ xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS \
 
 ```bash
 # Build and run
-swift run RelatedWorks
+swift run RelatedWorksTUI
 
-# Or use the bundled binary
+# Or use the bundled binary from GitHub release
 ./relatedworks-tui
+```
+
+By default the TUI reads from local storage. To use iCloud projects, pass the path manually — this is required because Apple restricts iCloud entitlements to sandboxed app bundles, and the TUI is a command-line tool:
+
+```bash
+./relatedworks-tui --projects-dir ~/Library/Mobile\ Documents/iCloud~me~snowzjx~relatedworks/Documents/projects
 ```
 
 | Key | Action |
@@ -76,7 +82,6 @@ swift run RelatedWorks
 | `Enter` | Select |
 | `/` | Search |
 | `Esc` | Back |
-| `r` | Regenerate (output view) |
 | `Ctrl+D` | Quit |
 
 ## Building
@@ -87,7 +92,7 @@ xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp \
   -configuration Release build
 
 # TUI
-swift build -c release --product RelatedWorks
+swift build -c release --product RelatedWorksTUI
 ```
 
 ## AI Backends

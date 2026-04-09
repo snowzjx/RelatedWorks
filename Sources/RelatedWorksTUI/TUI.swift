@@ -236,15 +236,13 @@ func projectScreen(project: Project) {
     while true {
         let filtered = filterPapers(project.papers, query: filterQuery)
 
-        // Build menu items from filtered papers + Generate action
-        var items: [(String, Bool)] = filtered.map { p in
+        // Build menu items from filtered papers
+        let items: [(String, Bool)] = filtered.map { p in
             let id = cyan("[@\(p.id)]")
             let title = String(p.title.prefix(50))
             let year = dim("(\(p.year ?? 0))")
             return ("\(id)  \(title)  \(year)", false)
         }
-        let hasPapers = !project.papers.isEmpty
-        items.append((yellow("⚡") + " Generate Related Works" + (hasPapers ? "" : dim("  (no papers)")), !hasPapers))
 
         // Clamp selection
         sel = min(sel, items.count - 1)
@@ -321,9 +319,7 @@ func projectScreen(project: Project) {
             while next < items.count && items[next].1 { next += 1 }
             if next < items.count { sel = next }
         case .enter:
-            if sel == filtered.count {
-                generateScreen(project: project)
-            } else {
+            if sel < filtered.count {
                 paperScreen(paper: filtered[sel], project: project)
             }
         case .q, .esc, .ctrlD:
@@ -382,49 +378,6 @@ func paperScreen(paper: Paper, project: Project) {
 }
 
 func generateScreen(project: Project) {
-    var projects = (try? store.loadAll()) ?? []
-    guard let pIdx = projects.firstIndex(where: { $0.id == project.id }) else { return }
-
-    func doGenerate() {
-        cls()
-        let (w, _) = termSize()
-        let bar = String(repeating: "─", count: w - 2)
-        print(bold(cyan("┌\(bar)┐")))
-        print(bold(cyan("│ ")) + pad(bold("Generating Related Works…"), to: w - 4) + bold(cyan(" │")))
-        print(bold(cyan("│ ")) + pad(dim("Calling Ollama, please wait…"), to: w - 4) + bold(cyan(" │")))
-        print(bold(cyan("└\(bar)┘")))
-        fflush(stdout)
-
-        let sema = DispatchSemaphore(value: 0)
-        let box = ResultBox()
-        let projectSnapshot = projects[pIdx]
-        DispatchQueue.global().async {
-            let group = DispatchGroup()
-            group.enter()
-            Task {
-                box.value = await RelatedWorksGenerator.generate(for: projectSnapshot)
-                group.leave()
-            }
-            group.wait()
-            sema.signal()
-        }
-        sema.wait()
-        let result = box.value
-
-        projects[pIdx].generatedLatex = result
-        projects[pIdx].generationModel = AppSettings.shared.generationModel
-        try? store.save(projects[pIdx])
-    }
-
-    if projects[pIdx].generatedLatex == nil { doGenerate() }
-
-    while true {
-        let latex = projects[pIdx].generatedLatex ?? ""
-        let lines = latex.isEmpty ? [red("(no output)")] : latex.components(separatedBy: "\n")
-        let model = projects[pIdx].generationModel.map { "  " + dim("[\($0)]") } ?? ""
-        let key = pagerWithKey(title: yellow("⚡") + " \(project.name)\(model)", lines: lines, showRegenerate: true)
-        if case .r = key { doGenerate() } else { return }
-    }
 }
 
 // MARK: - Main

@@ -155,7 +155,6 @@
 		FTUIPROD /* relatedworks-tui */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "relatedworks-tui"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FTUI /* Sources/RelatedWorksTUI/TUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/TUI.swift; sourceTree = SOURCE_ROOT; };
 		FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/main.swift; sourceTree = SOURCE_ROOT; };
-		FTUI_ENT /* RelatedWorksTUI/RelatedWorksTUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksTUI/RelatedWorksTUI.entitlements; sourceTree = SOURCE_ROOT; };
 		FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.entitlements; sourceTree = SOURCE_ROOT; };
 		FAPP_ENT_AS /* RelatedWorksApp/RelatedWorksApp.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
 		FAPP_INFO /* Sources/RelatedWorksApp/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksApp/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -267,7 +266,6 @@
 			children = (
 				FTUI /* Sources/RelatedWorksTUI/TUI.swift */,
 				FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */,
-				FTUI_ENT /* RelatedWorksApp/RelatedWorksTUI.entitlements */,
 			);
 			name = RelatedWorksTUI;
 			sourceTree = "<group>";
@@ -839,7 +837,6 @@
 		BCTUI001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RelatedWorksTUI/RelatedWorksTUI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -857,7 +854,6 @@
 		BCTUI002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RelatedWorksTUI/RelatedWorksTUI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
