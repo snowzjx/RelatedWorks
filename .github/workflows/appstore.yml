@@ -51,6 +51,7 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="RelatedWorksAppStore" \
             ENABLE_HARDENED_RUNTIME=YES \
             OTHER_CODE_SIGN_FLAGS="--timestamp" \
+            CODE_SIGN_ENTITLEMENTS="RelatedWorksApp/RelatedWorksApp.AppStore.entitlements" \
             MARKETING_VERSION="${{ github.event.inputs.version }}" \
             -archivePath /tmp/RelatedWorks.xcarchive \
             archive
