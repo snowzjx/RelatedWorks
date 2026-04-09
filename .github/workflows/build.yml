@@ -57,10 +57,6 @@ jobs:
             MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
-          echo "=== Entitlements after build ==="
-          codesign -d --entitlements :- build/RelatedWorks.app
-          echo "=== Embedded profile entitlements ==="
-          security cms -D -i build/RelatedWorks.app/Contents/embedded.provisionprofile | grep -A 30 "Entitlements"
 
       - name: Build (unsigned, non-release)
         if: "!startsWith(github.ref, 'refs/tags/')"
@@ -79,6 +75,29 @@ jobs:
       - name: Build TUI
         run: swift build -c release --product RelatedWorks
 
+      - name: Bundle and sign TUI
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          # Wrap TUI in a minimal app bundle so it can hold a provisioning profile
+          mkdir -p build/RelatedWorksTUI.bundle/Contents/MacOS
+          cp .build/release/RelatedWorks build/RelatedWorksTUI.bundle/Contents/MacOS/RelatedWorks
+          cat > build/RelatedWorksTUI.bundle/Contents/Info.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>CFBundleIdentifier</key><string>me.snowzjx.relatedworks</string>
+            <key>CFBundleExecutable</key><string>RelatedWorks</string>
+            <key>CFBundleVersion</key><string>1</string>
+            <key>CFBundleShortVersionString</key><string>1.0</string>
+          </dict></plist>
+          EOF
+          cp ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile \
+            build/RelatedWorksTUI.bundle/Contents/embedded.provisionprofile
+          codesign --force --options runtime --timestamp \
+            --entitlements RelatedWorksApp/RelatedWorksTUI.entitlements \
+            --sign "Developer ID Application" \
+            build/RelatedWorksTUI.bundle
+
       - name: Notarize
         if: startsWith(github.ref, 'refs/tags/')
         env:
@@ -87,28 +106,32 @@ jobs:
           MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
         run: |
           ditto -c -k --keepParent build/RelatedWorks.app build/RelatedWorks-notarize.zip
-          xcrun notarytool submit build/RelatedWorks-notarize.zip \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_PASSWORD" \
-            --team-id "$MACOS_TEAM_ID" \
-            --wait \
-            --output-format json > notary_result.json
-          cat notary_result.json
-          SUBMISSION_ID=$(jq -r '.id' notary_result.json)
-          STATUS=$(jq -r '.status' notary_result.json)
-          xcrun notarytool log "$SUBMISSION_ID" \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_PASSWORD" \
-            --team-id "$MACOS_TEAM_ID" || true
-          if [ "$STATUS" != "Accepted" ]; then exit 1; fi
+          ditto -c -k --keepParent build/RelatedWorksTUI.bundle build/RelatedWorksTUI-notarize.zip
+          for zip in build/RelatedWorks-notarize.zip build/RelatedWorksTUI-notarize.zip; do
+            xcrun notarytool submit "$zip" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_PASSWORD" \
+              --team-id "$MACOS_TEAM_ID" \
+              --wait \
+              --output-format json > notary_result.json
+            cat notary_result.json
+            SUBMISSION_ID=$(jq -r '.id' notary_result.json)
+            STATUS=$(jq -r '.status' notary_result.json)
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_PASSWORD" \
+              --team-id "$MACOS_TEAM_ID" || true
+            if [ "$STATUS" != "Accepted" ]; then exit 1; fi
+          done
           xcrun stapler staple build/RelatedWorks.app
+          xcrun stapler staple build/RelatedWorksTUI.bundle
 
       - name: Package release
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           mkdir -p release
           cp -r build/RelatedWorks.app release/
-          cp .build/release/RelatedWorks release/relatedworks-tui
+          cp build/RelatedWorksTUI.bundle/Contents/MacOS/RelatedWorks release/relatedworks-tui
           zip -r RelatedWorks.zip release/
 
       - name: Create GitHub Release
