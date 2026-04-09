@@ -104,6 +104,17 @@
 		ZF_BLD_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */; };
 		ZF_BLD_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */; };
 		ZF_BLD_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */; };
+		TUI_BLD_TUI = {isa = PBXBuildFile; fileRef = FTUI; };
+		TUI_BLD_Main = {isa = PBXBuildFile; fileRef = FTUI_MAIN; };
+		TUI_BLD_Models = {isa = PBXBuildFile; fileRef = F010; };
+		TUI_BLD_Store = {isa = PBXBuildFile; fileRef = F011; };
+		TUI_BLD_DBLPService = {isa = PBXBuildFile; fileRef = F012; };
+		TUI_BLD_Generator = {isa = PBXBuildFile; fileRef = F013; };
+		TUI_BLD_DeepLink = {isa = PBXBuildFile; fileRef = F015; };
+		TUI_BLD_ArxivService = {isa = PBXBuildFile; fileRef = F016; };
+		TUI_BLD_AppSettings = {isa = PBXBuildFile; fileRef = F017; };
+		TUI_BLD_AIBackend = {isa = PBXBuildFile; fileRef = F019b; };
+		TUI_BLD_ProjectExporter = {isa = PBXBuildFile; fileRef = F021; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -141,6 +152,14 @@
 		IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/SettingsView.swift; sourceTree = SOURCE_ROOT; };
 		IF008 /* Sources/RelatedWorksIOS/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksIOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = SOURCE_ROOT; };
+		FTUIPROD /* relatedworks-tui */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "relatedworks-tui"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FTUI /* Sources/RelatedWorksTUI/TUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/TUI.swift; sourceTree = SOURCE_ROOT; };
+		FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/main.swift; sourceTree = SOURCE_ROOT; };
+		FTUI_ENT /* RelatedWorksTUI/RelatedWorksTUI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksTUI/RelatedWorksTUI.entitlements; sourceTree = SOURCE_ROOT; };
+		FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.entitlements; sourceTree = SOURCE_ROOT; };
+		FAPP_ENT_AS /* RelatedWorksApp/RelatedWorksApp.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
+		FAPP_INFO /* Sources/RelatedWorksApp/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksApp/Info.plist; sourceTree = SOURCE_ROOT; };
+		FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Archive.swift; sourceTree = SOURCE_ROOT; };
 		ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+BackingConfiguration.swift"; sourceTree = SOURCE_ROOT; };
@@ -166,37 +185,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		800ACD0F2F854E5500DC088A /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
-				F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */,
-				IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */,
-				ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */,
-				ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */,
-				ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */,
-				ZF_REF_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift */,
-				ZF_REF_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift */,
-				ZF_REF_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift */,
-				ZF_REF_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift */,
-				ZF_REF_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift */,
-				ZF_REF_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift */,
-				ZF_REF_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift */,
-				ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */,
-				ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */,
-				ZF_REF_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift */,
-				ZF_REF_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift */,
-				ZF_REF_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift */,
-				ZF_REF_Entry /* Sources/ZIPFoundation/Entry.swift */,
-				ZF_REF_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift */,
-				ZF_REF_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift */,
-				ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */,
-				ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */,
-				ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		GAPP /* RelatedWorksApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,11 +197,24 @@
 				F007 /* Sources/RelatedWorksApp/GenerateView.swift */,
 				F008 /* Sources/RelatedWorksApp/AnnotationEditor.swift */,
 				F018 /* Sources/RelatedWorksApp/PreferencesView.swift */,
+				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
+				F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */,
 				FA001 /* Sources/RelatedWorksApp/Assets.xcassets */,
+				GAPP_CONFIG /* Config */,
 			);
 			name = RelatedWorksApp;
 			path = Sources/RelatedWorksApp;
 			sourceTree = SOURCE_ROOT;
+		};
+		GAPP_CONFIG /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */,
+				FAPP_ENT_AS /* RelatedWorksApp/RelatedWorksApp.AppStore.entitlements */,
+				FAPP_INFO /* Sources/RelatedWorksApp/Info.plist */,
+			);
+			name = Config;
+			sourceTree = "<group>";
 		};
 		GCORE /* RelatedWorksCore */ = {
 			isa = PBXGroup;
@@ -242,13 +243,71 @@
 				IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */,
 				IF004 /* Sources/RelatedWorksIOS/PaperDetailView.swift */,
 				IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */,
+				IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */,
 				IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */,
-				IF008 /* Sources/RelatedWorksIOS/Info.plist */,
-				FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */,
 				FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */,
+				FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */,
+				GIOS_CONFIG /* Config */,
 			);
 			name = RelatedWorksIOS;
 			path = Sources/RelatedWorksIOS;
+			sourceTree = SOURCE_ROOT;
+		};
+		GIOS_CONFIG /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */,
+				IF008 /* Sources/RelatedWorksIOS/Info.plist */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		GTUI /* RelatedWorksTUI */ = {
+			isa = PBXGroup;
+			children = (
+				FTUI /* Sources/RelatedWorksTUI/TUI.swift */,
+				FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */,
+				FTUI_ENT /* RelatedWorksApp/RelatedWorksTUI.entitlements */,
+			);
+			name = RelatedWorksTUI;
+			sourceTree = "<group>";
+		};
+		GTEST /* RelatedWorksTests */ = {
+			isa = PBXGroup;
+			children = (
+				TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */,
+			);
+			name = RelatedWorksTests;
+			path = Tests/RelatedWorksTests;
+			sourceTree = SOURCE_ROOT;
+		};
+		GZF /* ZIPFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */,
+				ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */,
+				ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */,
+				ZF_REF_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift */,
+				ZF_REF_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift */,
+				ZF_REF_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift */,
+				ZF_REF_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift */,
+				ZF_REF_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift */,
+				ZF_REF_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift */,
+				ZF_REF_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift */,
+				ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */,
+				ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */,
+				ZF_REF_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift */,
+				ZF_REF_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift */,
+				ZF_REF_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift */,
+				ZF_REF_Entry /* Sources/ZIPFoundation/Entry.swift */,
+				ZF_REF_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift */,
+				ZF_REF_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift */,
+				ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */,
+				ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */,
+				ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */,
+			);
+			name = ZIPFoundation;
+			path = Sources/ZIPFoundation;
 			sourceTree = SOURCE_ROOT;
 		};
 		GPROD /* Products */ = {
@@ -256,6 +315,7 @@
 			children = (
 				FAPP /* RelatedWorks.app */,
 				FIOSAPP /* RelatedWorksIOS.app */,
+				FTUIPROD /* relatedworks-tui */,
 				TPROD /* RelatedWorksTests.xctest */,
 			);
 			name = Products;
@@ -267,20 +327,12 @@
 				GAPP /* RelatedWorksApp */,
 				GIOS /* RelatedWorksIOS */,
 				GCORE /* RelatedWorksCore */,
+				GTUI /* RelatedWorksTUI */,
 				GTEST /* RelatedWorksTests */,
+				GZF /* ZIPFoundation */,
 				GPROD /* Products */,
-				800ACD0F2F854E5500DC088A /* Recovered References */,
 			);
 			sourceTree = "<group>";
-		};
-		GTEST /* RelatedWorksTests */ = {
-			isa = PBXGroup;
-			children = (
-				TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */,
-			);
-			name = RelatedWorksTests;
-			path = Tests/RelatedWorksTests;
-			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -316,6 +368,21 @@
 			productName = RelatedWorksIOS;
 			productReference = FIOSAPP /* RelatedWorksIOS.app */;
 			productType = "com.apple.product-type.application";
+		};
+		TTUI /* RelatedWorksTUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCLTTUI /* Build configuration list for PBXNativeTarget "RelatedWorksTUI" */;
+			buildPhases = (
+				BPTUI /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RelatedWorksTUI;
+			productName = "relatedworks-tui";
+			productReference = FTUIPROD /* relatedworks-tui */;
+			productType = "com.apple.product-type.tool";
 		};
 		TTEST /* RelatedWorksTests */ = {
 			isa = PBXNativeTarget;
@@ -358,6 +425,7 @@
 			targets = (
 				TAPP /* RelatedWorksApp */,
 				TIOS /* RelatedWorksIOS */,
+				TTUI /* RelatedWorksTUI */,
 				TTEST /* RelatedWorksTests */,
 			);
 		};
@@ -493,6 +561,24 @@
 				TC016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
 				TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPTUI /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				TUI_BLD_Main,
+				TUI_BLD_TUI,
+				TUI_BLD_Models,
+				TUI_BLD_Store,
+				TUI_BLD_DBLPService,
+				TUI_BLD_Generator,
+				TUI_BLD_DeepLink,
+				TUI_BLD_ArxivService,
+				TUI_BLD_AppSettings,
+				TUI_BLD_AIBackend,
+				TUI_BLD_ProjectExporter,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,7 +749,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.entitlements;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = A47Y4XPLXR;
@@ -694,7 +780,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.entitlements;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = A47Y4XPLXR;
@@ -750,6 +836,44 @@
 			};
 			name = Release;
 		};
+		BCTUI001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksTUI/RelatedWorksTUI.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.tui;
+				PRODUCT_NAME = "relatedworks-tui";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BCTUI002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksTUI/RelatedWorksTUI.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.tui;
+				PRODUCT_NAME = "relatedworks-tui";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -785,6 +909,15 @@
 			buildConfigurations = (
 				BC001 /* Debug */,
 				BC002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCLTTUI /* Build configuration list for PBXNativeTarget "RelatedWorksTUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCTUI001 /* Debug */,
+				BCTUI002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -12,3 +12,5 @@ DerivedData/
 xcuserdata/
 build/
 build_sandbox/
+build_tui/
+build_local/

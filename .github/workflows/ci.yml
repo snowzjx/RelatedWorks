@@ -1,4 +1,4 @@
-name: Build
+name: CI
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile
 
-      - name: Build (signed)
+      - name: Build macOS app (signed)
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
@@ -58,7 +58,7 @@ jobs:
             CONFIGURATION_BUILD_DIR=build \
             build
 
-      - name: Build (unsigned, non-release)
+      - name: Build macOS app (unsigned)
         if: "!startsWith(github.ref, 'refs/tags/')"
         run: |
           xcodebuild \
@@ -72,82 +72,33 @@ jobs:
             CONFIGURATION_BUILD_DIR=build \
             build
 
-      - name: Build TUI
-        run: swift build -c release --product RelatedWorks
-
-      - name: Bundle and sign TUI
+      - name: Build TUI (signed)
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          # Wrap TUI in a minimal app bundle so it can hold a provisioning profile
-          mkdir -p build/RelatedWorksTUI.bundle/Contents/MacOS
-          cp .build/release/RelatedWorks build/RelatedWorksTUI.bundle/Contents/MacOS/RelatedWorks
-          cat > build/RelatedWorksTUI.bundle/Contents/Info.plist << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0"><dict>
-            <key>CFBundleIdentifier</key><string>me.snowzjx.relatedworks</string>
-            <key>CFBundleExecutable</key><string>RelatedWorks</string>
-            <key>CFBundleVersion</key><string>1</string>
-            <key>CFBundleShortVersionString</key><string>1.0</string>
-          </dict></plist>
-          EOF
-          cp ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile \
-            build/RelatedWorksTUI.bundle/Contents/embedded.provisionprofile
-          codesign --force --options runtime --timestamp \
-            --entitlements RelatedWorksApp/RelatedWorksTUI.entitlements \
-            --sign "Developer ID Application" \
-            build/RelatedWorksTUI.bundle
+          VERSION="${GITHUB_REF_NAME#v}"
+          xcodebuild \
+            -project RelatedWorksApp.xcodeproj \
+            -scheme RelatedWorksTUI \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
+            PROVISIONING_PROFILE_SPECIFIER="RelatedWorks" \
+            ENABLE_HARDENED_RUNTIME=YES \
+            OTHER_CODE_SIGN_FLAGS="--timestamp" \
+            CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
+            MARKETING_VERSION="$VERSION" \
+            CONFIGURATION_BUILD_DIR=build \
+            build
 
-      - name: Notarize
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
-          MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
+      - name: Build TUI (unsigned)
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        run: swift build -c release --product RelatedWorksTUI
+
+      - name: Build iOS (unsigned, CI check only)
+        if: "!startsWith(github.ref, 'refs/tags/')"
         run: |
-          ditto -c -k --keepParent build/RelatedWorks.app build/RelatedWorks-notarize.zip
-          ditto -c -k --keepParent build/RelatedWorksTUI.bundle build/RelatedWorksTUI-notarize.zip
-          for zip in build/RelatedWorks-notarize.zip build/RelatedWorksTUI-notarize.zip; do
-            xcrun notarytool submit "$zip" \
-              --apple-id "$APPLE_ID" \
-              --password "$APPLE_APP_PASSWORD" \
-              --team-id "$MACOS_TEAM_ID" \
-              --wait \
-              --output-format json > notary_result.json
-            cat notary_result.json
-            SUBMISSION_ID=$(jq -r '.id' notary_result.json)
-            STATUS=$(jq -r '.status' notary_result.json)
-            xcrun notarytool log "$SUBMISSION_ID" \
-              --apple-id "$APPLE_ID" \
-              --password "$APPLE_APP_PASSWORD" \
-              --team-id "$MACOS_TEAM_ID" || true
-            if [ "$STATUS" != "Accepted" ]; then exit 1; fi
-          done
-          xcrun stapler staple build/RelatedWorks.app
-          xcrun stapler staple build/RelatedWorksTUI.bundle
-
-      - name: Package release
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          mkdir -p release
-          cp -r build/RelatedWorks.app release/
-          cp build/RelatedWorksTUI.bundle/Contents/MacOS/RelatedWorks release/relatedworks-tui
-          zip -r RelatedWorks.zip release/
-
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: RelatedWorks.zip
-
-  build-ios:
-    runs-on: macos-26
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build iOS
-        run: |
-          VERSION=$( [[ "${GITHUB_REF_NAME}" == v* ]] && echo "${GITHUB_REF_NAME#v}" || echo "0.0.0" )
           xcodebuild \
             -project RelatedWorksApp.xcodeproj \
             -scheme RelatedWorksIOS \
@@ -156,5 +107,60 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            MARKETING_VERSION="$VERSION" \
             build
+
+      - name: Notarize
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
+        run: |
+          # Notarize app
+          ditto -c -k --keepParent build/RelatedWorks.app build/RelatedWorks-notarize.zip
+          xcrun notarytool submit build/RelatedWorks-notarize.zip \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$MACOS_TEAM_ID" \
+            --wait \
+            --output-format json > notary_result.json
+          cat notary_result.json
+          SUBMISSION_ID=$(jq -r '.id' notary_result.json)
+          STATUS=$(jq -r '.status' notary_result.json)
+          xcrun notarytool log "$SUBMISSION_ID" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$MACOS_TEAM_ID" || true
+          if [ "$STATUS" != "Accepted" ]; then exit 1; fi
+          xcrun stapler staple build/RelatedWorks.app
+          # Notarize TUI
+          zip -j build/relatedworks-tui-notarize.zip build/relatedworks-tui
+          xcrun notarytool submit build/relatedworks-tui-notarize.zip \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$MACOS_TEAM_ID" \
+            --wait \
+            --output-format json > notary_tui_result.json
+          cat notary_tui_result.json
+          TUI_SUBMISSION_ID=$(jq -r '.id' notary_tui_result.json)
+          TUI_STATUS=$(jq -r '.status' notary_tui_result.json)
+          xcrun notarytool log "$TUI_SUBMISSION_ID" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --team-id "$MACOS_TEAM_ID" || true
+          if [ "$TUI_STATUS" != "Accepted" ]; then exit 1; fi
+          xcrun stapler staple build/relatedworks-tui
+
+      - name: Package release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          mkdir -p release
+          cp -r build/RelatedWorks.app release/
+          cp build/relatedworks-tui release/relatedworks-tui
+          zip -r RelatedWorks.zip release/
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RelatedWorks.zip

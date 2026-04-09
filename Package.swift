@@ -13,9 +13,9 @@ let package = Package(
             path: "Sources/RelatedWorksCore"
         ),
         .executableTarget(
-            name: "RelatedWorks",
+            name: "RelatedWorksTUI",
             dependencies: ["RelatedWorksCore"],
-            path: "Sources/RelatedWorks",
+            path: "Sources/RelatedWorksTUI",
             exclude: []
         ),
         .testTarget(

@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(RelatedWorksCore)
 import RelatedWorksCore
+#endif
 
 // MARK: - Terminal
 
@@ -197,8 +199,7 @@ func projectListScreen(projects: [Project]) {
         if projects.isEmpty {
             pager(title: "RelatedWorks", lines: [
                 yellow("No projects found."), "",
-                "Create one with:",
-                dim("  relatedworks project:create <name>")
+                "Create a project in the macOS app first."
             ])
             return
         }
@@ -428,9 +429,3 @@ func generateScreen(project: Project) {
 
 // MARK: - Main
 
-enableRaw()
-defer { disableRaw(); cls() }
-
-let store = Store()
-let projects = (try? store.loadAll()) ?? []
-projectListScreen(projects: projects)
