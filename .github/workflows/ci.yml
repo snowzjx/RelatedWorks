@@ -148,7 +148,6 @@ jobs:
             --password "$APPLE_APP_PASSWORD" \
             --team-id "$MACOS_TEAM_ID" || true
           if [ "$TUI_STATUS" != "Accepted" ]; then exit 1; fi
-          xcrun stapler staple build/relatedworks-tui
 
       - name: Package release
         if: startsWith(github.ref, 'refs/tags/')
