@@ -53,17 +53,14 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="RelatedWorks" \
             ENABLE_HARDENED_RUNTIME=YES \
             OTHER_CODE_SIGN_FLAGS="--timestamp" \
+            CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
             MARKETING_VERSION="$VERSION" \
             CONFIGURATION_BUILD_DIR=build \
             build
-          # Re-sign to strip get-task-allow entitlement injected by xcodebuild
-          # Copy provisioning profile first so iCloud entitlements remain valid
-          cp ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksApp.provisionprofile \
-            build/RelatedWorks.app/Contents/embedded.provisionprofile
-          codesign --force --options runtime --timestamp \
-            --entitlements RelatedWorksApp/RelatedWorksApp.entitlements \
-            --sign "Developer ID Application" \
-            build/RelatedWorks.app
+          echo "=== Entitlements after build ==="
+          codesign -d --entitlements :- build/RelatedWorks.app
+          echo "=== Embedded profile entitlements ==="
+          security cms -D -i build/RelatedWorks.app/Contents/embedded.provisionprofile | grep -A 30 "Entitlements"
 
       - name: Build (unsigned, non-release)
         if: "!startsWith(github.ref, 'refs/tags/')"
