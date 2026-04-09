@@ -71,6 +71,8 @@
 		IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
 		IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */; };
+		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
+		FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sources/RelatedWorksIOS/SampleProject.relatedworks; sourceTree = SOURCE_ROOT; };
 		T001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */; };
 		TC010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
 		TC011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
@@ -242,6 +244,7 @@
 				IF005 /* Sources/RelatedWorksIOS/AnnotationEditor.swift */,
 				IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */,
 				IF008 /* Sources/RelatedWorksIOS/Info.plist */,
+				FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */,
 				FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */,
 			);
 			name = RelatedWorksIOS;
@@ -367,6 +370,7 @@
 			files = (
 				IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
 				IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */,
+				IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -10,6 +10,16 @@ struct RelatedWorksIOSApp: App {
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
             _ = Store.iCloudProjectsDir()
         }
+        importSampleProjectIfNeeded()
+    }
+
+    private func importSampleProjectIfNeeded() {
+        let key = "sampleProjectImported"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(true, forKey: key)
+        guard store.projects.isEmpty,
+              let url = Bundle.main.url(forResource: "SampleProject", withExtension: "relatedworks") else { return }
+        _ = try? IOSProjectImporter.import(from: url, into: store)
     }
 
     var body: some Scene {
