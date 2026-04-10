@@ -207,8 +207,8 @@
     <img src="icon.png" alt="RelatedWorks icon" class="icon"/>
     <h1>RelatedWorks</h1>
     <p class="tagline">
-      A native macOS literature manager for CS researchers.<br/>
-      Organize papers, annotate with cross-references, and generate<br/>
+      A native macOS &amp; iOS academic literature manager for Computer Science researchers.<br/>
+      Organize papers, take interconnected notes, and automatically draft<br/>
       Related Works sections — powered by local or cloud AI.
     </p>
 
@@ -237,65 +237,6 @@
       Build from source: macOS 13+ / iOS 17+. Use <a href="https://ollama.com" target="_blank">Ollama</a> locally
       or a <a href="https://aistudio.google.com/apikey" target="_blank">Gemini API key</a>.
     </p>
-  </div>
-
-  <div class="screenshots-card">
-    <h2>💻 Graphical UI</h2>
-    <div class="screenshot-item">
-      <img src="screenshot-main.png" alt="Main interface with paper list, annotations, and cross-references"/>
-      <p>Paper detail view — annotations with <code>@cross-reference</code> linking and live cross-reference navigation</p>
-    </div>
-    <div class="screenshot-item">
-      <img src="screenshot-pdf-import.png" alt="PDF import with AI metadata extraction"/>
-      <p>Drop a PDF — AI extracts title, authors, abstract, and suggests a semantic ID automatically</p>
-    </div>
-    <div class="screenshot-item">
-      <img src="screenshot-generate.png" alt="Generated Related Works section in LaTeX"/>
-      <p>One-click Related Works generation — LaTeX-ready output synthesized from your annotations</p>
-    </div>
-    <div class="screenshot-item">
-      <img src="screenshot-bibtex.png" alt="BibTeX export view"/>
-      <p>BibTeX export — fetched from DBLP or auto-generated, ready to paste into your <code>.bib</code> file</p>
-    </div>
-  </div>
-
-  <div class="tui-card">
-    <h2>🖥 Terminal UI</h2>
-    <p>RelatedWorks ships a full interactive TUI — perfect for keyboard-driven workflows, SSH sessions, or when you prefer staying in the terminal. The TUI shares all data with the GUI in real time.</p>
-
-    <div class="terminal"><pre>
-<span class="prompt">$</span> <span class="cmd">./relatedworks-tui</span>   <span class="dim"># bundled in release zip</span>
-<span class="dim"># For iCloud projects (Apple restricts iCloud to sandboxed apps):</span>
-<span class="prompt">$</span> <span class="cmd">./relatedworks-tui --projects-dir ~/Library/Mobile\ Documents/iCloud~me~snowzjx~relatedworks/Documents/projects</span>
-
-<span class="box">┌──────────────────────────────────────────────────┐</span>
-<span class="box">│ </span><b>RelatedWorks — Projects</b><span class="box">                          │</span>
-<span class="box">├──────────────────────────────────────────────────┤</span>
-<span class="box">│</span><span class="sel"> › [a1b2c3d4]  My Survey Paper  (5 papers)        </span><span class="box">│</span>
-<span class="box">│</span>   <span class="dim">[e5f6a7b8]</span>  <b>LLM Efficiency Study</b>  <span class="green">3 papers</span>     <span class="box">│</span>
-<span class="box">├──────────────────────────────────────────────────┤</span>
-<span class="box">│ </span><span class="dim">↑↓ navigate  Enter select  q quit                </span><span class="box">│</span>
-<span class="box">└──────────────────────────────────────────────────┘</span>
-
-<span class="dim"># Press / to search papers live inside a project</span>
-
-<span class="box">┌──────────────────────────────────────────────────┐</span>
-<span class="box">│ </span>My Survey Paper  <span class="green">[/bert_]</span><span class="box">                        │</span>
-<span class="box">├──────────────────────────────────────────────────┤</span>
-<span class="box">│</span><span class="sel"> › [@BERT]  BERT: Pre-training of Deep...  (2019) </span><span class="box">│</span>
-<span class="box">│</span>   <span class="dim">[@RoBERTa]</span>  RoBERTa: A Robustly Optimized…     <span class="box">│</span>
-<span class="box">├──────────────────────────────────────────────────┤</span>
-<span class="box">│ </span><span class="dim">type to filter  Esc clear  Enter/↑↓ navigate     </span><span class="box">│</span>
-<span class="box">└──────────────────────────────────────────────────┘</span>
-</pre></div>
-
-    <div class="keys">
-      <span class="key">↑ ↓</span> navigate/scroll
-      <span class="key">Enter</span> select / navigate cross-refs
-      <span class="key">/</span> live search
-      <span class="key">q</span> back
-      <span class="key">Ctrl+D</span> quit
-    </div>
   </div>
 
   <footer>© 2026 RelatedWorks · MIT License</footer>
