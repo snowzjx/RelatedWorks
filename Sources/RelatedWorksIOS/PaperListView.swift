@@ -54,8 +54,9 @@ struct PaperListView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button { 
-                    editName = project?.name ?? ""
-                    editDescription = project?.description ?? ""
+                    guard let proj = project else { return }
+                    editName = proj.name
+                    editDescription = proj.description
                     showRename = true
                 } label: {
                     Image(systemName: "pencil")
@@ -67,8 +68,8 @@ struct PaperListView: View {
                 Form {
                     TextField("Name", text: $editName)
                     Section("Description") {
-                        TextEditor(text: $editDescription)
-                            .frame(minHeight: 100)
+                        TextField("Description", text: $editDescription, axis: .vertical)
+                            .lineLimit(3...6)
                     }
                 }
                 .navigationTitle("Edit Project")
@@ -85,8 +86,8 @@ struct PaperListView: View {
                             try? store.save(proj)
                             showRename = false
                         }
-                        .disabled(editName.trimmingCharacters(in: .whitespaces).isEmpty)
-                    }
+                        .disabled(editName.trimmingCharacters(in: .whitespaces).isEmpty ||
+                                  (editName == project?.name && editDescription == project?.description))                    }
                 }
             }
             .presentationDetents([.medium])
