@@ -42,6 +42,12 @@ struct ProjectSidebar: View {
         }
         .toolbar {
             ToolbarItem {
+                Button(action: { importProject() }) {
+                    Label("Import Project", systemImage: "square.and.arrow.down")
+                }
+                .help("Import Project (⌘⇧I)")
+            }
+            ToolbarItem {
                 Button(action: { showingNewProject = true }) {
                     Label("New Project", systemImage: "plus")
                 }
@@ -65,12 +71,15 @@ struct ProjectSidebar: View {
         }
         .overlay {
             if store.projects.isEmpty {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
                     Text("No projects yet")
                         .foregroundStyle(.secondary)
                         .font(.subheadline)
                     Button("New Project") { showingNewProject = true }
                         .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    Button("Import Project…") { importProject() }
+                        .buttonStyle(.bordered)
                         .controlSize(.small)
                 }
             }
