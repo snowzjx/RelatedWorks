@@ -25,7 +25,6 @@ public class Store: ObservableObject {
         }
         try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
         projects = (try? loadAll()) ?? []
-        migrateGlobalPDFs()
         startMetadataQuery()
     }
 
@@ -59,15 +58,19 @@ public class Store: ObservableObject {
         projectsDir.appendingPathComponent("\(projectID.uuidString)/pdfs", isDirectory: true)
     }
 
+    public func pdfURL(for paperID: String, projectID: UUID) -> URL {
+        pdfsDir(for: projectID).appendingPathComponent("\(paperID).pdf")
+    }
+
     @discardableResult
-    public func registerPDF(at sourceURL: URL, forID id: String, projectID: UUID) throws -> String {
+    public func registerPDF(at sourceURL: URL, forID id: String, projectID: UUID) throws -> URL {
         let dir = pdfsDir(for: projectID)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let dest = dir.appendingPathComponent("\(id).pdf")
         if !FileManager.default.fileExists(atPath: dest.path) {
             try FileManager.default.copyItem(at: sourceURL, to: dest)
         }
-        return dest.path
+        return dest
     }
 
     public func cleanupPDF(paperID: String, projectID: UUID) {
@@ -88,10 +91,9 @@ public class Store: ObservableObject {
     public func existingID(forPDFAt url: URL, title: String? = nil) -> String? {
         if let hash = sha256(url) {
             for project in projects {
-                for paper in project.papers {
-                    if let path = paper.pdfPath, let h = sha256(URL(fileURLWithPath: path)), h == hash {
-                        return paper.id
-                    }
+                for paper in project.papers where paper.hasPDF {
+                    let paperURL = pdfURL(for: paper.id, projectID: project.id)
+                    if let h = sha256(paperURL), h == hash { return paper.id }
                 }
             }
         }
@@ -224,34 +226,6 @@ public class Store: ObservableObject {
         case iCloudUnavailable
         public var errorDescription: String? {
             "iCloud Drive is not available. Make sure you are signed in to iCloud and iCloud Drive is enabled."
-        }
-    }
-
-    // MARK: - Legacy migration (global pdfs → per-project)
-
-    private func migrateGlobalPDFs() {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let globalPDFsDir = appSupport.appendingPathComponent("RelatedWorks/pdfs")
-        guard FileManager.default.fileExists(atPath: globalPDFsDir.path) else { return }
-        var changed = false
-        for i in 0 ..< projects.count {
-            for j in 0 ..< projects[i].papers.count {
-                let paper = projects[i].papers[j]
-                guard let oldPath = paper.pdfPath else { continue }
-                let oldURL = URL(fileURLWithPath: oldPath)
-                if oldPath.contains(projects[i].id.uuidString) { continue }
-                let newDir = pdfsDir(for: projects[i].id)
-                try? FileManager.default.createDirectory(at: newDir, withIntermediateDirectories: true)
-                let newURL = newDir.appendingPathComponent("\(paper.id).pdf")
-                if FileManager.default.fileExists(atPath: oldURL.path) && !FileManager.default.fileExists(atPath: newURL.path) {
-                    try? FileManager.default.copyItem(at: oldURL, to: newURL)
-                }
-                if FileManager.default.fileExists(atPath: newURL.path) {
-                    projects[i].papers[j].pdfPath = newURL.path
-                    changed = true
-                }
-            }
-            if changed { try? save(projects[i]) }
         }
     }
 

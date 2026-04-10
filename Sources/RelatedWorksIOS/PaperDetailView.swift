@@ -35,15 +35,10 @@ struct PaperDetailView: View {
     var crossRefs: [Paper] { project?.crossReferences(for: paper.id) ?? [] }
     var otherPaperIDs: [String] { project?.papers.filter { $0.id != paper.id }.map(\.id) ?? [] }
 
-    /// Resolves the PDF path dynamically — handles cases where the stored absolute path
-    /// is stale (e.g. after simulator reset) by looking up the file in the current pdfs dir.
     var resolvedPDFURL: URL? {
-        guard let path = paper.pdfPath else { return nil }
-        let stored = URL(fileURLWithPath: path)
-        if FileManager.default.fileExists(atPath: stored.path) { return stored }
-        // Fall back: look in current pdfs dir by paper ID
-        let fallback = store.pdfsDir(for: projectID).appendingPathComponent("\(paper.id).pdf")
-        return FileManager.default.fileExists(atPath: fallback.path) ? fallback : nil
+        guard paper.hasPDF else { return nil }
+        let url = store.pdfURL(for: paper.id, projectID: projectID)
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 
     var body: some View {
@@ -73,7 +68,7 @@ struct PaperDetailView: View {
                                     TagChip("DBLP ↗", color: .green)
                                 }
                             }
-                            if paper.pdfPath != nil {
+                            if paper.hasPDF {
                                 Button {
                                     pdfURL = resolvedPDFURL
                                 } label: {

@@ -152,7 +152,7 @@ struct PaperRow: View {
                 if !paper.annotation.isEmpty {
                     Image(systemName: "note.text").font(.caption2).foregroundStyle(.secondary)
                 }
-                if paper.pdfPath != nil {
+                if paper.hasPDF {
                     Image(systemName: "doc.fill").font(.caption2).foregroundStyle(.red.opacity(0.7))
                 }
             }

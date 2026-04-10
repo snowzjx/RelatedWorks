@@ -10,7 +10,7 @@ public struct Paper: Codable, Identifiable, Hashable {
     public var venue: String?
     public var dblpKey: String?
     public var abstract: String?
-    public var pdfPath: String?
+    public var hasPDF: Bool
     public var annotation: String
     public var addedAt: Date
 
@@ -22,7 +22,45 @@ public struct Paper: Codable, Identifiable, Hashable {
         self.year = year
         self.venue = venue
         self.annotation = annotation
+        self.hasPDF = false
         self.addedAt = Date()
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        title = try c.decode(String.self, forKey: .title)
+        authors = try c.decodeIfPresent([String].self, forKey: .authors) ?? []
+        year = try c.decodeIfPresent(Int.self, forKey: .year)
+        venue = try c.decodeIfPresent(String.self, forKey: .venue)
+        dblpKey = try c.decodeIfPresent(String.self, forKey: .dblpKey)
+        abstract = try c.decodeIfPresent(String.self, forKey: .abstract)
+        annotation = try c.decodeIfPresent(String.self, forKey: .annotation) ?? ""
+        addedAt = try c.decodeIfPresent(Date.self, forKey: .addedAt) ?? Date()
+        // Migrate from old pdfPath field
+        if let hasPDF = try c.decodeIfPresent(Bool.self, forKey: .hasPDF) {
+            self.hasPDF = hasPDF
+        } else {
+            self.hasPDF = (try c.decodeIfPresent(String.self, forKey: .pdfPath)) != nil
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, authors, year, venue, dblpKey, abstract, hasPDF, pdfPath, annotation, addedAt
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(title, forKey: .title)
+        try c.encode(authors, forKey: .authors)
+        try c.encodeIfPresent(year, forKey: .year)
+        try c.encodeIfPresent(venue, forKey: .venue)
+        try c.encodeIfPresent(dblpKey, forKey: .dblpKey)
+        try c.encodeIfPresent(abstract, forKey: .abstract)
+        try c.encode(hasPDF, forKey: .hasPDF)
+        try c.encode(annotation, forKey: .annotation)
+        try c.encode(addedAt, forKey: .addedAt)
     }
 }
 

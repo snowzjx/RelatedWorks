@@ -32,9 +32,9 @@ struct IOSProjectImporter {
             let dst = dstPDFs.appendingPathComponent("\(project.papers[i].id).pdf")
             if fm.fileExists(atPath: src.path) {
                 try? fm.copyItem(at: src, to: dst)
-                project.papers[i].pdfPath = dst.path
+                project.papers[i].hasPDF = true
             } else {
-                project.papers[i].pdfPath = nil
+                project.papers[i].hasPDF = false
             }
         }
 

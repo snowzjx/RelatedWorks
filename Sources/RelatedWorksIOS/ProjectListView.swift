@@ -132,14 +132,13 @@ struct ProjectListView: View {
         }
         .navigationTitle("Projects")
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .bottomBar) {
+                Button { showSettings = true } label: {
+                    Label("Settings", systemImage: "gear")
+                }
+                Spacer()
                 Button { showImporter = true } label: {
                     Label("Import", systemImage: "tray.and.arrow.down")
-                }
-            }
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button { showSettings = true } label: {
-                    Image(systemName: "gear")
                 }
             }
         }

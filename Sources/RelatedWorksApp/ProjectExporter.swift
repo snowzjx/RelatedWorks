@@ -12,12 +12,10 @@ struct ProjectExporter {
         let data = try JSONEncoder().encode(project)
         try data.write(to: bundleDir.appendingPathComponent("project.json"))
 
-        for paper in project.papers {
-            if let path = paper.pdfPath {
-                let src = URL(fileURLWithPath: path)
-                let dst = bundlePDFs.appendingPathComponent("\(paper.id).pdf")
-                if fm.fileExists(atPath: src.path) { try? fm.copyItem(at: src, to: dst) }
-            }
+        for paper in project.papers where paper.hasPDF {
+            let src = pdfsDir.appendingPathComponent("\(paper.id).pdf")
+            let dst = bundlePDFs.appendingPathComponent("\(paper.id).pdf")
+            if fm.fileExists(atPath: src.path) { try? fm.copyItem(at: src, to: dst) }
         }
 
         if fm.fileExists(atPath: destination.path) { try fm.removeItem(at: destination) }
@@ -51,9 +49,9 @@ struct ProjectExporter {
             let dst = dstPDFs.appendingPathComponent("\(project.papers[i].id).pdf")
             if fm.fileExists(atPath: src.path) {
                 try? fm.copyItem(at: src, to: dst)
-                project.papers[i].pdfPath = dst.path
+                project.papers[i].hasPDF = true
             } else {
-                project.papers[i].pdfPath = nil
+                project.papers[i].hasPDF = false
             }
         }
 
@@ -64,10 +62,5 @@ struct ProjectExporter {
     enum ImportError: LocalizedError {
         case invalidBundle
         var errorDescription: String? { "Invalid .relatedworks file" }
-    }
-
-    enum ExportError: LocalizedError {
-        case zipFailed
-        var errorDescription: String? { "Failed to create zip archive" }
     }
 }

@@ -30,11 +30,9 @@ struct PaperDetailView: View {
     var otherPaperIDs: [String] { project.papers.filter { $0.id != paper.id }.map(\.id) }
 
     var resolvedPDFURL: URL? {
-        guard let path = paper.pdfPath else { return nil }
-        let stored = URL(fileURLWithPath: path)
-        if FileManager.default.fileExists(atPath: stored.path) { return stored }
-        let fallback = store.pdfsDir(for: project.id).appendingPathComponent("\(paper.id).pdf")
-        return FileManager.default.fileExists(atPath: fallback.path) ? fallback : nil
+        guard paper.hasPDF else { return nil }
+        let url = store.pdfURL(for: paper.id, projectID: project.id)
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 
     var body: some View {
@@ -65,7 +63,7 @@ struct PaperDetailView: View {
                     }
 
                     HStack(spacing: 8) {
-                        if paper.pdfPath != nil {
+                        if paper.hasPDF {
                             Button {
                                 let resolved = resolvedPDFURL
                                 if let url = resolved { NSWorkspace.shared.open(url) }
@@ -181,8 +179,8 @@ struct PaperDetailView: View {
         panel.allowedContentTypes = [.pdf]
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let url = panel.url else { return }
-        if let stored = try? store.registerPDF(at: url, forID: paper.id, projectID: project.id) {
-            paper.pdfPath = stored
+        if (try? store.registerPDF(at: url, forID: paper.id, projectID: project.id)) != nil {
+            paper.hasPDF = true
             try? store.save(project)
         }
     }

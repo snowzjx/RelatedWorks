@@ -339,8 +339,10 @@ struct AddPaperSheet: View {
             paper.abstract = meta?.abstract
         }
 
-        if let url = pdfURL, let stored = try? store.registerPDF(at: url, forID: id, projectID: project.id) {
-            paper.pdfPath = stored
+        if let url = pdfURL {
+            if (try? store.registerPDF(at: url, forID: id, projectID: project.id)) != nil {
+                paper.hasPDF = true
+            }
         }
 
         project.addPaper(paper)
