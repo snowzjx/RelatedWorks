@@ -30,6 +30,8 @@ struct RelatedWorksApp: App {
                     NotificationCenter.default.post(name: .importProject, object: nil)
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
+
+                ExportMenuButton()
             }
             CommandGroup(replacing: .help) {
                 Button("RelatedWorks Help") {
@@ -46,8 +48,32 @@ struct RelatedWorksApp: App {
     }
 }
 
+// Focused value for selected project
+struct SelectedProjectKey: FocusedValueKey {
+    typealias Value = UUID
+}
+
+extension FocusedValues {
+    var selectedProjectID: UUID? {
+        get { self[SelectedProjectKey.self] }
+        set { self[SelectedProjectKey.self] = newValue }
+    }
+}
+
+struct ExportMenuButton: View {
+    @FocusedValue(\.selectedProjectID) var selectedProjectID
+    var body: some View {
+        Button("Export Project…") {
+            NotificationCenter.default.post(name: .exportProject, object: nil)
+        }
+        .keyboardShortcut("e", modifiers: .command)
+        .disabled(selectedProjectID == nil)
+    }
+}
+
 extension Notification.Name {
     static let importProject = Notification.Name("importProject")
+    static let exportProject = Notification.Name("exportProject")
     static let showHelp = Notification.Name("showHelp")
     static let iCloudSyncChanged = Notification.Name("iCloudSyncChanged")
 }

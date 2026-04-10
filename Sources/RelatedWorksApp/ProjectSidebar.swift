@@ -58,6 +58,11 @@ struct ProjectSidebar: View {
         .onReceive(NotificationCenter.default.publisher(for: .importProject)) { _ in
             importProject()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .exportProject)) { _ in
+            guard let id = selectedProjectID,
+                  let project = store.projects.first(where: { $0.id == id }) else { return }
+            exportProject(project)
+        }
         .sheet(isPresented: $showingNewProject) {
             NewProjectSheet(isPresented: $showingNewProject, onCreated: { id in
                 selectedProjectID = id

@@ -28,6 +28,7 @@ struct ContentView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .frame(minWidth: 960, minHeight: 620)
+        .focusedValue(\.selectedProjectID, selectedProjectID)
         .onChange(of: deepLinkHandler.pending) { dest in
             guard let dest else { return }
             switch dest {
