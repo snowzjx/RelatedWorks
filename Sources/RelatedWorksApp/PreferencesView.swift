@@ -170,9 +170,12 @@ struct ModelsSettingsView: View {
     @ViewBuilder
     private func modelPicker(models: [String], selection: Binding<String>, placeholder: String, isGemini: Bool = false) -> some View {
         if models.isEmpty {
-            TextField(placeholder, text: selection).textFieldStyle(.roundedBorder)
+            Text(selection.wrappedValue.isEmpty ? "No models available" : selection.wrappedValue)
+                .foregroundStyle(.secondary)
+                .font(.callout)
         } else {
             Picker("", selection: selection) {
+                Text("Select model…").tag("").foregroundStyle(.secondary)
                 ForEach(models, id: \.self) { model in
                     let incompatible = isGemini && AppSettings.incompatibleGeminiModels.contains(model)
                     if incompatible {
@@ -181,7 +184,7 @@ struct ModelsSettingsView: View {
                         Text(model).tag(model)
                     }
                 }
-                if !models.contains(selection.wrappedValue) {
+                if !selection.wrappedValue.isEmpty && !models.contains(selection.wrappedValue) {
                     Text(selection.wrappedValue).tag(selection.wrappedValue)
                 }
             }

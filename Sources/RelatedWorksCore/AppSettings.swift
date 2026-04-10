@@ -71,12 +71,12 @@ public class AppSettings: ObservableObject {
     public init() {
         fontSize = UserDefaults.standard.double(forKey: "fontSize").nonZero ?? 14
         ollamaBaseURL = UserDefaults.standard.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
-        extractionModel = UserDefaults.standard.string(forKey: "extractionModel") ?? "gemma3:4b"
-        generationModel = UserDefaults.standard.string(forKey: "generationModel") ?? "qwen3:latest"
-        extractionBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "extractionBackend") ?? "") ?? .ollama
-        generationBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "generationBackend") ?? "") ?? .ollama
-        geminiExtractionModel = UserDefaults.standard.string(forKey: "geminiExtractionModel") ?? "gemini-2.5-flash"
-        geminiGenerationModel = UserDefaults.standard.string(forKey: "geminiGenerationModel") ?? "gemini-2.5-flash"
+        extractionModel = UserDefaults.standard.string(forKey: "extractionModel") ?? ""
+        generationModel = UserDefaults.standard.string(forKey: "generationModel") ?? ""
+        extractionBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "extractionBackend") ?? "") ?? .none
+        generationBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "generationBackend") ?? "") ?? .none
+        geminiExtractionModel = UserDefaults.standard.string(forKey: "geminiExtractionModel") ?? ""
+        geminiGenerationModel = UserDefaults.standard.string(forKey: "geminiGenerationModel") ?? ""
         generationPrompt = UserDefaults.standard.string(forKey: "generationPrompt") ?? AppSettings.defaultGenerationPrompt
         iCloudSyncEnabled = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
         startPolling()
