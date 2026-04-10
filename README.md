@@ -8,6 +8,12 @@
 
 A native macOS & iOS academic literature manager for Computer Science researchers. Organize papers, take interconnected notes, and automatically draft Related Works sections.
 
+## 🧪 Beta Test
+
+The macOS App Store and iOS App Store versions are coming soon! Join the public beta on TestFlight now:
+
+**[Join Beta on TestFlight →](https://testflight.apple.com/join/B1VxbrDv)**
+
 ## Features
 
 - **Project-based workspaces** — organize literature per paper you're writing
@@ -20,21 +26,23 @@ A native macOS & iOS academic literature manager for Computer Science researcher
 - **Multiple AI backends** — Ollama (local) and Google Gemini
 - **Project export/import** — `.relatedworks` file containing papers, PDFs, and annotations
 - **iCloud Drive sync** — sync projects across your Mac and iPhone
-- **iOS companion app** — browse, search, and annotate your library on iPhone/iPad
+- **iOS companion app** — native iPad multi-column layout, browse, annotate, and read PDFs
 - **Terminal UI (TUI)** — keyboard-driven workflow for SSH/headless use
 - **Deep link support** — `relatedworks://` URIs for every paper and project
 
 ## Requirements
 
 ### macOS App
-- macOS 13+
+- macOS 26+ (distributed binaries built with Xcode 26 / macOS 26 SDK)
 - At least one AI backend:
   - [Ollama](https://ollama.com) running locally, **or**
   - [Google Gemini API key](https://aistudio.google.com/apikey)
+- Build from source: macOS 13+
 
 ### iOS App
-- iOS 17+
+- iOS 26+ (distributed binaries built with Xcode 26 / iOS 26 SDK)
 - No AI backend required — the iOS app is focused on reading and annotating
+- Build from source: iOS 17+
 
 ## Quick Start
 
@@ -53,7 +61,7 @@ Enable in **Settings → General → Sync via iCloud Drive** (macOS) or **Settin
 
 ## iOS App
 
-Browse projects, read and edit annotations, view PDFs, and navigate via deep links. Shares the same iCloud library as the macOS app when sync is enabled.
+Native iPad multi-column layout — project list, paper list, and detail view side by side. Browse projects, read and edit annotations, view PDFs full screen, and navigate via deep links. Shares the same iCloud library as the macOS app when sync is enabled.
 
 ```bash
 xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS \
@@ -90,6 +98,10 @@ By default the TUI reads from local storage. To use iCloud projects, pass the pa
 # macOS app
 xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksApp \
   -configuration Release build
+
+# iOS app
+xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS \
+  -destination 'generic/platform=iOS' -configuration Release build
 
 # TUI
 swift build -c release --product RelatedWorksTUI
