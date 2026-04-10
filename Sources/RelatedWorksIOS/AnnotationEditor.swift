@@ -21,7 +21,10 @@ struct AnnotationEditor: UIViewRepresentable {
 
     func updateUIView(_ tv: UITextView, context: Context) {
         guard !context.coordinator.isEditing else { return }
-        if tv.text != text { tv.text = text }
+        if tv.text != text {
+            tv.text = text
+            tv.font = .preferredFont(forTextStyle: .body)
+        }
     }
 
     // MARK: - Coordinator

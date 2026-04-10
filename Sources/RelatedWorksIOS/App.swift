@@ -3,28 +3,29 @@ import SwiftUI
 @main
 struct RelatedWorksIOSApp: App {
     @StateObject private var settings = AppSettings.shared
-    @State private var store = Store()
+    @State private var store: Store
     @State private var pendingDeepLink: DeepLink.Destination?
 
     init() {
+        let s = Store()
+        // Import sample project on first launch
+        let key = "sampleProjectImported"
+        if !UserDefaults.standard.bool(forKey: key) {
+            UserDefaults.standard.set(true, forKey: key)
+            if s.projects.isEmpty,
+               let url = Bundle.main.url(forResource: "SampleProject", withExtension: "relatedworks") {
+                _ = try? IOSProjectImporter.import(from: url, into: s)
+            }
+        }
+        _store = State(initialValue: s)
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
             _ = Store.iCloudProjectsDir()
         }
-        importSampleProjectIfNeeded()
-    }
-
-    private func importSampleProjectIfNeeded() {
-        let key = "sampleProjectImported"
-        guard !UserDefaults.standard.bool(forKey: key) else { return }
-        UserDefaults.standard.set(true, forKey: key)
-        guard store.projects.isEmpty,
-              let url = Bundle.main.url(forResource: "SampleProject", withExtension: "relatedworks") else { return }
-        _ = try? IOSProjectImporter.import(from: url, into: store)
     }
 
     var body: some Scene {
         WindowGroup {
-            ProjectListView(pendingDeepLink: $pendingDeepLink)
+            RootView(pendingDeepLink: $pendingDeepLink)
                 .environmentObject(store)
                 .environmentObject(settings)
                 .onChange(of: settings.iCloudSyncEnabled) {

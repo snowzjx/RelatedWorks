@@ -165,7 +165,7 @@ struct PaperDetailView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in }
         } // ScrollViewReader
-        .sheet(item: $pdfURL) { url in
+        .fullScreenCover(item: $pdfURL) { url in
             NavigationStack {
                 PDFViewer(url: url)
                     .ignoresSafeArea()

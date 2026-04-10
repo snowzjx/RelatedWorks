@@ -3,6 +3,7 @@ import SwiftUI
 struct PaperListView: View {
     let projectID: UUID
     var autoRename: Bool = false
+    @Binding var selectedPaper: PaperDestination?
     @EnvironmentObject var store: Store
     @State private var searchQuery = ""
     @State private var pendingDeleteOffsets: IndexSet?
@@ -28,11 +29,9 @@ struct PaperListView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(filteredPapers) { paper in
-                NavigationLink(value: PaperDestination(paper: paper, projectID: projectID)) {
-                    PaperRowView(paper: paper)
-                }
+        List(filteredPapers, selection: $selectedPaper) { paper in
+            let isSelected = selectedPaper?.paper.id == paper.id
+            PaperRowView(paper: paper, isSelected: isSelected)                .tag(PaperDestination(paper: paper, projectID: projectID))
                 .swipeActions(edge: .trailing) {
                     Button {
                         pendingDeleteOffsets = IndexSet([filteredPapers.firstIndex(of: paper)!])
@@ -41,7 +40,6 @@ struct PaperListView: View {
                     }
                     .tint(.red)
                 }
-            }
         }
         .navigationTitle(project?.name ?? "Papers")
         .navigationBarTitleDisplayMode(.large)
@@ -125,6 +123,7 @@ struct PaperListView: View {
 
 struct PaperRowView: View {
     let paper: Paper
+    var isSelected: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -132,11 +131,10 @@ struct PaperRowView: View {
                 Text("@\(paper.id)")
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(isSelected ? .white : .blue)
                 if !paper.annotation.isEmpty {
                     Image(systemName: "note.text")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
                 }
             }
             Text(paper.title)
@@ -146,7 +144,6 @@ struct PaperRowView: View {
                 let venueStr = paper.venue.map { "\($0) · " } ?? ""
                 Text(venueStr + String(year))
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 2)

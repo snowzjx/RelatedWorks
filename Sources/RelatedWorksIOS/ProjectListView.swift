@@ -11,6 +11,61 @@ extension DeepLink.Destination: Equatable {
     }
 }
 
+// MARK: - Root (NavigationSplitView for iPad, NavigationStack for iPhone)
+
+struct RootView: View {
+    @EnvironmentObject var store: Store
+    @Binding var pendingDeepLink: DeepLink.Destination?
+    @State private var selectedProjectID: UUID?
+    @State private var selectedPaper: PaperDestination?
+
+    var selectedProject: Project? {
+        store.projects.first(where: { $0.id == selectedProjectID })
+    }
+
+    var body: some View {
+        NavigationSplitView {
+            ProjectListView(
+                pendingDeepLink: $pendingDeepLink,
+                selectedProjectID: $selectedProjectID
+            )
+        } content: {
+            if let id = selectedProjectID {
+                PaperListView(projectID: id, selectedPaper: $selectedPaper)
+            } else {
+                ContentUnavailableView("Select a Project", systemImage: "folder")
+            }
+        } detail: {
+            if let dest = selectedPaper {
+                NavigationStack {
+                    PaperDetailView(paper: dest.paper, projectID: dest.projectID)
+                }
+                .id(dest.paper.id)
+            } else {
+                ContentUnavailableView("Select a Paper", systemImage: "doc.text")
+            }
+        }
+        .onChange(of: selectedProjectID) {
+            selectedPaper = nil
+        }
+        .onChange(of: pendingDeepLink) {
+            guard let link = pendingDeepLink else { return }
+            switch link {
+            case .project(let id):
+                selectedProjectID = id
+                selectedPaper = nil
+            case .paper(let projectID, let paperID):
+                selectedProjectID = projectID
+                if let project = store.projects.first(where: { $0.id == projectID }),
+                   let paper = project.paper(withID: paperID) {
+                    selectedPaper = PaperDestination(paper: paper, projectID: projectID)
+                }
+            }
+            pendingDeepLink = nil
+        }
+    }
+}
+
 struct PaperDestination: Hashable {
     let paper: Paper
     let projectID: UUID
@@ -55,105 +110,69 @@ struct ImportConfirmSheet: View {
 struct ProjectListView: View {
     @EnvironmentObject var store: Store
     @Binding var pendingDeepLink: DeepLink.Destination?
+    @Binding var selectedProjectID: UUID?
     @State private var showImporter = false
+    @State private var showSettings = false
     @State private var importError: String?
     @State private var pendingDeleteOffsets: IndexSet?
-    @State private var navPath = NavigationPath()
     @State private var duplicateProjectID: UUID? = nil
 
     var body: some View {
-        NavigationStack(path: $navPath) {
-            List {
-                ForEach(store.projects) { project in
-                    NavigationLink(value: ProjectNavDestination(projectID: project.id)) {
-                        ProjectRowView(project: project)
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button {
-                            pendingDeleteOffsets = IndexSet([store.projects.firstIndex(of: project)!])
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        .tint(.red)
-                    }
-                }
-            }
-            .navigationTitle("Projects")
-            .navigationDestination(for: ProjectNavDestination.self) { dest in
-                PaperListView(projectID: dest.projectID, autoRename: dest.autoRename)
-            }
-            .navigationDestination(for: PaperDestination.self) { dest in
-                PaperDetailView(paper: dest.paper, projectID: dest.projectID)
-            }
-            .onChange(of: pendingDeepLink) {
-                guard let link = pendingDeepLink else { return }
-                navPath.removeLast(navPath.count)
-                switch link {
-                case .project(let id):
-                    navPath.append(ProjectNavDestination(projectID: id))
-                case .paper(let projectID, let paperID):
-                    navPath.append(ProjectNavDestination(projectID: projectID))
-                    if let project = store.projects.first(where: { $0.id == projectID }),
-                       let paper = project.paper(withID: paperID) {
-                        navPath.append(PaperDestination(paper: paper, projectID: projectID))
-                    }
-                }
-                pendingDeepLink = nil
-            }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+        List(store.projects, selection: $selectedProjectID) { project in
+            ProjectRowView(project: project)
+                .tag(project.id)
+                .swipeActions(edge: .trailing) {
                     Button {
-                        showImporter = true
+                        pendingDeleteOffsets = IndexSet([store.projects.firstIndex(of: project)!])
                     } label: {
-                        Label("Import", systemImage: "tray.and.arrow.down")
+                        Label("Delete", systemImage: "trash")
                     }
+                    .tint(.red)
                 }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gear")
-                    }
+        }
+        .navigationTitle("Projects")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { showImporter = true } label: {
+                    Label("Import", systemImage: "tray.and.arrow.down")
                 }
             }
-            .fileImporter(
-                isPresented: $showImporter,
-                allowedContentTypes: [UTType(filenameExtension: "relatedworks") ?? .data]
-            ) { result in
-                handleImport(result)
-            }
-            .alert("Import Failed", isPresented: .constant(importError != nil), actions: {
-                Button("OK") { importError = nil }
-            }, message: {
-                Text(importError ?? "")
-            })
-            .alert("Duplicate Project", isPresented: Binding(
-                get: { duplicateProjectID != nil },
-                set: { if !$0 { duplicateProjectID = nil } }
-            )) {
-                Button("Rename") {
-                    if let id = duplicateProjectID {
-                        navPath.append(ProjectNavDestination(projectID: id, autoRename: true))
-                    }
-                    duplicateProjectID = nil
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button { showSettings = true } label: {
+                    Image(systemName: "gear")
                 }
-                Button("OK", role: .cancel) { duplicateProjectID = nil }
-            } message: {
-                Text("A project with the same name already exists. Please rename one of them to avoid confusion.")
-            }
-            .alert("Delete Project", isPresented: Binding(
-                get: { pendingDeleteOffsets != nil },
-                set: { if !$0 { pendingDeleteOffsets = nil } }
-            )) {
-                Button("Delete", role: .destructive) {
-                    if let offsets = pendingDeleteOffsets {
-                        for index in offsets { try? store.delete(store.projects[index]) }
-                        pendingDeleteOffsets = nil
-                    }
-                }
-                Button("Cancel", role: .cancel) { pendingDeleteOffsets = nil }
-            } message: {
-                Text("This project and all its papers will be permanently deleted.")
             }
         }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack { SettingsView() }
+        }
+        .fileImporter(
+            isPresented: $showImporter,
+            allowedContentTypes: [UTType(filenameExtension: "relatedworks") ?? .data]
+        ) { result in handleImport(result) }
+        .alert("Import Failed", isPresented: .constant(importError != nil)) {
+            Button("OK") { importError = nil }
+        } message: { Text(importError ?? "") }
+        .alert("Duplicate Project", isPresented: Binding(
+            get: { duplicateProjectID != nil },
+            set: { if !$0 { duplicateProjectID = nil } }
+        )) {
+            Button("OK", role: .cancel) { duplicateProjectID = nil }
+        } message: {
+            Text("A project with the same name already exists. Please rename one of them to avoid confusion.")
+        }
+        .alert("Delete Project", isPresented: Binding(
+            get: { pendingDeleteOffsets != nil },
+            set: { if !$0 { pendingDeleteOffsets = nil } }
+        )) {
+            Button("Delete", role: .destructive) {
+                if let offsets = pendingDeleteOffsets {
+                    for index in offsets { try? store.delete(store.projects[index]) }
+                    pendingDeleteOffsets = nil
+                }
+            }
+            Button("Cancel", role: .cancel) { pendingDeleteOffsets = nil }
+        } message: { Text("This project and all its papers will be permanently deleted.") }
     }
 
     private func handleImport(_ result: Result<URL, Error>) {
@@ -179,13 +198,13 @@ struct ProjectRowView: View {
     let project: Project
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(project.name).font(.headline)
+            Text(project.name).font(.headline).foregroundStyle(.blue)
             HStack(spacing: 4) {
-                Image(systemName: "doc.text").font(.caption).foregroundStyle(.secondary)
-                Text("\(project.papers.count)").font(.caption).foregroundStyle(.secondary)
+                Image(systemName: "doc.text").font(.caption).foregroundStyle(Color(uiColor: .label))
+                Text("\(project.papers.count)").font(.caption).foregroundStyle(Color(uiColor: .label))
             }
             if !project.description.isEmpty {
-                Text(project.description).font(.caption).foregroundStyle(.tertiary)
+                Text(project.description).font(.caption).foregroundStyle(Color(uiColor: .label))
             }
         }
         .padding(.vertical, 2)
