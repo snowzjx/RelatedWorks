@@ -188,7 +188,9 @@
       color: #d0d0d5;
     }
 
-    footer { margin-top: 16px; font-size: 0.78rem; color: #48484a; }
+    footer { margin-top: 16px; font-size: 0.78rem; color: #48484a; text-align: center; }
+    footer a { color: inherit; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     @media (prefers-color-scheme: light) {
       body { background: #f2f2f7; color: #1c1c1e; }
@@ -219,21 +221,23 @@
     <img src="icon.png" alt="RelatedWorks icon" class="icon"/>
     <h1>RelatedWorks</h1>
     <p class="tagline">
-      A native macOS &amp; iOS academic literature manager for Computer Science researchers.<br/>
-      Organize papers, take interconnected notes, and automatically draft<br/>
-      Related Works sections — powered by local or cloud AI.
+      A native macOS and iOS/iPadOS app for Computer Science researchers.<br/>
+      Organize your research literature, take interconnected notes, and generate<br/>
+      LaTeX-ready Related Works sections — powered by AI.
     </p>
 
     <ul class="features">
       <li><span class="dot">✦</span> <span>Project-based workspaces — one project per paper you're writing</span></li>
-      <li><span class="dot">✦</span> <span>PDF import with AI metadata extraction (title, authors, abstract)</span></li>
-      <li><span class="dot">✦</span> <span>DBLP + arXiv search with automatic BibTeX fetching</span></li>
-      <li><span class="dot">✦</span> <span>Semantic IDs and <code>@cross-reference</code> annotations</span></li>
-      <li><span class="dot yellow">✦</span> <span>One-click Related Works generation in LaTeX via AI</span></li>
-      <li><span class="dot">✦</span> <span>Multiple AI backends — Ollama (local) and Google Gemini</span></li>
-      <li><span class="dot">✦</span> <span>Export &amp; import projects as <code>.relatedworks</code> files</span></li>
-      <li><span class="dot green">✦</span> <span>Full Terminal UI — keyboard-driven, works over SSH</span></li>
-      <li><span class="dot">✦</span> <span>Live search &amp; filter — search by ID, title, authors, venue, year, abstract, or annotation with match highlighting</span></li>
+      <li><span class="dot">✦</span> <span>Import PDFs with AI-powered metadata extraction (macOS only)</span></li>
+      <li><span class="dot">✦</span> <span>Search DBLP and arXiv to fetch bibliographic data automatically (macOS only)</span></li>
+      <li><span class="dot">✦</span> <span>Semantic IDs — give each paper a short memorable tag like <code>@Transformer</code> or <code>@BERT</code></span></li>
+      <li><span class="dot">✦</span> <span>Cross-reference annotations — link papers using <code>@mentions</code> in your notes</span></li>
+      <li><span class="dot yellow">✦</span> <span>Generate a LaTeX-ready Related Works draft with one click (macOS only)</span></li>
+      <li><span class="dot">✦</span> <span>Export BibTeX entries fetched from DBLP or auto-generated (macOS only)</span></li>
+      <li><span class="dot">✦</span> <span>iCloud Drive sync — keep your library in sync across Mac and iPhone/iPad</span></li>
+      <li><span class="dot">✦</span> <span>Export and import projects as <code>.relatedworks</code> files (macOS); import projects on iPhone and iPad</span></li>
+      <li><span class="dot">✦</span> <span>Supports Ollama and Google Gemini (macOS only)</span></li>
+      <li><span class="dot green">✦</span> <span>Terminal UI (TUI) — keyboard-driven and SSH/headless use (macOS only, distributed via GitHub release)</span></li>
       <li><span class="dot">✦</span> <span>Deep link support via <code>relatedworks://</code> URIs</span></li>
     </ul>
 
@@ -245,8 +249,8 @@
 
     <p class="req">
       macOS App Store &amp; iOS App Store versions coming soon.<br/>
-      Distributed binaries require macOS 26+ / iOS 26+ (built with Xcode 26).<br/>
-      Build from source: macOS 13+ / iOS 17+. Use <a href="https://ollama.com" target="_blank">Ollama</a> locally
+      Released binaries require macOS 26+ / iOS 26+ (built with Xcode 26).<br/>
+      Source builds require macOS 13+ / iOS 17+. Use <a href="https://ollama.com" target="_blank">Ollama</a> locally
       or a <a href="https://aistudio.google.com/apikey" target="_blank">Gemini API key</a>.
     </p>
   </div>
@@ -282,6 +286,6 @@
     </div>
   </div>
 
-  <footer>© 2026 RelatedWorks · MIT License</footer>
+  <footer>© 2026 RelatedWorks · MIT License · <a href="privacy.html">Privacy Notice</a></footer>
 </body>
 </html>
