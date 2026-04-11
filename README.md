@@ -6,7 +6,7 @@
 
 > ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.
 
-A native macOS & iOS academic literature manager for Computer Science researchers. Organize papers, take interconnected notes, and automatically draft Related Works sections.
+RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science researchers. Organize your research literature, take interconnected notes, and generate LaTeX-ready Related Works sections — powered by AI.
 
 ## 🧪 Beta Test
 
@@ -16,41 +16,41 @@ The macOS App Store and iOS App Store versions are coming soon! Join the public 
 
 ## Features
 
-- **Project-based workspaces** — organize literature per paper you're writing
-- **PDF import with AI metadata extraction** — drop a PDF and let AI extract title, authors, and suggest a semantic ID
-- **DBLP + arXiv search** — auto-fetches bibliographic metadata
-- **Semantic IDs** — each paper gets a short memorable ID (e.g. `Transformer`, `BERT`)
-- **Cross-reference annotations** — use `@SemanticID` syntax in notes to link papers
-- **BibTeX management** — fetched from DBLP when available, auto-generated otherwise
-- **Automated Related Works generation** — synthesizes annotations into a LaTeX-ready draft via AI
-- **Multiple AI backends** — Ollama (local) and Google Gemini
-- **Project export/import** — `.relatedworks` file containing papers, PDFs, and annotations
-- **iCloud Drive sync** — sync projects across your Mac and iPhone
-- **iOS companion app** — native iPad multi-column layout, browse, annotate, and read PDFs
-- **Terminal UI (TUI)** — keyboard-driven workflow for SSH/headless use
+- **Project-based workspaces** — one project per paper you're writing
+- **Import PDFs with AI-powered metadata extraction** (macOS only)
+- **Search DBLP and arXiv** to fetch bibliographic data automatically (macOS only)
+- **Semantic IDs** — give each paper a short memorable tag like `@Transformer` or `@BERT`
+- **Cross-reference annotations** — link papers using `@mentions` in your notes
+- **Generate a LaTeX-ready Related Works draft** with one click (macOS only)
+- **Export BibTeX entries** fetched from DBLP or auto-generated (macOS only)
+- **iCloud Drive sync** — keep your library in sync across Mac and iPhone/iPad
+- **Export and import projects** as `.relatedworks` files (macOS); **import projects** on iPhone and iPad
+- **Supports Ollama** and **Google Gemini** (macOS only)
+- **iPhone and iPad companion app** — browse papers, review notes, and make lightweight edits on the go
+- **Terminal UI (TUI)** — keyboard-driven and SSH/headless use (macOS only, distributed via GitHub release)
 - **Deep link support** — `relatedworks://` URIs for every paper and project
 
 ## Requirements
 
 ### macOS App
-- macOS 26+ (distributed binaries built with Xcode 26 / macOS 26 SDK)
+- Released binaries require macOS 26+ (built with Xcode 26 / macOS 26 SDK)
 - At least one AI backend:
   - [Ollama](https://ollama.com) running locally, **or**
   - [Google Gemini API key](https://aistudio.google.com/apikey)
-- Build from source: macOS 13+
+- Source builds require macOS 13+
 
-### iOS App
-- iOS 26+ (distributed binaries built with Xcode 26 / iOS 26 SDK)
-- No AI backend required — the iOS app is focused on reading and annotating
-- Build from source: iOS 17+
+### iOS/iPadOS App
+- Released binaries require iOS 26+ (built with Xcode 26 / iOS 26 SDK)
+- No AI backend required — the iPhone and iPad app is focused on viewing and lightweight editing
+- Source builds require iOS 17+
 
 ## Quick Start
 
-1. **Create a project** — each project represents a paper you're writing
-2. **Add papers** — import a PDF, search DBLP/arXiv, or enter manually
-3. **Annotate** — write notes using `@SemanticID` to cross-reference papers
-4. **Generate** — click **Generate Related Works** for a LaTeX-ready draft
-5. **Export BibTeX** — fetched from DBLP or auto-generated from metadata
+1. **Create a project** — each project represents the paper you're writing
+2. **Add papers** — import a PDF, search DBLP/arXiv on macOS, or enter metadata manually
+3. **Annotate** — write notes using `@mentions` to cross-reference related papers
+4. **Generate** — click **Generate Related Works** on macOS for a LaTeX-ready draft
+5. **Take it with you** — browse, review, and refine annotations on iPhone or iPad via iCloud sync
 
 ## iCloud Sync
 
@@ -59,22 +59,21 @@ Enable in **Settings → General → Sync via iCloud Drive** (macOS) or **Settin
 - On **macOS**: existing local data is migrated to iCloud Drive
 - On **iOS**: the app switches to reading from iCloud Drive; local data is not moved
 
-## iOS App
+## iPhone And iPad Companion App
 
-Native iPad multi-column layout — project list, paper list, and detail view side by side. Browse projects, read and edit annotations, view PDFs full screen, and navigate via deep links. Shares the same iCloud library as the macOS app when sync is enabled.
+On iPhone and iPad, RelatedWorks is designed primarily as a companion viewer and lightweight editor for your research library. The iOS/iPadOS app does not require or rely on any AI backend; instead, it syncs your library seamlessly from the macOS version via iCloud.
 
-```bash
-xcodebuild -project RelatedWorksApp.xcodeproj -scheme RelatedWorksIOS \
-  -destination 'generic/platform=iOS' -configuration Release build
-```
+You can comfortably browse papers, review notes, and refine annotations on the go, making it easy to continue working on your literature wherever you are. Any annotations you edit on iPhone or iPad automatically sync back to your Mac, giving you a smooth companion workflow for reading and writing. On iPhone and iPad, RelatedWorks supports project import, but project export remains macOS-only.
 
 ## Terminal UI (TUI)
 
+The TUI is a macOS-only companion distributed as a GitHub release. It is intended for keyboard-driven and SSH/headless workflows against the same project library.
+
 ```bash
-# Build and run
+# Run from source
 swift run RelatedWorksTUI
 
-# Or use the bundled binary from GitHub release
+# Or use the bundled binary from the GitHub release
 ./relatedworks-tui
 ```
 
