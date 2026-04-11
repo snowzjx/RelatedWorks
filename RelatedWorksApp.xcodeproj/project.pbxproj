@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		80939E9F2F8A75040094ACE5 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 80939E9E2F8A75040094ACE5 /* AppIcon.icon */; };
+		80939EA02F8A75040094ACE5 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 80939E9E2F8A75040094ACE5 /* AppIcon.icon */; };
 		A001 /* Sources/RelatedWorksApp/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001 /* Sources/RelatedWorksApp/App.swift */; };
 		A002 /* Sources/RelatedWorksApp/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* Sources/RelatedWorksApp/ContentView.swift */; };
 		A003 /* Sources/RelatedWorksApp/ProjectSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* Sources/RelatedWorksApp/ProjectSidebar.swift */; };
@@ -27,31 +29,8 @@
 		A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Sources/RelatedWorksApp/Assets.xcassets */; };
 		A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
 		A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
-		A021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
-		A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */; };
-		MAC_ZF_Archive = {isa = PBXBuildFile; fileRef = ZF_REF_Archive; };
-		MAC_ZF_BackingConfig = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration; };
-		MAC_ZF_Deprecated = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated; };
-		MAC_ZF_Helpers = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePHelpers; };
-		MAC_ZF_MemoryFile = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePMemoryFile; };
-		MAC_ZF_Progress = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePProgress; };
-		MAC_ZF_Reading = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReading; };
-		MAC_ZF_ReadingDep = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReadingDeprecated; };
-		MAC_ZF_Writing = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWriting; };
-		MAC_ZF_WritingDep = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWritingDeprecated; };
-		MAC_ZF_ZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64; };
-		MAC_ZF_DataComp = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression; };
-		MAC_ZF_DataCompDep = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompressionDeprecated; };
-		MAC_ZF_DataSer = {isa = PBXBuildFile; fileRef = ZF_REF_DataPSerialization; };
-		MAC_ZF_Date = {isa = PBXBuildFile; fileRef = ZF_REF_DatePZIP; };
-		MAC_ZF_Entry = {isa = PBXBuildFile; fileRef = ZF_REF_Entry; };
-		MAC_ZF_EntrySer = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPSerialization; };
-		MAC_ZF_EntryZIP64 = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPZIP64; };
-		MAC_ZF_FMgr = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP; };
-		MAC_ZF_FMgrDep = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated; };
-		MAC_ZF_URL = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP; };
-		F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
 		A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* Sources/RelatedWorksApp/HelpView.swift */; };
+		A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */; };
 		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
 		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
 		IOS003 /* Sources/RelatedWorksIOS/PaperListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */; };
@@ -72,7 +51,27 @@
 		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
 		IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */; };
 		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
-		FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sources/RelatedWorksIOS/SampleProject.relatedworks; sourceTree = SOURCE_ROOT; };
+		MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
+		MAC_ZF_BackingConfig /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */; };
+		MAC_ZF_DataComp /* Sources/ZIPFoundation/Data+Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */; };
+		MAC_ZF_DataCompDep /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompressionDeprecated /* Sources/ZIPFoundation/Data+CompressionDeprecated.swift */; };
+		MAC_ZF_DataSer /* Sources/ZIPFoundation/Data+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPSerialization /* Sources/ZIPFoundation/Data+Serialization.swift */; };
+		MAC_ZF_Date /* Sources/ZIPFoundation/Date+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DatePZIP /* Sources/ZIPFoundation/Date+ZIP.swift */; };
+		MAC_ZF_Deprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */; };
+		MAC_ZF_Entry /* Sources/ZIPFoundation/Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Entry /* Sources/ZIPFoundation/Entry.swift */; };
+		MAC_ZF_EntrySer /* Sources/ZIPFoundation/Entry+Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPSerialization /* Sources/ZIPFoundation/Entry+Serialization.swift */; };
+		MAC_ZF_EntryZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_EntryPZIP64 /* Sources/ZIPFoundation/Entry+ZIP64.swift */; };
+		MAC_ZF_FMgr /* Sources/ZIPFoundation/FileManager+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */; };
+		MAC_ZF_FMgrDep /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */; };
+		MAC_ZF_Helpers /* Sources/ZIPFoundation/Archive+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePHelpers /* Sources/ZIPFoundation/Archive+Helpers.swift */; };
+		MAC_ZF_MemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePMemoryFile /* Sources/ZIPFoundation/Archive+MemoryFile.swift */; };
+		MAC_ZF_Progress /* Sources/ZIPFoundation/Archive+Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePProgress /* Sources/ZIPFoundation/Archive+Progress.swift */; };
+		MAC_ZF_Reading /* Sources/ZIPFoundation/Archive+Reading.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReading /* Sources/ZIPFoundation/Archive+Reading.swift */; };
+		MAC_ZF_ReadingDep /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePReadingDeprecated /* Sources/ZIPFoundation/Archive+ReadingDeprecated.swift */; };
+		MAC_ZF_URL /* Sources/ZIPFoundation/URL+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */; };
+		MAC_ZF_Writing /* Sources/ZIPFoundation/Archive+Writing.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWriting /* Sources/ZIPFoundation/Archive+Writing.swift */; };
+		MAC_ZF_WritingDep /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePWritingDeprecated /* Sources/ZIPFoundation/Archive+WritingDeprecated.swift */; };
+		MAC_ZF_ZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */; };
 		T001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */; };
 		TC010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
 		TC011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
@@ -83,6 +82,17 @@
 		TC016 /* Sources/RelatedWorksCore/ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* Sources/RelatedWorksCore/ArxivService.swift */; };
 		TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
 		TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
+		TUI_BLD_AIBackend /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
+		TUI_BLD_AppSettings /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
+		TUI_BLD_ArxivService /* Sources/RelatedWorksCore/ArxivService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* Sources/RelatedWorksCore/ArxivService.swift */; };
+		TUI_BLD_DBLPService /* Sources/RelatedWorksCore/DBLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* Sources/RelatedWorksCore/DBLPService.swift */; };
+		TUI_BLD_DeepLink /* Sources/RelatedWorksCore/DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* Sources/RelatedWorksCore/DeepLink.swift */; };
+		TUI_BLD_Generator /* Sources/RelatedWorksCore/Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Sources/RelatedWorksCore/Generator.swift */; };
+		TUI_BLD_Main /* Sources/RelatedWorksTUI/main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */; };
+		TUI_BLD_Models /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
+		TUI_BLD_ProjectExporter /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
+		TUI_BLD_Store /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
+		TUI_BLD_TUI /* Sources/RelatedWorksTUI/TUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTUI /* Sources/RelatedWorksTUI/TUI.swift */; };
 		ZF_BLD_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
 		ZF_BLD_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */; };
 		ZF_BLD_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePDeprecated /* Sources/ZIPFoundation/Archive+Deprecated.swift */; };
@@ -104,20 +114,10 @@
 		ZF_BLD_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIP /* Sources/ZIPFoundation/FileManager+ZIP.swift */; };
 		ZF_BLD_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_FileManagerPZIPDeprecated /* Sources/ZIPFoundation/FileManager+ZIPDeprecated.swift */; };
 		ZF_BLD_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_URLPZIP /* Sources/ZIPFoundation/URL+ZIP.swift */; };
-		TUI_BLD_TUI = {isa = PBXBuildFile; fileRef = FTUI; };
-		TUI_BLD_Main = {isa = PBXBuildFile; fileRef = FTUI_MAIN; };
-		TUI_BLD_Models = {isa = PBXBuildFile; fileRef = F010; };
-		TUI_BLD_Store = {isa = PBXBuildFile; fileRef = F011; };
-		TUI_BLD_DBLPService = {isa = PBXBuildFile; fileRef = F012; };
-		TUI_BLD_Generator = {isa = PBXBuildFile; fileRef = F013; };
-		TUI_BLD_DeepLink = {isa = PBXBuildFile; fileRef = F015; };
-		TUI_BLD_ArxivService = {isa = PBXBuildFile; fileRef = F016; };
-		TUI_BLD_AppSettings = {isa = PBXBuildFile; fileRef = F017; };
-		TUI_BLD_AIBackend = {isa = PBXBuildFile; fileRef = F019b; };
-		TUI_BLD_ProjectExporter = {isa = PBXBuildFile; fileRef = F021; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		80939E9E2F8A75040094ACE5 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		F001 /* Sources/RelatedWorksApp/App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/App.swift; sourceTree = SOURCE_ROOT; };
 		F002 /* Sources/RelatedWorksApp/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ContentView.swift; sourceTree = SOURCE_ROOT; };
 		F003 /* Sources/RelatedWorksApp/ProjectSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectSidebar.swift; sourceTree = SOURCE_ROOT; };
@@ -139,10 +139,19 @@
 		F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksCore/BlacklistedModels.plist; sourceTree = SOURCE_ROOT; };
 		F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
 		F022 /* Sources/RelatedWorksApp/HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/HelpView.swift; sourceTree = SOURCE_ROOT; };
+		F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
 		FA001 /* Sources/RelatedWorksApp/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		FAPP /* RelatedWorks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorks.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.entitlements; sourceTree = SOURCE_ROOT; };
+		FAPP_ENT_AS /* RelatedWorksApp/RelatedWorksApp.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
+		FAPP_INFO /* Sources/RelatedWorksApp/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksApp/Info.plist; sourceTree = SOURCE_ROOT; };
 		FIOSAPP /* RelatedWorksIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksIOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
+		FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sources/RelatedWorksIOS/SampleProject.relatedworks; sourceTree = SOURCE_ROOT; };
+		FTUI /* Sources/RelatedWorksTUI/TUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/TUI.swift; sourceTree = SOURCE_ROOT; };
+		FTUIPROD /* relatedworks-tui */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "relatedworks-tui"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/main.swift; sourceTree = SOURCE_ROOT; };
 		IF001 /* Sources/RelatedWorksIOS/App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/App.swift; sourceTree = SOURCE_ROOT; };
 		IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/ProjectListView.swift; sourceTree = SOURCE_ROOT; };
 		IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/PaperListView.swift; sourceTree = SOURCE_ROOT; };
@@ -152,13 +161,6 @@
 		IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/SettingsView.swift; sourceTree = SOURCE_ROOT; };
 		IF008 /* Sources/RelatedWorksIOS/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksIOS/Info.plist; sourceTree = SOURCE_ROOT; };
 		TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = SOURCE_ROOT; };
-		FTUIPROD /* relatedworks-tui */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "relatedworks-tui"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FTUI /* Sources/RelatedWorksTUI/TUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/TUI.swift; sourceTree = SOURCE_ROOT; };
-		FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/main.swift; sourceTree = SOURCE_ROOT; };
-		FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.entitlements; sourceTree = SOURCE_ROOT; };
-		FAPP_ENT_AS /* RelatedWorksApp/RelatedWorksApp.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
-		FAPP_INFO /* Sources/RelatedWorksApp/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksApp/Info.plist; sourceTree = SOURCE_ROOT; };
-		FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Archive.swift; sourceTree = SOURCE_ROOT; };
 		ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ZIPFoundation/Archive+BackingConfiguration.swift"; sourceTree = SOURCE_ROOT; };
@@ -261,13 +263,29 @@
 			name = Config;
 			sourceTree = "<group>";
 		};
-		GTUI /* RelatedWorksTUI */ = {
+		GPROD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FTUI /* Sources/RelatedWorksTUI/TUI.swift */,
-				FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */,
+				FAPP /* RelatedWorks.app */,
+				FIOSAPP /* RelatedWorksIOS.app */,
+				FTUIPROD /* relatedworks-tui */,
+				TPROD /* RelatedWorksTests.xctest */,
 			);
-			name = RelatedWorksTUI;
+			name = Products;
+			sourceTree = "<group>";
+		};
+		GROOT = {
+			isa = PBXGroup;
+			children = (
+				GAPP /* RelatedWorksApp */,
+				GIOS /* RelatedWorksIOS */,
+				GCORE /* RelatedWorksCore */,
+				GTUI /* RelatedWorksTUI */,
+				GTEST /* RelatedWorksTests */,
+				GZF /* ZIPFoundation */,
+				GPROD /* Products */,
+				80939E9E2F8A75040094ACE5 /* AppIcon.icon */,
+			);
 			sourceTree = "<group>";
 		};
 		GTEST /* RelatedWorksTests */ = {
@@ -278,6 +296,15 @@
 			name = RelatedWorksTests;
 			path = Tests/RelatedWorksTests;
 			sourceTree = SOURCE_ROOT;
+		};
+		GTUI /* RelatedWorksTUI */ = {
+			isa = PBXGroup;
+			children = (
+				FTUI /* Sources/RelatedWorksTUI/TUI.swift */,
+				FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */,
+			);
+			name = RelatedWorksTUI;
+			sourceTree = "<group>";
 		};
 		GZF /* ZIPFoundation */ = {
 			isa = PBXGroup;
@@ -307,30 +334,6 @@
 			name = ZIPFoundation;
 			path = Sources/ZIPFoundation;
 			sourceTree = SOURCE_ROOT;
-		};
-		GPROD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAPP /* RelatedWorks.app */,
-				FIOSAPP /* RelatedWorksIOS.app */,
-				FTUIPROD /* relatedworks-tui */,
-				TPROD /* RelatedWorksTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		GROOT = {
-			isa = PBXGroup;
-			children = (
-				GAPP /* RelatedWorksApp */,
-				GIOS /* RelatedWorksIOS */,
-				GCORE /* RelatedWorksCore */,
-				GTUI /* RelatedWorksTUI */,
-				GTEST /* RelatedWorksTests */,
-				GZF /* ZIPFoundation */,
-				GPROD /* Products */,
-			);
-			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -367,21 +370,6 @@
 			productReference = FIOSAPP /* RelatedWorksIOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		TTUI /* RelatedWorksTUI */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = BCLTTUI /* Build configuration list for PBXNativeTarget "RelatedWorksTUI" */;
-			buildPhases = (
-				BPTUI /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = RelatedWorksTUI;
-			productName = "relatedworks-tui";
-			productReference = FTUIPROD /* relatedworks-tui */;
-			productType = "com.apple.product-type.tool";
-		};
 		TTEST /* RelatedWorksTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BCLTTEST /* Build configuration list for PBXNativeTarget "RelatedWorksTests" */;
@@ -396,6 +384,21 @@
 			productName = RelatedWorksTests;
 			productReference = TPROD /* RelatedWorksTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		TTUI /* RelatedWorksTUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCLTTUI /* Build configuration list for PBXNativeTarget "RelatedWorksTUI" */;
+			buildPhases = (
+				BPTUI /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RelatedWorksTUI;
+			productName = "relatedworks-tui";
+			productReference = FTUIPROD /* relatedworks-tui */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -435,6 +438,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
+				80939EA02F8A75040094ACE5 /* AppIcon.icon in Resources */,
 				IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */,
 				IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */,
 			);
@@ -446,6 +450,7 @@
 			files = (
 				A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */,
 				A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
+				80939E9F2F8A75040094ACE5 /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,17 +571,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				TUI_BLD_Main,
-				TUI_BLD_TUI,
-				TUI_BLD_Models,
-				TUI_BLD_Store,
-				TUI_BLD_DBLPService,
-				TUI_BLD_Generator,
-				TUI_BLD_DeepLink,
-				TUI_BLD_ArxivService,
-				TUI_BLD_AppSettings,
-				TUI_BLD_AIBackend,
-				TUI_BLD_ProjectExporter,
+				TUI_BLD_Main /* Sources/RelatedWorksTUI/main.swift in Sources */,
+				TUI_BLD_TUI /* Sources/RelatedWorksTUI/TUI.swift in Sources */,
+				TUI_BLD_Models /* Sources/RelatedWorksCore/Models.swift in Sources */,
+				TUI_BLD_Store /* Sources/RelatedWorksCore/Store.swift in Sources */,
+				TUI_BLD_DBLPService /* Sources/RelatedWorksCore/DBLPService.swift in Sources */,
+				TUI_BLD_Generator /* Sources/RelatedWorksCore/Generator.swift in Sources */,
+				TUI_BLD_DeepLink /* Sources/RelatedWorksCore/DeepLink.swift in Sources */,
+				TUI_BLD_ArxivService /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
+				TUI_BLD_AppSettings /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
+				TUI_BLD_AIBackend /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
+				TUI_BLD_ProjectExporter /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -900,20 +905,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BC001 /* Debug */,
-				BC002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		BCLTTUI /* Build configuration list for PBXNativeTarget "RelatedWorksTUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BCTUI001 /* Debug */,
 				BCTUI002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC001 /* Debug */,
+				BC002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
