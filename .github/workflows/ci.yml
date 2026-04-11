@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Run Swift package tests
+        run: swift test
+
       - name: Import signing certificate
         if: startsWith(github.ref, 'refs/tags/')
         env:

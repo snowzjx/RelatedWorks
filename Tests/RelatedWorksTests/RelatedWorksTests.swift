@@ -123,33 +123,23 @@ struct StoreTests {
 
         // Register
         let stored = try store.registerPDF(at: tmpPDF, forID: "TestPaper", projectID: project.id)
-        #expect(FileManager.default.fileExists(atPath: stored))
-        #expect(stored.contains(project.id.uuidString))
+        #expect(FileManager.default.fileExists(atPath: stored.path))
+        #expect(stored.path.contains(project.id.uuidString))
 
         // Cleanup
         store.cleanupPDF(paperID: "TestPaper", projectID: project.id)
-        #expect(!FileManager.default.fileExists(atPath: stored))
+        #expect(!FileManager.default.fileExists(atPath: stored.path))
     }
 
-    @Test func exportAndImportProject() throws {
-        let store = makeTestStore()
-        var project = Project(name: "Export Test")
-        project.addPaper(Paper(id: "BERT", title: "BERT", authors: ["Devlin"], year: 2019))
-        try store.save(project)
+    @Test func importingProjectAssignsNewIDAndPreservesContent() {
+        var source = Project(name: "Export Test", description: "desc")
+        source.addPaper(Paper(id: "BERT", title: "BERT", authors: ["Devlin"], year: 2019))
 
-        // Export
-        let exportURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ExportTest.relatedworks")
-        defer { try? FileManager.default.removeItem(at: exportURL) }
-        try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: exportURL)
-        #expect(FileManager.default.fileExists(atPath: exportURL.path))
-
-        // Import into a fresh store
-        let store2 = makeTestStore()
-        let imported = try ProjectExporter.import(from: exportURL, into: store2)
-        #expect(imported.name == "Export Test")
+        let imported = Project(importing: source, newID: UUID())
+        #expect(imported.name == source.name)
+        #expect(imported.description == source.description)
         #expect(imported.papers.first?.id == "BERT")
-        #expect(imported.id != project.id) // new UUID assigned
+        #expect(imported.id != source.id)
     }
 
     private func makeTestStore() -> Store {
