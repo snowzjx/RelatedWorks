@@ -12,9 +12,9 @@ struct HelpView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         HelpStep(number: "1", title: "Create a Project",
-                            detail: "Each project represents a paper you're writing. Click the + button in the sidebar to create a new project.")
+                            detail: "Each project represents a paper you're writing. Click the + button in the sidebar or press ⌘N to create one.")
                         HelpStep(number: "2", title: "Add Papers",
-                            detail: "Import a PDF (drag onto the paper list), search DBLP/arXiv via the search bar, or enter metadata manually.")
+                            detail: "Import a PDF, drag one onto the paper list, search DBLP or arXiv, or enter metadata manually. Use Add Paper or press ⌘⇧A.")
                         HelpStep(number: "3", title: "Assign a Semantic ID",
                             detail: "Every paper gets a short memorable ID (e.g. Transformer, BERT, GPT4) used to cross-reference papers in notes.")
                         HelpStep(number: "4", title: "Take Notes & Cross-Reference",
@@ -32,7 +32,7 @@ struct HelpView: View {
 
                 Group {
                     Text("AI Backends").font(.title2).bold()
-                    Text("Configure in Settings → AI Backends and Settings → Models.")
+                    Text("Configure AI providers and models in Settings.")
                         .foregroundStyle(.secondary)
 
                     VStack(alignment: .leading, spacing: 6) {
@@ -48,8 +48,11 @@ struct HelpView: View {
                     Text("Keyboard Shortcuts").font(.title2).bold()
 
                     VStack(alignment: .leading, spacing: 6) {
+                        HelpShortcut(key: "⌘N", action: "New Project")
+                        HelpShortcut(key: "⌘⇧A", action: "Add Paper")
                         HelpShortcut(key: "⌘,", action: "Open Settings")
                         HelpShortcut(key: "⌘⇧I", action: "Import Project")
+                        HelpShortcut(key: "⌘E", action: "Export Selected Project")
                     }
                     .font(.callout)
                 }
@@ -70,8 +73,12 @@ struct HelpView: View {
 
                 Group {
                     Text("Data Storage").font(.title2).bold()
-                    Text("All data is stored in ~/Library/Application Support/RelatedWorks/")
-                        .font(.callout).monospaced()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("With local storage, projects and PDFs are stored under:")
+                        Text("~/Library/Application Support/RelatedWorks/projects/")
+                            .font(.callout).monospaced()
+                        Text("With iCloud sync enabled in Settings, projects and PDFs are stored in the app's iCloud Drive container and sync across your devices.")
+                    }
                 }
             }
             .padding(24)

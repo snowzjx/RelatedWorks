@@ -80,7 +80,6 @@ struct ProjectDetailView: View {
                 .foregroundStyle(.blue)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .keyboardShortcut("a", modifiers: [.command, .shift])
                 .help("Add Paper (⌘⇧A)")
             }
             .frame(width: 260)
@@ -118,6 +117,9 @@ struct ProjectDetailView: View {
         }
         .sheet(item: $editingPaper) { paper in
             EditMetadataSheet(paper: paper, project: $project)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .addPaper)) { _ in
+            showingAddPaper = true
         }
         .onChange(of: externalPaperID) { id in
             if let id { selectedPaperID = id; externalPaperID = nil }

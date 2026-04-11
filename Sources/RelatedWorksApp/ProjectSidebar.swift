@@ -58,6 +58,9 @@ struct ProjectSidebar: View {
         .onReceive(NotificationCenter.default.publisher(for: .importProject)) { _ in
             importProject()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .newProject)) { _ in
+            showingNewProject = true
+        }
         .onReceive(NotificationCenter.default.publisher(for: .exportProject)) { _ in
             guard let id = selectedProjectID,
                   let project = store.projects.first(where: { $0.id == id }) else { return }

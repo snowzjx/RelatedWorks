@@ -1,5 +1,9 @@
 import SwiftUI
 
+private enum AppWindowID {
+    static let main = "main"
+}
+
 @main
 struct RelatedWorksApp: App {
     @State private var store = Store()
@@ -8,7 +12,7 @@ struct RelatedWorksApp: App {
     @State private var showHelp = false
 
     var body: some Scene {
-        WindowGroup {
+        Window("RelatedWorks", id: AppWindowID.main) {
             ContentView(deepLinkHandler: deepLinkHandler)
                 .environmentObject(store)
                 .environmentObject(settings)
@@ -24,8 +28,15 @@ struct RelatedWorksApp: App {
         .windowToolbarStyle(.unified)
         .handlesExternalEvents(matching: ["*"])
         .commands {
-            CommandGroup(replacing: .newItem) {}
+            CommandGroup(replacing: .newItem) {
+                Button("New Project") {
+                    NotificationCenter.default.post(name: .newProject, object: nil)
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
             CommandGroup(after: .newItem) {
+                AddPaperMenuButton()
+
                 Button("Import Project…") {
                     NotificationCenter.default.post(name: .importProject, object: nil)
                 }
@@ -34,10 +45,13 @@ struct RelatedWorksApp: App {
                 ExportMenuButton()
             }
             CommandGroup(replacing: .help) {
-                Button("RelatedWorks Help") {
+                Button("User Guide") {
                     NotificationCenter.default.post(name: .showHelp, object: nil)
                 }
-                .keyboardShortcut("?", modifiers: .command)
+                .keyboardShortcut("/", modifiers: [.command, .shift])
+            }
+            CommandGroup(after: .windowArrangement) {
+                MainWindowMenuItem()
             }
         }
 
@@ -71,7 +85,32 @@ struct ExportMenuButton: View {
     }
 }
 
+struct AddPaperMenuButton: View {
+    @FocusedValue(\.selectedProjectID) var selectedProjectID
+
+    var body: some View {
+        Button("Add Paper…") {
+            NotificationCenter.default.post(name: .addPaper, object: nil)
+        }
+        .keyboardShortcut("a", modifiers: [.command, .shift])
+        .disabled(selectedProjectID == nil)
+    }
+}
+
+struct MainWindowMenuItem: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("Main Window") {
+            openWindow(id: AppWindowID.main)
+        }
+        .keyboardShortcut("0", modifiers: .command)
+    }
+}
+
 extension Notification.Name {
+    static let newProject = Notification.Name("newProject")
+    static let addPaper = Notification.Name("addPaper")
     static let importProject = Notification.Name("importProject")
     static let exportProject = Notification.Name("exportProject")
     static let showHelp = Notification.Name("showHelp")
