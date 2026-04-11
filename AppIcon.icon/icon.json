@@ -98,6 +98,7 @@
       "layers" : [
         {
           "fill" : "none",
+          "glass" : true,
           "image-name" : "02-paper-back 4.svg",
           "name" : "02-paper-back 4"
         }
