@@ -93,15 +93,24 @@ struct ProjectSidebar: View {
 
     private func exportProject(_ project: Project) {
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "\(project.name).relatedworks"
+        panel.nameFieldStringValue = project.name
         panel.allowedContentTypes = [.init(filenameExtension: "relatedworks")!]
         guard panel.runModal() == .OK, let url = panel.url else { return }
+        let destination = normalizedExportURL(url)
         do {
-            try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: url)
+            try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: destination)
         } catch {
             let alert = NSAlert(); alert.messageText = "Export Failed"
             alert.informativeText = error.localizedDescription; alert.runModal()
         }
+    }
+
+    private func normalizedExportURL(_ url: URL) -> URL {
+        var base = url
+        while base.pathExtension.lowercased() == "relatedworks" {
+            base = base.deletingPathExtension()
+        }
+        return base.appendingPathExtension("relatedworks")
     }
 
     private func importProject() {
