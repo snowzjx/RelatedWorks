@@ -1,7 +1,7 @@
 # RelatedWorks
 
 <p align="center">
-  <img src="icon.svg" width="120" alt="RelatedWorks icon"/>
+  <img src="icon-dark.png" width="120" alt="RelatedWorks icon"/>
 </p>
 
 > ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.
