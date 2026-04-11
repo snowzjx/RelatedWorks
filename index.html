@@ -110,17 +110,28 @@
       margin-bottom: 24px;
     }
 
-    .screenshots-card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
-
-    .screenshot-item { margin-bottom: 24px; }
-    .screenshot-item:last-child { margin-bottom: 0; }
-    .screenshot-item img {
+    .screenshots-card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+    .screenshots-note { font-size: 0.9rem; color: #8e8e93; margin-bottom: 16px; }
+    .shots {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .shot {
+      min-width: 320px;
+      max-width: 320px;
+      scroll-snap-align: start;
+      flex: 0 0 auto;
+    }
+    .shot img {
       width: 100%;
       border-radius: 12px;
-      border: 1px solid #2c2c2e;
       display: block;
     }
-    .screenshot-item p {
+    .shot p {
       font-size: 0.82rem;
       color: #636366;
       margin-top: 8px;
@@ -189,15 +200,16 @@
       .req { color: #8e8e93; }
       .terminal { background: #1c1c1e; }
       footer { color: #8e8e93; }
-      .screenshot-item p { color: #8e8e93; }
+      .shot p { color: #8e8e93; }
       .tui-card p { color: #6e6e73; }
     }
 
     @media (max-width: 480px) {
-      .hero, .tui-card { padding: 32px 20px; border-radius: 16px; }
+      .hero, .screenshots-card, .tui-card { padding: 32px 20px; border-radius: 16px; }
       h1 { font-size: 1.8rem; }
       .features { padding: 16px; }
       .terminal { font-size: 0.72rem; padding: 14px; }
+      .shot { min-width: 260px; max-width: 260px; }
     }
   </style>
 </head>
@@ -237,6 +249,37 @@
       Build from source: macOS 13+ / iOS 17+. Use <a href="https://ollama.com" target="_blank">Ollama</a> locally
       or a <a href="https://aistudio.google.com/apikey" target="_blank">Gemini API key</a>.
     </p>
+  </div>
+
+  <div class="screenshots-card">
+    <h2>✨ Product Tour</h2>
+    <p class="screenshots-note">Scroll horizontally to preview the app experience.</p>
+    <div class="shots">
+      <figure class="shot">
+        <img src="assets/screenshots/title-page.jpg" alt="Title Page"/>
+        <p>Project Workspace</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/pdf-import.jpg" alt="PDF Import"/>
+        <p>PDF Import with AI Metadata</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/cross-reference.jpg" alt="Cross Reference"/>
+        <p>@Cross-Reference Annotations</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/related-works.jpg" alt="Related Works"/>
+        <p>One-Click Related Works Generation</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/ai-backend.jpg" alt="AI Backend"/>
+        <p>AI Backend Configuration</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/dark-mode.jpg" alt="Dark Mode"/>
+        <p>Dark Appearance</p>
+      </figure>
+    </div>
   </div>
 
   <footer>© 2026 RelatedWorks · MIT License</footer>
