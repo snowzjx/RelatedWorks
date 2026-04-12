@@ -1,7 +1,11 @@
 # RelatedWorks
 
 <p align="center">
-  <img src="icon-dark.png" width="120" alt="RelatedWorks icon"/>
+  <picture>
+    <source srcset="icon-light.png" media="(prefers-color-scheme: light)"/>
+    <source srcset="icon-dark.png" media="(prefers-color-scheme: dark)"/>
+    <img src="icon-dark.png" width="120" alt="RelatedWorks icon"/>
+  </picture>
 </p>
 
 > ⚠️ This project is purely vibe coded — built entirely through AI-assisted development without traditional planning or architecture review. Expect rough edges.

@@ -25,23 +25,36 @@
       "blur-material" : null,
       "layers" : [
         {
-          "glass" : false,
-          "image-name" : "05-rw-text 6.svg",
-          "name" : "05-rw-text 6",
+          "image-name" : "06-paper-detail.svg",
+          "name" : "06-paper-detail",
           "position" : {
             "scale" : 1,
             "translation-in-points" : [
-              -77,
-              -225.1318827767857
+              -1.6143968433606233,
+              114.91736416534638
             ]
           }
         },
         {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : "none"
+            }
+          ],
           "glass" : false,
-          "image-name" : "06-paper-details 4.svg",
-          "name" : "06-paper-details 4"
+          "image-name" : "05-rw-text.svg",
+          "name" : "05-rw-text",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -33.61439684336062,
+              -156.8788310809307
+            ]
+          }
         }
       ],
+      "name" : "Group",
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
@@ -58,29 +71,46 @@
       "hidden" : false,
       "layers" : [
         {
+          "blend-mode" : "normal",
           "fill" : "none",
           "glass" : true,
           "hidden" : false,
-          "image-name" : "04-paper-front 4.svg",
-          "name" : "04-paper-front 4"
+          "image-name" : "04-paper-front.svg",
+          "name" : "04-paper-front",
+          "position" : {
+            "scale" : 0.9,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
+      "lighting" : "individual",
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.2
       },
-      "specular" : true,
+      "specular" : false,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.3
+        "value" : 0.1
       }
     },
     {
       "blur-material" : 0.5,
       "layers" : [
         {
-          "image-name" : "03-paper-mid 4.svg",
-          "name" : "03-paper-mid 4"
+          "fill" : "none",
+          "image-name" : "03-paper-middle.svg",
+          "name" : "03-paper-middle",
+          "position" : {
+            "scale" : 0.88,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {
@@ -97,10 +127,43 @@
       "blur-material" : 0.5,
       "layers" : [
         {
-          "fill" : "none",
+          "blend-mode-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "value" : {
+                "automatic-gradient" : "display-p3:0.92557,0.78517,0.26910,1.00000",
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 1
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : 0.3
+                  }
+                }
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : "none"
+            }
+          ],
           "glass" : true,
-          "image-name" : "02-paper-back 4.svg",
-          "name" : "02-paper-back 4"
+          "image-name" : "02-paper-back.svg",
+          "name" : "02-paper-back",
+          "position" : {
+            "scale" : 0.82,
+            "translation-in-points" : [
+              0.26272625539752426,
+              -26.249971519967175
+            ]
+          }
         }
       ],
       "lighting" : "individual",
