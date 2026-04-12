@@ -6,7 +6,7 @@
   <title>RelatedWorks</title>
   <link rel="icon" type="image/png" href="icon-light.png" media="(prefers-color-scheme: light)"/>
   <link rel="icon" type="image/png" href="icon-dark.png" media="(prefers-color-scheme: dark)"/>
-  <link rel="icon" type="image/png" href="icon-dark.png"/>
+  <link rel="icon" type="image/png" href="icon.png"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -128,6 +128,10 @@
       scroll-snap-align: start;
       flex: 0 0 auto;
     }
+    .shot-hero {
+      min-width: 420px;
+      max-width: 420px;
+    }
     .shot img {
       width: 100%;
       border-radius: 12px;
@@ -214,6 +218,7 @@
       .features { padding: 16px; }
       .terminal { font-size: 0.72rem; padding: 14px; }
       .shot { min-width: 260px; max-width: 260px; }
+      .shot-hero { min-width: 320px; max-width: 320px; }
     }
   </style>
 </head>
@@ -265,7 +270,7 @@
     <h2>✨ Product Tour</h2>
     <p class="screenshots-note">Scroll horizontally to preview the app experience.</p>
     <div class="shots">
-      <figure class="shot">
+      <figure class="shot shot-hero">
         <img src="assets/screenshots/title-page.jpg" alt="Title Page"/>
         <p>Project Workspace</p>
       </figure>
