@@ -38,6 +38,29 @@ Notes:
 - When touching export/import behavior, verify whether the code lives in `RelatedWorksCore`, app-only code, or iOS-specific code before changing tests.
 - Preserve the existing visual language when editing the GitHub Pages site.
 
+## Icon Update Checklist
+
+When the app icon is updated, check all of the following instead of updating only the primary app icon source:
+
+- App icon source files under `AppIcon.icon/`.
+- Root README/site icon exports on `main`: `icon-dark.png` and `icon-light.png`.
+- iOS About panel asset: `Sources/RelatedWorksIOS/Assets.xcassets/AppLogo.imageset/AppLogo-light.png` and `AppLogo-dark.png`.
+- Any macOS/iOS asset catalogs that intentionally reuse the icon artwork.
+- GitHub Pages assets on `gh-pages`: `icon-dark.png`, `icon-light.png`, and fallback `icon.png`.
+- GitHub Pages showcase screenshots that visibly include the app icon, especially `assets/screenshots/title-page.jpg`.
+
+Branch expectations for icon work:
+
+- App/source/README changes belong on `main`.
+- Website icons, screenshots, and page HTML belong on `gh-pages`.
+- Do not leave icon-related website updates only in a `gh-pages` worktree; confirm they are committed on `gh-pages` and pushed.
+
+Verification steps for icon work:
+
+- Compare hashes or dimensions when replacing PNG exports so reused assets really changed.
+- Check `git status --short` on both `main` and the `gh-pages` worktree before finishing.
+- If the icon appears inside a screenshot, verify the composition and scale rather than only swapping the raw icon file.
+
 ## Commit Style
 
 Recent history uses conventional commit prefixes:
