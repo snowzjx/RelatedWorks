@@ -141,19 +141,6 @@ struct ModelsSettingsView: View {
                 }
             } header: { Text("Related Works Generation") }
 
-            Section {
-                VStack(alignment: .leading, spacing: 6) {
-                    TextEditor(text: $settings.generationPrompt)
-                        .font(.system(.caption, design: .monospaced))
-                        .frame(minHeight: 140)
-                        .scrollContentBackground(.hidden)
-                        .background(Color(nsColor: .controlBackgroundColor))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
-                    Button("Reset to Default") { settings.generationPrompt = AppSettings.defaultGenerationPrompt }
-                        .controlSize(.small).buttonStyle(.borderless).foregroundStyle(.blue)
-                }
-            } header: { Text("Generation Prompt") }
         }
         .formStyle(.grouped)
         .onAppear { fetchModels() }

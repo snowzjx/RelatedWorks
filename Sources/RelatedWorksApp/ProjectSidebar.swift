@@ -140,6 +140,7 @@ struct ProjectSidebar: View {
 
 struct ProjectRow: View {
     let project: Project
+
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(project.name).fontWeight(.medium).lineLimit(1)
@@ -160,22 +161,27 @@ struct RenameProjectSheet: View {
     @Binding var isPresented: Bool
     @State private var name = ""
     @State private var description = ""
+    @State private var projectType: ProjectType = .custom
+    @State private var generationPrompt = ""
     @FocusState private var focused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Edit Project").font(.title3).fontWeight(.semibold)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Name").font(.caption).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Project Name", systemImage: "folder")
+                    .font(.caption).foregroundStyle(.secondary)
                 TextField("Project name", text: $name)
                     .textFieldStyle(.roundedBorder)
                     .focused($focused)
             }
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Description").font(.caption).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Description (optional)", systemImage: "text.alignleft")
+                    .font(.caption).foregroundStyle(.secondary)
                 TextField("What paper are you writing?", text: $description)
                     .textFieldStyle(.roundedBorder)
             }
+            projectPromptFields
             HStack {
                 Spacer()
                 Button("Cancel") { isPresented = false }.keyboardShortcut(.escape)
@@ -183,16 +189,76 @@ struct RenameProjectSheet: View {
                     var updated = project
                     updated.name = name.trimmingCharacters(in: .whitespaces)
                     updated.description = description.trimmingCharacters(in: .whitespaces)
+                    updated.projectType = projectType
+                    updated.generationPrompt = generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
                     try? store.save(updated)
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.return)
-                .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty ||
+                          generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
-        .padding(24).frame(width: 360)
-        .onAppear { name = project.name; description = project.description; focused = true }
+        .padding(24).frame(width: 460)
+        .onAppear {
+            name = project.name
+            description = project.description
+            projectType = project.projectType
+            generationPrompt = project.generationPrompt
+            focused = true
+        }
+        .onChange(of: generationPrompt) { newValue in
+            syncProjectTypeForPrompt(newValue)
+        }
+    }
+
+    @ViewBuilder
+    private var projectPromptFields: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Project Type", systemImage: "square.stack.3d.up")
+                .font(.caption).foregroundStyle(.secondary)
+            Picker("Project Type", selection: $projectType) {
+                ForEach(ProjectType.allCases, id: \.self) { type in
+                    Text(type.displayName).tag(type)
+                }
+            }
+            .pickerStyle(.menu)
+            .onChange(of: projectType) { newValue in
+                if let preset = newValue.presetPrompt {
+                    generationPrompt = preset
+                }
+            }
+
+            Label("Project Prompt", systemImage: "text.badge.star")
+                .font(.caption).foregroundStyle(.secondary)
+            TextEditor(text: $generationPrompt)
+                .font(.system(.caption, design: .monospaced))
+                .frame(height: 140)
+                .scrollContentBackground(.hidden)
+                .background(Color(nsColor: .controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
+
+            HStack {
+                Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName). Editing it will switch the type to Custom.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if let preset = projectType.presetPrompt {
+                    Button("Reset to Preset") { generationPrompt = preset }
+                        .buttonStyle(.borderless)
+                        .controlSize(.small)
+                }
+            }
+        }
+    }
+
+    private func syncProjectTypeForPrompt(_ prompt: String) {
+        guard projectType != .custom, let preset = projectType.presetPrompt else { return }
+        if prompt != preset {
+            projectType = .custom
+        }
     }
 }
 
@@ -203,6 +269,8 @@ struct NewProjectSheet: View {
 
     @State private var name = ""
     @State private var description = ""
+    @State private var projectType: ProjectType = .researchPaper
+    @State private var generationPrompt = ProjectType.researchPaper.presetPrompt ?? ""
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -225,6 +293,45 @@ struct NewProjectSheet: View {
                     .textFieldStyle(.roundedBorder)
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Project Type", systemImage: "square.stack.3d.up")
+                    .font(.caption).foregroundStyle(.secondary)
+                Picker("Project Type", selection: $projectType) {
+                    ForEach(ProjectType.allCases, id: \.self) { type in
+                        Text(type.displayName).tag(type)
+                    }
+                }
+                .pickerStyle(.menu)
+                .onChange(of: projectType) { newValue in
+                    if let preset = newValue.presetPrompt {
+                        generationPrompt = preset
+                    }
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Project Prompt", systemImage: "text.badge.star")
+                    .font(.caption).foregroundStyle(.secondary)
+                TextEditor(text: $generationPrompt)
+                    .font(.system(.caption, design: .monospaced))
+                    .frame(height: 140)
+                    .scrollContentBackground(.hidden)
+                    .background(Color(nsColor: .controlBackgroundColor))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
+                HStack {
+                    Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName). Editing it will switch the type to Custom.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if let preset = projectType.presetPrompt {
+                        Button("Reset to Preset") { generationPrompt = preset }
+                            .buttonStyle(.borderless)
+                            .controlSize(.small)
+                    }
+                }
+            }
+
             HStack {
                 Spacer()
                 Button("Cancel") { isPresented = false }
@@ -232,16 +339,28 @@ struct NewProjectSheet: View {
                 Button("Create") { create() }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.return)
-                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty ||
+                              generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
         .padding(24)
-        .frame(width: 400)
+        .frame(width: 460)
         .onAppear { focused = true }
+        .onChange(of: generationPrompt) { newValue in
+            guard projectType != .custom, let preset = projectType.presetPrompt else { return }
+            if newValue != preset {
+                projectType = .custom
+            }
+        }
     }
 
     private func create() {
-        let p = Project(name: name.trimmingCharacters(in: .whitespaces), description: description)
+        let p = Project(
+            name: name.trimmingCharacters(in: .whitespaces),
+            description: description.trimmingCharacters(in: .whitespaces),
+            projectType: projectType,
+            generationPrompt: generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
         try? store.save(p)
         onCreated(p.id)
         isPresented = false

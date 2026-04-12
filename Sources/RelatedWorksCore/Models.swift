@@ -2,6 +2,62 @@ import Foundation
 
 // MARK: - Core Models
 
+public enum ProjectType: String, Codable, CaseIterable, Hashable {
+    case survey
+    case researchPaper
+    case techReport
+    case custom
+
+    public var displayName: String {
+        switch self {
+        case .survey: return "Survey"
+        case .researchPaper: return "Research Paper"
+        case .techReport: return "Tech Report"
+        case .custom: return "Custom"
+        }
+    }
+
+    public var presetPrompt: String? {
+        switch self {
+        case .survey:
+            return """
+                Write 3-4 cohesive paragraphs in formal academic LaTeX style for the Related Works section of a survey paper.
+                The paper title and description are provided above — use them to define the survey scope and organize the literature landscape.
+                Group papers into broad themes, methodological families, or problem settings instead of discussing them one by one.
+                Emphasize how the cited works connect to each other, what subareas they cover, and where the overall landscape still has open questions or fragmentation.
+                Incorporate the author annotation notes naturally into the discussion.
+                Cite papers using LaTeX \\cite{ID} where ID is the paper's semantic ID (e.g. \\cite{Transformer}, \\cite{BERT}).
+                Do NOT include a section heading, just the paragraphs.
+                Output only the LaTeX paragraph text, nothing else.
+                """
+        case .researchPaper:
+            return """
+                Write 2-3 cohesive paragraphs in formal academic LaTeX style for the Related Works section of a research paper.
+                The paper title and description are provided above — tailor the discussion to position this paper against the most relevant prior work.
+                Group related papers thematically instead of listing them one by one.
+                Highlight key differences, limitations, or gaps in prior work that motivate the current paper.
+                Incorporate the author annotation notes naturally into the discussion.
+                Cite papers using LaTeX \\cite{ID} where ID is the paper's semantic ID (e.g. \\cite{Transformer}, \\cite{BERT}).
+                Do NOT include a section heading, just the paragraphs.
+                Output only the LaTeX paragraph text, nothing else.
+                """
+        case .techReport:
+            return """
+                Write 2-3 cohesive paragraphs in clear formal LaTeX style for the Related Works section of a technical report.
+                The paper title and description are provided above — focus on practical system context, prior approaches, and implementation tradeoffs relevant to this report.
+                Group papers by technical approach, deployment setting, or system constraint instead of listing them one by one.
+                Make the comparison concrete, emphasizing design decisions, empirical tradeoffs, and operational lessons from prior work.
+                Incorporate the author annotation notes naturally into the discussion.
+                Cite papers using LaTeX \\cite{ID} where ID is the paper's semantic ID (e.g. \\cite{Transformer}, \\cite{BERT}).
+                Do NOT include a section heading, just the paragraphs.
+                Output only the LaTeX paragraph text, nothing else.
+                """
+        case .custom:
+            return nil
+        }
+    }
+}
+
 public struct Paper: Codable, Identifiable, Hashable {
     public var id: String
     public var title: String
@@ -68,16 +124,21 @@ public struct Project: Codable, Identifiable, Hashable {
     public var id: UUID
     public var name: String
     public var description: String
+    public var projectType: ProjectType
+    public var generationPrompt: String
     public var papers: [Paper]
     public var createdAt: Date
     public var generatedLatex: String?
     public var generationModel: String?
     public var bibEntries: [String: String]
 
-    public init(name: String, description: String = "") {
+    public init(name: String, description: String = "", projectType: ProjectType = .researchPaper,
+                generationPrompt: String? = nil) {
         self.id = UUID()
         self.name = name
         self.description = description
+        self.projectType = projectType
+        self.generationPrompt = Self.resolveInitialPrompt(projectType: projectType, generationPrompt: generationPrompt)
         self.papers = []
         self.createdAt = Date()
         self.generatedLatex = nil
@@ -86,9 +147,18 @@ public struct Project: Codable, Identifiable, Hashable {
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
+        let legacy = try decoder.container(keyedBy: LegacyCodingKeys.self)
         id = try c.decode(UUID.self, forKey: .id)
         name = try c.decode(String.self, forKey: .name)
         description = try c.decodeIfPresent(String.self, forKey: .description) ?? ""
+        projectType = try c.decodeIfPresent(ProjectType.self, forKey: .projectType) ?? .custom
+        if let storedPrompt = (try c.decodeIfPresent(String.self, forKey: .generationPrompt))?.trimmedNilIfEmpty {
+            generationPrompt = storedPrompt
+        } else if let legacyOverride = (try legacy.decodeIfPresent(String.self, forKey: .generationPromptOverride))?.trimmedNilIfEmpty {
+            generationPrompt = legacyOverride
+        } else {
+            generationPrompt = AppSettings.shared.generationPrompt
+        }
         papers = try c.decodeIfPresent([Paper].self, forKey: .papers) ?? []
         createdAt = try c.decode(Date.self, forKey: .createdAt)
         generatedLatex = try c.decodeIfPresent(String.self, forKey: .generatedLatex)
@@ -104,6 +174,8 @@ public struct Project: Codable, Identifiable, Hashable {
         self.id = newID
         self.name = source.name
         self.description = source.description
+        self.projectType = source.projectType
+        self.generationPrompt = source.generationPrompt
         self.papers = source.papers
         self.createdAt = Date()
         self.generatedLatex = source.generatedLatex
@@ -133,5 +205,49 @@ public struct Project: Codable, Identifiable, Hashable {
         return regex.matches(in: text, range: range).compactMap {
             Range($0.range(at: 1), in: text).map { String(text[$0]) }
         }
+    }
+
+    public mutating func applyPreset(for type: ProjectType) {
+        projectType = type
+        if let preset = type.presetPrompt {
+            generationPrompt = preset
+        }
+    }
+
+    public mutating func updateGenerationPrompt(_ prompt: String) {
+        generationPrompt = prompt.trimmedNilIfEmpty ?? generationPrompt
+        if projectType != .custom, let preset = projectType.presetPrompt, prompt != preset {
+            projectType = .custom
+        }
+    }
+
+    public func usesPresetPrompt() -> Bool {
+        guard let preset = projectType.presetPrompt else { return false }
+        return generationPrompt == preset
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, description, projectType, generationPrompt, papers, createdAt, generatedLatex, generationModel, bibEntries
+    }
+
+    enum LegacyCodingKeys: String, CodingKey {
+        case generationPromptOverride
+    }
+
+    private static func resolveInitialPrompt(projectType: ProjectType, generationPrompt: String?) -> String {
+        if let prompt = generationPrompt?.trimmedNilIfEmpty {
+            return prompt
+        }
+        if let preset = projectType.presetPrompt {
+            return preset
+        }
+        return AppSettings.shared.generationPrompt
+    }
+}
+
+private extension String {
+    var trimmedNilIfEmpty: String? {
+        let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
     }
 }

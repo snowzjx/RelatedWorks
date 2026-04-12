@@ -49,6 +49,37 @@ struct ProjectModelTests {
         let refs = project.crossReferences(for: "BERT")
         #expect(refs.isEmpty)
     }
+
+    @Test func projectInitializesPromptFromPreset() {
+        let project = Project(name: "Survey", projectType: .survey)
+        #expect(project.generationPrompt == ProjectType.survey.presetPrompt)
+    }
+
+    @Test func editingPresetPromptSwitchesTypeToCustom() {
+        var project = Project(name: "Survey", projectType: .survey)
+        project.updateGenerationPrompt("Manually tuned prompt")
+        #expect(project.projectType == .custom)
+        #expect(project.generationPrompt == "Manually tuned prompt")
+    }
+
+    @Test func projectDecodingMigratesMissingPromptFields() throws {
+        let json = """
+        {
+          "id": "\(UUID().uuidString)",
+          "name": "Legacy",
+          "description": "",
+          "papers": [],
+          "createdAt": "2026-04-12T00:00:00Z",
+          "bibEntries": {}
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let project = try decoder.decode(Project.self, from: json)
+        #expect(project.projectType == .custom)
+        #expect(project.generationPrompt == AppSettings.shared.generationPrompt)
+    }
 }
 
 // MARK: - Store Tests
@@ -132,12 +163,19 @@ struct StoreTests {
     }
 
     @Test func importingProjectAssignsNewIDAndPreservesContent() {
-        var source = Project(name: "Export Test", description: "desc")
+        var source = Project(
+            name: "Export Test",
+            description: "desc",
+            projectType: .techReport,
+            generationPrompt: "Project prompt"
+        )
         source.addPaper(Paper(id: "BERT", title: "BERT", authors: ["Devlin"], year: 2019))
 
         let imported = Project(importing: source, newID: UUID())
         #expect(imported.name == source.name)
         #expect(imported.description == source.description)
+        #expect(imported.projectType == .techReport)
+        #expect(imported.generationPrompt == "Project prompt")
         #expect(imported.papers.first?.id == "BERT")
         #expect(imported.id != source.id)
     }

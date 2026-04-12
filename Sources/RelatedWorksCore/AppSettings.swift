@@ -56,7 +56,7 @@ public class AppSettings: ObservableObject {
         }
     }
 
-    // Generation prompt
+    // Legacy global generation prompt, kept only to migrate older project JSON.
     @Published public var generationPrompt: String {
         didSet { UserDefaults.standard.set(generationPrompt, forKey: "generationPrompt") }
     }
