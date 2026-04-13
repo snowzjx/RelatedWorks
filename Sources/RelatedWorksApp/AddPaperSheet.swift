@@ -127,8 +127,7 @@ struct AddPaperSheet: View {
                             }
                         }
                         HStack {
-                            TextField("Paper title or keywords", text: $query)
-                                .textFieldStyle(.roundedBorder)
+                            LiquidGlassSearchField(prompt: "Paper title or keywords", text: $query)
                                 .onChange(of: query) { _ in triggerSearch() }
                             if isSearching { ProgressView().scaleEffect(0.7).frame(width: 20) }
                         }

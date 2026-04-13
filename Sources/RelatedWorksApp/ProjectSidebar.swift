@@ -217,13 +217,16 @@ struct RenameProjectSheet: View {
     private var projectPromptFields: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label("Project Type", systemImage: "square.stack.3d.up")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption)
+                .foregroundStyle(.secondary)
             Picker("Project Type", selection: $projectType) {
                 ForEach(ProjectType.allCases, id: \.self) { type in
                     Text(type.displayName).tag(type)
                 }
             }
-            .pickerStyle(.menu)
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .controlSize(.small)
             .onChange(of: projectType) { newValue in
                 if let preset = newValue.presetPrompt {
                     generationPrompt = preset
@@ -241,7 +244,7 @@ struct RenameProjectSheet: View {
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
 
             HStack {
-                Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName). Editing it will switch the type to Custom.")
+                Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName).")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -295,13 +298,16 @@ struct NewProjectSheet: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Label("Project Type", systemImage: "square.stack.3d.up")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 Picker("Project Type", selection: $projectType) {
                     ForEach(ProjectType.allCases, id: \.self) { type in
                         Text(type.displayName).tag(type)
                     }
                 }
-                .pickerStyle(.menu)
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .controlSize(.small)
                 .onChange(of: projectType) { newValue in
                     if let preset = newValue.presetPrompt {
                         generationPrompt = preset
@@ -320,7 +326,7 @@ struct NewProjectSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                     .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
                 HStack {
-                    Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName). Editing it will switch the type to Custom.")
+                    Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName).")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     Spacer()

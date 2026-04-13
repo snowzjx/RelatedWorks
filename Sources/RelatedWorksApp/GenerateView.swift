@@ -1,4 +1,9 @@
-import SwiftUI
+    import SwiftUI
+
+private enum GeneratedOutputTab: Hashable {
+    case draft
+    case bibtex
+}
 
 struct GenerateButton: View {
     @Binding var project: Project
@@ -41,10 +46,8 @@ struct GeneratedOutputSheet: View {
     @Binding var isGenerating: Bool
     let onRegenerate: () -> Void
     @Environment(\.dismiss) var dismiss
-    @State private var tab: Tab = .latex
+    @State private var tab: GeneratedOutputTab = .draft
     @State private var copied = false
-
-    enum Tab { case latex, bib }
 
     var bibContent: String {
         project.bibEntries.values.joined(separator: "\n\n")
@@ -66,12 +69,13 @@ struct GeneratedOutputSheet: View {
                     }
                 }
                 Spacer()
-                Picker("", selection: $tab) {
-                    Text("LaTeX").tag(Tab.latex)
-                    Text(".bib").tag(Tab.bib)
+                Picker("Output", selection: $tab) {
+                    Text("Draft").tag(GeneratedOutputTab.draft)
+                    Text("BibTeX").tag(GeneratedOutputTab.bibtex)
                 }
+                .labelsHidden()
                 .pickerStyle(.segmented)
-                .frame(width: 140)
+                .frame(width: 180)
 
                 Button(action: copy) {
                     Label(copied ? "Copied!" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
@@ -102,49 +106,52 @@ struct GeneratedOutputSheet: View {
 
             Divider()
 
-            // ── Content ──────────────────────────────────────────────
-            if tab == .latex {
-                if let latex = project.generatedLatex, !latex.isEmpty {
-                    ScrollView {
-                        Text(latex)
-                            .font(.system(.body, design: .monospaced))
-                            .lineSpacing(4)
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(20)
+            Group {
+                switch tab {
+                case .draft:
+                    if let latex = project.generatedLatex, !latex.isEmpty {
+                        ScrollView {
+                            Text(latex)
+                                .font(.system(.body, design: .monospaced))
+                                .lineSpacing(4)
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(20)
+                        }
+                        .background(Color(nsColor: .textBackgroundColor))
+                    } else {
+                        VStack(spacing: 12) {
+                            Image(systemName: "text.badge.star").font(.system(size: 40)).foregroundStyle(.tertiary)
+                            Text("No draft yet").font(.headline)
+                            Text("Click Regenerate to generate a Related Works section.")
+                                .foregroundStyle(.secondary)
+                            Button("Generate Now", action: onRegenerate)
+                                .buttonStyle(.borderedProminent)
+                                .disabled(isGenerating)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    .background(Color(nsColor: .textBackgroundColor))
-                } else {
-                    VStack(spacing: 12) {
-                        Image(systemName: "text.badge.star").font(.system(size: 40)).foregroundStyle(.tertiary)
-                        Text("No draft yet").font(.headline)
-                        Text("Click Regenerate to generate a Related Works section.")
-                            .foregroundStyle(.secondary)
-                        Button("Generate Now", action: onRegenerate)
-                            .buttonStyle(.borderedProminent)
-                            .disabled(isGenerating)
+
+                case .bibtex:
+                    if bibContent.isEmpty {
+                        VStack(spacing: 12) {
+                            Image(systemName: "doc.text").font(.system(size: 40)).foregroundStyle(.tertiary)
+                            Text("No BibTeX entries yet").font(.headline)
+                            Text("BibTeX is fetched from DBLP when you add papers with a DBLP match.")
+                                .foregroundStyle(.secondary).multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ScrollView {
+                            Text(bibContent)
+                                .font(.system(.body, design: .monospaced))
+                                .lineSpacing(4)
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(20)
+                        }
+                        .background(Color(nsColor: .textBackgroundColor))
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            } else {
-                if bibContent.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "doc.text").font(.system(size: 40)).foregroundStyle(.tertiary)
-                        Text("No BibTeX entries yet").font(.headline)
-                        Text("BibTeX is fetched from DBLP when you add papers with a DBLP match.")
-                            .foregroundStyle(.secondary).multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ScrollView {
-                        Text(bibContent)
-                            .font(.system(.body, design: .monospaced))
-                            .lineSpacing(4)
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(20)
-                    }
-                    .background(Color(nsColor: .textBackgroundColor))
                 }
             }
         }
@@ -152,7 +159,7 @@ struct GeneratedOutputSheet: View {
     }
 
     private func copy() {
-        let content = tab == .latex ? (project.generatedLatex ?? "") : bibContent
+        let content = tab == .draft ? (project.generatedLatex ?? "") : bibContent
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(content, forType: .string)
         copied = true
