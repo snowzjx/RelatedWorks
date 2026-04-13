@@ -1,165 +1,191 @@
-    import SwiftUI
+import SwiftUI
 
 private enum GeneratedOutputTab: Hashable {
     case draft
     case bibtex
 }
 
+// MARK: - Syntax Highlighting
+
+private func applyHighlights(to source: String, rules: [(pattern: String, color: Color, options: NSRegularExpression.Options)]) -> AttributedString {
+    var a = AttributedString(source)
+    a.foregroundColor = .primary
+    a.font = .system(.body, design: .monospaced)
+
+    for rule in rules {
+        guard let re = try? NSRegularExpression(pattern: rule.pattern, options: rule.options) else { continue }
+        let nsRange = NSRange(source.startIndex..., in: source)
+        for match in re.matches(in: source, range: nsRange) {
+            guard let range = Range(match.range, in: source) else { continue }
+            let lower = AttributedString.Index(range.lowerBound, within: a)
+            let upper = AttributedString.Index(range.upperBound, within: a)
+            if let l = lower, let u = upper {
+                a[l..<u].foregroundColor = rule.color
+            }
+        }
+    }
+    return a
+}
+
+private func highlightedLatex(_ source: String) -> AttributedString {
+    applyHighlights(to: source, rules: [
+        (#"%.*$"#,          .init(nsColor: .systemGreen),  .anchorsMatchLines),
+        (#"\\[a-zA-Z@]+"#, .init(nsColor: .systemBlue),   []),
+        (#"[{}]"#,          .init(nsColor: .systemOrange), []),
+        (#"\[[^\]]*\]"#,    .init(nsColor: .systemPurple), []),
+    ])
+}
+
+private func highlightedBibtex(_ source: String) -> AttributedString {
+    applyHighlights(to: source, rules: [
+        (#"@[a-zA-Z]+"#,          .init(nsColor: .systemBlue),   []),
+        (#"^\s*\w+\s*="#,         .init(nsColor: .systemPurple), .anchorsMatchLines),
+        (#"\{[^{}]*\}|"[^"]*""#,  .init(nsColor: .systemOrange), []),
+        (#"\b\d{4}\b"#,           .init(nsColor: .systemTeal),   []),
+    ])
+}
+
+// MARK: - GenerateButton
+
 struct GenerateButton: View {
     @Binding var project: Project
-    @EnvironmentObject var store: Store
-    @State private var showingSheet = false
-    @State private var isGenerating = false
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Button(action: { showingSheet = true }) {
+        Button(action: { openWindow(id: "generate", value: project.id) }) {
             Label("Related Works", systemImage: "text.badge.star")
         }
         .disabled(project.papers.isEmpty || !AppSettings.shared.isGenerationConfigured)
         .help(project.papers.isEmpty ? "Add papers first" : (!AppSettings.shared.isGenerationConfigured ? "Configure an AI model in Settings" : "View or generate Related Works section"))
-        .sheet(isPresented: $showingSheet) {
-            GeneratedOutputSheet(project: $project, isGenerating: $isGenerating) {
-                regenerate()
+    }
+}
+
+// MARK: - GenerateWindowView
+
+struct GenerateWindowView: View {
+    let projectID: UUID?
+    @EnvironmentObject var store: Store
+    @State private var tab: GeneratedOutputTab = .draft
+    @State private var copied = false
+    @State private var isGenerating = false
+
+    private var project: Project? {
+        guard let id = projectID else { return nil }
+        return store.projects.first { $0.id == id }
+    }
+
+    var body: some View {
+        Group {
+            if var proj = project {
+                contentView(proj: proj)
+                    .navigationTitle(proj.name)
+                    .navigationSubtitle(proj.generationModel.map { "⚙ \($0)" } ?? "")
+                    .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Picker("Output", selection: $tab) {
+                                Text("Draft").tag(GeneratedOutputTab.draft)
+                                Text("BibTeX").tag(GeneratedOutputTab.bibtex)
+                            }
+                            .pickerStyle(.segmented)
+//                            .frame(width: 180)
+                        }
+
+                        ToolbarItemGroup(placement: .primaryAction) {
+                            Button(action: { copyContent(proj) }) {
+                                Label(copied ? "Copied!" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
+                            }
+
+                            Button(action: { regenerate(&proj) }) {
+                                if isGenerating {
+                                    ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
+                                } else {
+                                    Label("Regenerate", systemImage: "sparkles")
+                                }
+                            }
+                            .disabled(isGenerating)
+                        }
+                    }
+            } else {
+                Text("Project not found").foregroundStyle(.secondary)
             }
         }
     }
 
-    private func regenerate() {
+    @ViewBuilder
+    private func contentView(proj: Project) -> some View {
+        let bibContent = proj.bibEntries.values.joined(separator: "\n\n")
+        switch tab {
+        case .draft:
+            if let latex = proj.generatedLatex, !latex.isEmpty {
+                ScrollView {
+                    Text(highlightedLatex(latex))
+                        .lineSpacing(4)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                }
+                .background(Color(nsColor: .textBackgroundColor))
+            } else {
+                VStack(spacing: 12) {
+                    Image(systemName: "text.badge.star").font(.system(size: 40)).foregroundStyle(.tertiary)
+                    Text("No draft yet").font(.headline)
+                    Text("Click Regenerate to generate a Related Works section.")
+                        .foregroundStyle(.secondary)
+                    Button("Generate Now") {
+                        var p = proj
+                        regenerate(&p)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(isGenerating)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+
+        case .bibtex:
+            if bibContent.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "doc.text").font(.system(size: 40)).foregroundStyle(.tertiary)
+                    Text("No BibTeX entries yet").font(.headline)
+                    Text("BibTeX is fetched from DBLP when you add papers with a DBLP match.")
+                        .foregroundStyle(.secondary).multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    Text(highlightedBibtex(bibContent))
+                        .lineSpacing(4)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                }
+                .background(Color(nsColor: .textBackgroundColor))
+            }
+        }
+    }
+
+    private func regenerate(_ proj: inout Project) {
         isGenerating = true
-        project.generatedLatex = nil
-        project.generationModel = nil
-        try? store.save(project)
+        proj.generatedLatex = nil
+        proj.generationModel = nil
+        try? store.save(proj)
+        let snapshot = proj
         Task {
-            let output = await RelatedWorksGenerator.generate(for: project)
+            let output = await RelatedWorksGenerator.generate(for: snapshot)
             await MainActor.run {
-                project.generatedLatex = output
-                project.generationModel = AppSettings.shared.activeGenerationModelName
-                try? store.save(project)
+                guard var updated = store.projects.first(where: { $0.id == snapshot.id }) else { return }
+                updated.generatedLatex = output
+                updated.generationModel = AppSettings.shared.activeGenerationModelName
+                try? store.save(updated)
                 isGenerating = false
             }
         }
     }
-}
 
-struct GeneratedOutputSheet: View {
-    @Binding var project: Project
-    @Binding var isGenerating: Bool
-    let onRegenerate: () -> Void
-    @Environment(\.dismiss) var dismiss
-    @State private var tab: GeneratedOutputTab = .draft
-    @State private var copied = false
-
-    var bibContent: String {
-        project.bibEntries.values.joined(separator: "\n\n")
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // ── Header ───────────────────────────────────────────────
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Related Works").font(.title3).fontWeight(.semibold)
-                    HStack(spacing: 6) {
-                        Text(project.name).font(.subheadline).foregroundStyle(.secondary)
-                        if let model = project.generationModel {
-                            Text("·").foregroundStyle(.tertiary)
-                            Label(model, systemImage: "cpu")
-                                .font(.caption).foregroundStyle(.tertiary)
-                        }
-                    }
-                }
-                Spacer()
-                Picker("Output", selection: $tab) {
-                    Text("Draft").tag(GeneratedOutputTab.draft)
-                    Text("BibTeX").tag(GeneratedOutputTab.bibtex)
-                }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-                .frame(width: 180)
-
-                Button(action: copy) {
-                    Label(copied ? "Copied!" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
-                }
-                .buttonStyle(.bordered)
-
-                Button(action: onRegenerate) {
-                    Group {
-                        if isGenerating {
-                            HStack(spacing: 4) {
-                                ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
-                                Text("Generating…")
-                            }
-                        } else {
-                            Label("Regenerate", systemImage: "arrow.clockwise")
-                        }
-                    }
-                    .frame(minWidth: 120)
-                }
-                .buttonStyle(.bordered)
-                .disabled(isGenerating)
-
-                Button("Done") { dismiss() }
-                    .buttonStyle(.borderedProminent)
-                    .keyboardShortcut(.return)
-            }
-            .padding(20)
-
-            Divider()
-
-            Group {
-                switch tab {
-                case .draft:
-                    if let latex = project.generatedLatex, !latex.isEmpty {
-                        ScrollView {
-                            Text(latex)
-                                .font(.system(.body, design: .monospaced))
-                                .lineSpacing(4)
-                                .textSelection(.enabled)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(20)
-                        }
-                        .background(Color(nsColor: .textBackgroundColor))
-                    } else {
-                        VStack(spacing: 12) {
-                            Image(systemName: "text.badge.star").font(.system(size: 40)).foregroundStyle(.tertiary)
-                            Text("No draft yet").font(.headline)
-                            Text("Click Regenerate to generate a Related Works section.")
-                                .foregroundStyle(.secondary)
-                            Button("Generate Now", action: onRegenerate)
-                                .buttonStyle(.borderedProminent)
-                                .disabled(isGenerating)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-
-                case .bibtex:
-                    if bibContent.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "doc.text").font(.system(size: 40)).foregroundStyle(.tertiary)
-                            Text("No BibTeX entries yet").font(.headline)
-                            Text("BibTeX is fetched from DBLP when you add papers with a DBLP match.")
-                                .foregroundStyle(.secondary).multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        ScrollView {
-                            Text(bibContent)
-                                .font(.system(.body, design: .monospaced))
-                                .lineSpacing(4)
-                                .textSelection(.enabled)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(20)
-                        }
-                        .background(Color(nsColor: .textBackgroundColor))
-                    }
-                }
-            }
-        }
-        .frame(width: 720, height: 540)
-    }
-
-    private func copy() {
-        let content = tab == .draft ? (project.generatedLatex ?? "") : bibContent
+    private func copyContent(_ proj: Project) {
+        let bibContent = proj.bibEntries.values.joined(separator: "\n\n")
+        let content = tab == .draft ? (proj.generatedLatex ?? "") : bibContent
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(content, forType: .string)
         copied = true

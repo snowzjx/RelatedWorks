@@ -2,6 +2,7 @@ import SwiftUI
 
 private enum AppWindowID {
     static let main = "main"
+    static let generate = "generate"
 }
 
 @main
@@ -12,7 +13,7 @@ struct RelatedWorksApp: App {
     @State private var showHelp = false
 
     var body: some Scene {
-        Window("RelatedWorks", id: AppWindowID.main) {
+        Window("Main Window", id: AppWindowID.main) {
             ContentView(deepLinkHandler: deepLinkHandler)
                 .environmentObject(store)
                 .environmentObject(settings)
@@ -50,15 +51,20 @@ struct RelatedWorksApp: App {
                 }
                 .keyboardShortcut("/", modifiers: [.command, .shift])
             }
-            CommandGroup(after: .windowArrangement) {
-                MainWindowMenuItem()
-            }
         }
 
         Settings {
             PreferencesView()
                 .environmentObject(store)
         }
+
+        WindowGroup(id: AppWindowID.generate, for: UUID.self) { $projectID in
+            GenerateWindowView(projectID: projectID)
+                .environmentObject(store)
+        }
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified)
+        .defaultSize(width: 720, height: 540)
     }
 }
 
@@ -94,17 +100,6 @@ struct AddPaperMenuButton: View {
         }
         .keyboardShortcut("a", modifiers: [.command, .shift])
         .disabled(selectedProjectID == nil)
-    }
-}
-
-struct MainWindowMenuItem: View {
-    @Environment(\.openWindow) private var openWindow
-
-    var body: some View {
-        Button("Main Window") {
-            openWindow(id: AppWindowID.main)
-        }
-        .keyboardShortcut("0", modifiers: .command)
     }
 }
 
