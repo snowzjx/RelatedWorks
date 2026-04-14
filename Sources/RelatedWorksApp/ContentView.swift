@@ -53,12 +53,22 @@ struct NoModelBanner: View {
             Text("No AI model configured")
                 .font(.caption).foregroundStyle(.primary)
             Spacer()
-            Button("Settings") { openAppSettings() }
-                .font(.caption).buttonStyle(.borderless).foregroundStyle(.blue)
+            if #available(macOS 14, *) {
+                NoModelBannerSettingsButton()
+            }
         }
         .padding(.horizontal, 12).padding(.vertical, 8)
         .background(.bar)
         .overlay(alignment: .top) { Divider() }
+    }
+}
+
+@available(macOS 14, *)
+private struct NoModelBannerSettingsButton: View {
+    @Environment(\.openSettings) private var openSettings
+    var body: some View {
+        Button("Settings") { openSettings() }
+            .font(.caption).buttonStyle(.borderless).foregroundStyle(.blue)
     }
 }
 

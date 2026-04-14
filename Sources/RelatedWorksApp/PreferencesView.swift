@@ -101,12 +101,13 @@ struct GeneralSettingsView: View {
 
 struct ModelsSettingsView: View {
     @ObservedObject var settings: AppSettings
+    @ObservedObject private var reachability = OllamaReachability.shared
     @State private var ollamaModels: [String] = []
     @State private var geminiModels: [String] = []
 
     var availableBackends: [AIBackendType] {
         var backends: [AIBackendType] = [.none]
-        if settings.ollamaReachable { backends.append(.ollama) }
+        if reachability.reachable { backends.append(.ollama) }
         if !settings.geminiAPIKey.isEmpty { backends.append(.gemini) }
         return backends
     }
@@ -144,14 +145,6 @@ struct ModelsSettingsView: View {
         }
         .formStyle(.grouped)
         .onAppear { fetchModels() }
-        .onChange(of: settings.ollamaReachable) { reachable in
-            if !reachable {
-                if settings.extractionBackend == .ollama { settings.extractionBackend = .none }
-                if settings.generationBackend == .ollama { settings.generationBackend = .none }
-            } else {
-                fetchOllamaModels()
-            }
-        }
     }
 
     @ViewBuilder
@@ -229,6 +222,7 @@ struct ModelsSettingsView: View {
 
 struct BackendsSettingsView: View {
     @ObservedObject var settings: AppSettings
+    @ObservedObject private var reachability = OllamaReachability.shared
     @State private var ollamaModelCount: Int = 0
     @State private var showingURLEditor = false
     @State private var showingGeminiKeyEditor = false
@@ -249,7 +243,7 @@ struct BackendsSettingsView: View {
                     Button("Refresh") { Task { await settings.checkOllama() } }.controlSize(.small)
                 }
                 HStack(spacing: 6) {
-                    if settings.ollamaReachable {
+                    if reachability.reachable {
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                         Text("Ollama is running").font(.caption).foregroundStyle(.secondary)
                     } else {

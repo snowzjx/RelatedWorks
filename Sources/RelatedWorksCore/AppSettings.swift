@@ -65,7 +65,10 @@ public class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(iCloudSyncEnabled, forKey: "iCloudSyncEnabled") }
     }
 
-    @Published public var ollamaReachable: Bool = true
+    public var ollamaReachable: Bool {
+        get { OllamaReachability.shared.reachable }
+        set { OllamaReachability.shared.reachable = newValue }
+    }
     private var pollingTask: Task<Void, Never>?
 
     public init() {
@@ -134,7 +137,14 @@ public class AppSettings: ObservableObject {
         let urlStr = ollamaBaseURL.trimmingCharacters(in: .init(charactersIn: "/"))
         guard let url = URL(string: "\(urlStr)/api/tags") else { return }
         let reachable = (try? await URLSession.shared.data(from: url)) != nil
-        await MainActor.run { ollamaReachable = reachable }
+        await MainActor.run {
+            let wasReachable = ollamaReachable
+            ollamaReachable = reachable
+            if !reachable && wasReachable {
+                if extractionBackend == .ollama { extractionBackend = .none }
+                if generationBackend == .ollama { generationBackend = .none }
+            }
+        }
     }
 
     // MARK: - Convenience
@@ -173,7 +183,7 @@ public class AppSettings: ObservableObject {
 
     public var shouldShowOllamaBanner: Bool {
         let geminiOk = !geminiAPIKey.isEmpty
-        return !geminiOk && !ollamaReachable
+        return !geminiOk && !OllamaReachability.shared.reachable
             && (extractionBackend == .ollama || generationBackend == .ollama)
     }
 

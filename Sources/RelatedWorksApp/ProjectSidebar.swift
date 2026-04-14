@@ -3,6 +3,7 @@ import SwiftUI
 struct ProjectSidebar: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var settings: AppSettings
+    @ObservedObject private var reachability = OllamaReachability.shared
     @Binding var selectedProjectID: UUID?
     @State private var showingNewProject = false
     @State private var renameTarget: Project?
@@ -36,7 +37,9 @@ struct ProjectSidebar: View {
         }
         .navigationTitle("RelatedWorks")
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if !settings.isGenerationConfigured && !settings.isExtractionConfigured {
+            let ollamaDown = !reachability.reachable
+                && (settings.extractionBackend == .ollama || settings.generationBackend == .ollama)
+            if !settings.isGenerationConfigured && !settings.isExtractionConfigured || ollamaDown {
                 NoModelBanner()
             }
         }
