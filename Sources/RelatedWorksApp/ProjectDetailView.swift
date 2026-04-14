@@ -1,5 +1,51 @@
 import SwiftUI
 
+struct LiquidGlassSearchField: View {
+    let prompt: String
+    @Binding var text: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+
+            TextField(prompt, text: $text)
+                .textFieldStyle(.plain)
+                .font(.callout)
+
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .modifier(LiquidGlassContainer())
+    }
+}
+
+struct LiquidGlassContainer: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26.0, *) {
+            content
+                .glassEffect(in: .rect(cornerRadius: 14))
+        } else {
+            content
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(.white.opacity(0.18))
+                }
+        }
+    }
+}
+
 struct ProjectDetailView: View {
     @EnvironmentObject var store: Store
     @Binding var project: Project
@@ -28,83 +74,68 @@ struct ProjectDetailView: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
-            // Left: paper list
-            VStack(spacing: 0) {
-                HStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary).font(.caption)
-                    TextField("Search papers…", text: $searchQuery)
-                        .textFieldStyle(.plain)
-                        .font(.callout)
-                    if !searchQuery.isEmpty {
-                        Button { searchQuery = "" } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(Color(nsColor: .controlBackgroundColor))
-
-                Divider()
-
-                List(filteredPapers, selection: $selectedPaperID) { paper in
-                    PaperRow(paper: paper, highlight: searchQuery.trimmingCharacters(in: .whitespaces))
-                        .tag(paper.id)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
-                        .contextMenu {
-                            Button("Edit Metadata") { editingPaper = paper }
-                            Divider()
-                            Button(role: .destructive) { deletePaper(paper) } label: {
-                                Label("Remove Paper", systemImage: "trash")
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                // Left: paper list
+                VStack(spacing: 0) {
+                    List(filteredPapers, selection: $selectedPaperID) { paper in
+                        PaperRow(paper: paper, highlight: searchQuery.trimmingCharacters(in: .whitespaces))
+                            .tag(paper.id)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+                            .contextMenu {
+                                Button("Edit Metadata") { editingPaper = paper }
+                                Divider()
+                                Button(role: .destructive) { deletePaper(paper) } label: {
+                                    Label("Remove Paper", systemImage: "trash")
+                                }
                             }
+                    }
+                    .listStyle(.plain)
+
+                    Divider()
+
+                    // Larger add button
+                    Button(action: { showingAddPaper = true }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 16))
+                            Text("Add Paper")
+                                .fontWeight(.medium)
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.blue)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .help("Add Paper (⌘⇧A)")
                 }
-                .listStyle(.plain)
+                .frame(width: 260)
 
                 Divider()
 
-                // Larger add button
-                Button(action: { showingAddPaper = true }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 16))
-                        Text("Add Paper")
-                            .fontWeight(.medium)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                }
-                .buttonStyle(.borderless)
-                .foregroundStyle(.blue)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .help("Add Paper (⌘⇧A)")
-            }
-            .frame(width: 260)
-
-            Divider()
-
-            // Right: paper detail
-            if let idx = selectedIndex {
-                PaperDetailView(paper: $project.papers[idx], project: project,
-                                onSelectPaper: { id in selectedPaperID = id },
-                                highlight: searchQuery.trimmingCharacters(in: .whitespaces),
-                                onClearSearch: { searchQuery = "" })
-                    .id(project.papers[idx].id)
+                // Right: paper detail
+                if let idx = selectedIndex {
+                    PaperDetailView(paper: $project.papers[idx], project: project,
+                                    onSelectPaper: { id in selectedPaperID = id },
+                                    highlight: searchQuery.trimmingCharacters(in: .whitespaces),
+                                    onClearSearch: { searchQuery = "" })
+                        .id(project.papers[idx].id)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    EmptyStateView(
+                        icon: "doc.text.magnifyingglass",
+                        title: "No Paper Selected",
+                        message: "Add a paper or select one from the list."
+                    )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                EmptyStateView(
-                    icon: "doc.text.magnifyingglass",
-                    title: "No Paper Selected",
-                    message: "Add a paper or select one from the list."
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
         }
         .navigationTitle(project.name)
-        .navigationSubtitle(project.description.isEmpty ? "" : project.description)
+        .navigationSubtitle(projectSubtitle)
+        .searchable(text: $searchQuery, prompt: "Search papers…")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 GenerateButton(project: $project)
@@ -139,6 +170,14 @@ struct ProjectDetailView: View {
         project.bibEntries.removeValue(forKey: paper.id)
         try? store.save(project)
         store.cleanupPDF(paperID: paper.id, projectID: project.id)
+    }
+
+    private var projectSubtitle: String {
+        let trimmedDescription = project.description.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedDescription.isEmpty {
+            return project.projectType.displayName
+        }
+        return "\(project.projectType.displayName) · \(trimmedDescription)"
     }
 }
 
@@ -272,5 +311,19 @@ struct EditMetadataSheet: View {
         if let venue = paper.venue { lines.append("  booktitle = {\(venue)},") }
         lines.append("}")
         return lines.joined(separator: "\n")
+    }
+}
+
+struct ProjectTypeBadge: View {
+    let type: ProjectType
+
+    var body: some View {
+        Text(type.displayName)
+            .font(.caption2)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.accentColor.opacity(0.12))
+            .foregroundStyle(Color.accentColor)
+            .clipShape(Capsule())
     }
 }

@@ -43,7 +43,7 @@ public struct RelatedWorksGenerator {
         }
 
         lines.append("Instructions:")
-        lines.append(AppSettings.shared.generationPrompt)
+        lines.append(project.generationPrompt)
 
         return lines.joined(separator: "\n")
     }

@@ -4,6 +4,16 @@ import PackageDescription
 let package = Package(
     name: "RelatedWorks",
     platforms: [.macOS(.v13)],
+    products: [
+        .library(
+            name: "RelatedWorksCore",
+            targets: ["RelatedWorksCore"]
+        ),
+        .executable(
+            name: "RelatedWorksTUI",
+            targets: ["RelatedWorksTUI"]
+        ),
+    ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
     ],
