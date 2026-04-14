@@ -66,10 +66,11 @@ public struct GeminiBackend: AIBackend {
     }
 
     public func generate(prompt: String) async throws -> String {
-        let url = URL(string: "\(baseURL)/v1beta/models/\(model):generateContent?key=\(apiKey)")!
+        let url = URL(string: "\(baseURL)/v1beta/models/\(model):generateContent")!
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
         req.timeoutInterval = 300
         let body: [String: Any] = [
             "contents": [["parts": [["text": prompt]]]],

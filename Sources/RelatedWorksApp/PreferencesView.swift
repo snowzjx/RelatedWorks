@@ -203,8 +203,10 @@ struct ModelsSettingsView: View {
         let key = settings.geminiAPIKey
         guard !key.isEmpty else { return }
         Task {
-            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models?key=\(key)"),
-                  let (data, _) = try? await URLSession.shared.data(from: url),
+            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models") else { return }
+            var req = URLRequest(url: url)
+            req.setValue(key, forHTTPHeaderField: "x-goog-api-key")
+            guard let (data, _) = try? await URLSession.shared.data(for: req),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let models = json["models"] as? [[String: Any]] else { return }
             let names = models.compactMap { m -> String? in
@@ -308,8 +310,13 @@ struct BackendsSettingsView: View {
         isFetchingGemini = true
         geminiTestStatus = .idle
         Task {
-            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models?key=\(key)"),
-                  let (data, response) = try? await URLSession.shared.data(from: url) else {
+            guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models") else {
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Network error") }
+                return
+            }
+            var geminiReq = URLRequest(url: url)
+            geminiReq.setValue(key, forHTTPHeaderField: "x-goog-api-key")
+            guard let (data, response) = try? await URLSession.shared.data(for: geminiReq) else {
                 await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Network error") }
                 return
             }
