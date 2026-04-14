@@ -87,6 +87,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      flex-direction: column;
+      justify-content: center;
       padding: 12px 24px;
       border-radius: 12px;
       font-size: 0.95rem;
@@ -97,6 +99,14 @@
     .btn:hover { opacity: 0.85; }
     .btn-primary { background: #3d8ef0; color: #fff; }
     .btn-secondary { background: #2c2c2e; color: #f0f0f0; border: 1px solid #3a3a3c; }
+    .btn-title { line-height: 1.15; }
+    .btn-subtitle {
+      font-size: 0.72rem;
+      line-height: 1.1;
+      font-weight: 500;
+      opacity: 0.8;
+      margin-top: -2px;
+    }
 
     .req { margin-top: 24px; font-size: 0.8rem; color: #636366; }
     .req a { color: #3d8ef0; text-decoration: none; }
@@ -127,6 +137,10 @@
       max-width: 320px;
       scroll-snap-align: start;
       flex: 0 0 auto;
+    }
+    .shot-portrait {
+      min-width: 220px;
+      max-width: 220px;
     }
     .shot img {
       width: 100%;
@@ -248,13 +262,12 @@
     </ul>
 
     <div class="buttons">
-      <a class="btn btn-primary" href="https://testflight.apple.com/join/B1VxbrDv">🧪 Join Beta on TestFlight</a>
-      <a class="btn btn-secondary" href="https://github.com/snowzjx/RelatedWorks/releases/latest">⬇ Download Latest</a>
+      <a class="btn btn-primary" href="https://apps.apple.com/us/app/relatedworks/id6761808445"><span class="btn-title">⬇ Download on the App Store</span></a>
+      <a class="btn btn-secondary" href="https://github.com/snowzjx/RelatedWorks/releases/latest"><span class="btn-title">⬇ Download macOS from GitHub</span><span class="btn-subtitle">Mac App Store version coming soon</span></a>
       <a class="btn btn-secondary" href="https://github.com/snowzjx/RelatedWorks">⌥ View Source</a>
     </div>
 
     <p class="req">
-      macOS App Store &amp; iOS App Store versions coming soon.<br/>
       Released binaries require macOS 26+ / iOS 26+ (built with Xcode 26).<br/>
       Source builds require macOS 13+ / iOS 17+. Use <a href="https://ollama.com" target="_blank">Ollama</a> locally
       or a <a href="https://aistudio.google.com/apikey" target="_blank">Gemini API key</a>.
@@ -262,8 +275,8 @@
   </div>
 
   <div class="screenshots-card">
-    <h2>✨ Product Tour</h2>
-    <p class="screenshots-note">Scroll horizontally to preview the app experience.</p>
+    <h2>⌘ macOS</h2>
+    <p class="screenshots-note">A beautiful and simple native interface.</p>
     <div class="shots">
       <figure class="shot">
         <img src="assets/screenshots/title-page.jpg" alt="Title Page"/>
@@ -288,6 +301,33 @@
       <figure class="shot">
         <img src="assets/screenshots/dark-mode.jpg" alt="Dark Mode"/>
         <p>Dark Appearance</p>
+      </figure>
+    </div>
+  </div>
+
+  <div class="screenshots-card">
+    <h2>📱iOS</h2>
+    <p class="screenshots-note">Take your research with you, wherever you go.</p>
+    <div class="shots">
+      <figure class="shot shot-portrait">
+        <img src="assets/screenshots/ios-title-page.jpg" alt="iOS Title Page"/>
+        <p>Title Page</p>
+      </figure>
+      <figure class="shot shot-portrait">
+        <img src="assets/screenshots/ios-paper-list.jpg" alt="iOS Paper List"/>
+        <p>Paper List</p>
+      </figure>
+      <figure class="shot shot-portrait">
+        <img src="assets/screenshots/ios-cross-reference.jpg" alt="iOS Cross Reference"/>
+        <p>Cross Reference</p>
+      </figure>
+      <figure class="shot shot-portrait">
+        <img src="assets/screenshots/ios-dark-mode.jpg" alt="iOS Dark Mode"/>
+        <p>Dark Mode</p>
+      </figure>
+      <figure class="shot shot-portrait">
+        <img src="assets/screenshots/ios-icloud-support.jpg" alt="iOS iCloud Support"/>
+        <p>iCloud Support</p>
       </figure>
     </div>
   </div>
