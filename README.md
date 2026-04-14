@@ -12,11 +12,11 @@
 
 RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science researchers. Organize your research literature, take interconnected notes, and generate LaTeX-ready Related Works sections — powered by AI.
 
-## 🧪 Beta Test
+## App Availability
 
-The macOS App Store and iOS App Store versions are coming soon! Join the public beta on TestFlight now:
-
-**[Join Beta on TestFlight →](https://testflight.apple.com/join/B1VxbrDv)**
+- iOS app: [Download on the App Store](https://apps.apple.com/us/app/relatedworks/id6761808445)
+- macOS app: [Download from GitHub Releases](https://github.com/snowzjx/RelatedWorks/releases/latest)
+- Mac App Store version: coming soon
 
 ## Features
 
