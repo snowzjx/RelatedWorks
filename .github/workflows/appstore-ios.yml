@@ -76,8 +76,6 @@ jobs:
             CODE_SIGN_IDENTITY="Apple Distribution" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
-            ENABLE_HARDENED_RUNTIME=YES \
-            OTHER_CODE_SIGN_FLAGS="--timestamp" \
             MARKETING_VERSION="${{ github.event.inputs.version }}" \
             -archivePath /tmp/RelatedWorksIOS.xcarchive \
             archive
