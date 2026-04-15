@@ -94,6 +94,7 @@ struct AnnotationEditor: UIViewRepresentable {
             let bar = UIInputView(frame: CGRect(x: 0, y: 0, width: tv.bounds.width, height: 44),
                                   inputViewStyle: .keyboard)
             bar.allowsSelfSizing = true
+            bar.backgroundColor = UIColor.systemGroupedBackground
 
             let scroll = UIScrollView()
             scroll.showsHorizontalScrollIndicator = false
