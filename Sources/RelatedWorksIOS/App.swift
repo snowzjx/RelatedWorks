@@ -20,6 +20,11 @@ struct RelatedWorksIOSApp: App {
         _store = State(initialValue: s)
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
             _ = Store.iCloudProjectsDir()
+            guard AppSettings.shared.iCloudSyncEnabled else { return }
+            try? ICloudHandleStore.publishInboxHandle()
+        }
+        Task.detached(priority: .utility) {
+            await Self.refreshSharedICloudHandle(using: AppSettings.shared.iCloudSyncEnabled)
         }
     }
 
@@ -30,10 +35,21 @@ struct RelatedWorksIOSApp: App {
                 .environmentObject(settings)
                 .onChange(of: settings.iCloudSyncEnabled) {
                     store = Store()
+                    Task {
+                        await Self.refreshSharedICloudHandle(using: settings.iCloudSyncEnabled)
+                    }
                 }
                 .onOpenURL { url in
                     pendingDeepLink = DeepLink.parse(url)
                 }
+        }
+    }
+
+    private static func refreshSharedICloudHandle(using enabled: Bool) async {
+        if enabled {
+            try? ICloudHandleStore.publishInboxHandle()
+        } else {
+            ICloudHandleStore.clearInboxHandle()
         }
     }
 }

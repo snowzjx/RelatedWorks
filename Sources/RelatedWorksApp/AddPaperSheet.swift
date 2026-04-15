@@ -51,8 +51,15 @@ struct AddPaperSheet: View {
 
     enum Phase { case idle, extracting, filling }
     enum SearchSource { case dblp, arxiv, manual }
+    enum SourceMode: String, CaseIterable, Identifiable {
+        case importPDF = "Import PDF"
+        case inbox = "Inbox"
+
+        var id: String { rawValue }
+    }
 
     @State private var phase: Phase = .idle
+    @State private var sourceMode: SourceMode = .importPDF
     @State private var semanticID = ""
     @State private var idConflict = false
     @State private var pdfAlreadyInProject = false
@@ -65,8 +72,9 @@ struct AddPaperSheet: View {
     @State private var selectedResult: SearchResult?
     @State private var pdfURL: URL?
     @State private var extractedMeta: ExtractedMetadata?
+    @State private var selectedInboxItemID: UUID?
+    @State private var removeInboxItemAfterAdding = true
 
-    // Manual input fields (shown when both DBLP and arXiv return nothing)
     @State private var manualTitle = ""
     @State private var manualAuthors = ""
     @State private var manualYear = ""
@@ -80,13 +88,24 @@ struct AddPaperSheet: View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Add Paper").font(.title3).fontWeight(.semibold)
 
-            // ── PDF Drop Zone ────────────────────────────────────────
-            PDFDropZone(pdfURL: $pdfURL, isExtracting: phase == .extracting) { url in
-                importPDF(url)
+            if !store.inboxItems.isEmpty {
+                Picker("Source", selection: $sourceMode) {
+                    ForEach(SourceMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            if sourceMode == .importPDF {
+                PDFDropZone(pdfURL: $pdfURL, isExtracting: phase == .extracting) { url in
+                    selectImportedPDF(url)
+                }
+            } else {
+                inboxSection
             }
 
             if phase == .filling || phase == .idle {
-                // ── Semantic ID ──────────────────────────────────────
                 VStack(alignment: .leading, spacing: 6) {
                     Label("Semantic ID", systemImage: "tag")
                         .font(.caption).foregroundStyle(.secondary)
@@ -115,7 +134,6 @@ struct AddPaperSheet: View {
                     }
                 }
 
-                // ── Search ───────────────────────────────────────────
                 if !showManualInput {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
@@ -168,7 +186,6 @@ struct AddPaperSheet: View {
                     }
                     .disabled(pdfExistsElsewhere)
                 } else {
-                    // ── Manual Input ─────────────────────────────────
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Label("Manual Entry", systemImage: "pencil")
@@ -191,7 +208,6 @@ struct AddPaperSheet: View {
                     .disabled(pdfExistsElsewhere)
                 }
 
-                // ── Selected result preview ───────────────────────────
                 if let r = selectedResult {
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
@@ -203,7 +219,8 @@ struct AddPaperSheet: View {
                         Spacer()
                         Button { selectedResult = nil } label: {
                             Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                        }.buttonStyle(.plain)
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding(10)
                     .background(Color.green.opacity(0.08))
@@ -222,17 +239,91 @@ struct AddPaperSheet: View {
         }
         .padding(24)
         .frame(width: 540)
-        .onAppear { idFocused = true }
+        .onAppear {
+            if store.inboxItems.isEmpty {
+                sourceMode = .importPDF
+            } else if pdfURL == nil && selectedInboxItemID == nil {
+                sourceMode = .inbox
+                selectedInboxItemID = store.inboxItems.first?.id
+                if let item = store.inboxItems.first {
+                    selectInboxItem(item)
+                }
+            }
+            idFocused = true
+        }
+        .onChange(of: sourceMode) { mode in
+            if mode == .importPDF {
+                selectedInboxItemID = nil
+                removeInboxItemAfterAdding = true
+                resetEditorState(keepingPDF: false)
+            } else if let selectedInboxItemID,
+                      let item = store.inboxItems.first(where: { $0.id == selectedInboxItemID }) {
+                selectInboxItem(item)
+            } else if let first = store.inboxItems.first {
+                selectedInboxItemID = first.id
+                selectInboxItem(first)
+            } else {
+                resetEditorState(keepingPDF: false)
+            }
+        }
+        .onChange(of: selectedInboxItemID) { itemID in
+            guard sourceMode == .inbox else { return }
+            guard let itemID,
+                  let item = store.inboxItems.first(where: { $0.id == itemID }) else {
+                resetEditorState(keepingPDF: false)
+                return
+            }
+            selectInboxItem(item)
+        }
     }
 
     private var isAddDisabled: Bool {
         let id = semanticID.trimmingCharacters(in: .whitespaces)
         if id.isEmpty || phase == .extracting || idConflict || pdfAlreadyInProject { return true }
+        if sourceMode == .inbox && selectedInboxItemID == nil { return true }
         if showManualInput && manualTitle.trimmingCharacters(in: .whitespaces).isEmpty { return true }
         return false
     }
 
-    // MARK: - Actions
+    private var inboxSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Inbox", systemImage: "tray.full")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(store.inboxItems.count) item\(store.inboxItems.count == 1 ? "" : "s")")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+
+            if store.inboxItems.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "tray")
+                        .font(.title2)
+                        .foregroundStyle(.tertiary)
+                    Text("Inbox is Empty")
+                        .font(.headline)
+                    Text("Shared PDFs will appear here when they sync in.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, minHeight: 140)
+                .background(Color(nsColor: .controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                List(store.inboxItems, selection: $selectedInboxItemID) { item in
+                    InboxItemRow(item: item, isSelected: selectedInboxItemID == item.id)
+                        .tag(item.id)
+                }
+                .frame(height: 180)
+                .listStyle(.plain)
+
+                Toggle("Remove from Inbox after adding", isOn: $removeInboxItemAfterAdding)
+                    .font(.caption)
+            }
+        }
+    }
 
     private func generateBibtex(for paper: Paper) -> String {
         let type = paper.venue?.lowercased().contains("arxiv") == true ? "misc" : "inproceedings"
@@ -247,47 +338,117 @@ struct AddPaperSheet: View {
         return lines.joined(separator: "\n")
     }
 
-    private func importPDF(_ url: URL) {
+    private func resetEditorState(keepingPDF: Bool) {
+        phase = .idle
+        semanticID = ""
+        idConflict = false
         pdfAlreadyInProject = false
         pdfExistsElsewhere = false
+        query = ""
+        searchResults = []
+        searchSource = .dblp
+        isSearching = false
+        selectedResult = nil
+        extractedMeta = nil
+        manualTitle = ""
+        manualAuthors = ""
+        manualYear = ""
+        manualVenue = ""
+        if !keepingPDF {
+            pdfURL = nil
+        }
+    }
+
+    private func applyMetadataToEditor(
+        pdfURL: URL,
+        title: String,
+        authors: [String],
+        abstract: String?,
+        suggestedID: String
+    ) {
+        resetEditorState(keepingPDF: true)
+        self.pdfURL = pdfURL
+        extractedMeta = ExtractedMetadata(
+            title: title,
+            authors: authors,
+            abstract: abstract,
+            suggestedID: suggestedID.isEmpty ? "Paper" : suggestedID
+        )
+
+        if let existingID = store.existingID(forPDFAt: pdfURL, title: title) {
+            if project.papers.contains(where: { $0.id.lowercased() == existingID.lowercased() }) {
+                pdfAlreadyInProject = true
+                semanticID = existingID
+            } else {
+                pdfExistsElsewhere = true
+                semanticID = existingID
+                if let existingPaper = store.projects
+                    .flatMap({ $0.papers })
+                    .first(where: { $0.id.lowercased() == existingID.lowercased() }) {
+                    manualTitle = existingPaper.title
+                    manualAuthors = existingPaper.authors.joined(separator: ", ")
+                    manualYear = existingPaper.year.map(String.init) ?? ""
+                    manualVenue = existingPaper.venue ?? ""
+                    searchSource = .manual
+                }
+            }
+        } else {
+            semanticID = suggestedID.isEmpty ? "Paper" : suggestedID
+            idConflict = store.isIDTaken(semanticID.trimmingCharacters(in: .whitespaces))
+            query = title
+        }
+
+        if !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            manualTitle = title
+        }
+        if !authors.isEmpty {
+            manualAuthors = authors.joined(separator: ", ")
+        }
+
+        phase = .filling
+        triggerSearch()
+    }
+
+    private func selectImportedPDF(_ url: URL) {
         phase = .extracting
         Task {
-            let takenIDs = store.allPaperIDs
-            let meta = await PDFImporter.extractMetadata(from: url, takenIDs: takenIDs)
+            let meta = await PDFImporter.extractMetadata(from: url, takenIDs: store.allPaperIDs)
             await MainActor.run {
-                extractedMeta = meta
-                if let existingID = store.existingID(forPDFAt: url, title: meta.title) {
-                    if project.papers.contains(where: { $0.id.lowercased() == existingID.lowercased() }) {
-                        pdfAlreadyInProject = true
-                        semanticID = existingID
-                    } else {
-                        pdfExistsElsewhere = true
-                        semanticID = existingID
-                        if let existingPaper = store.projects.flatMap({ $0.papers }).first(where: { $0.id.lowercased() == existingID.lowercased() }) {
-                            // Pre-fill metadata from the existing entry
-                            selectedResult = nil
-                            manualTitle = existingPaper.title
-                            manualAuthors = existingPaper.authors.joined(separator: ", ")
-                            manualYear = existingPaper.year.map(String.init) ?? ""
-                            manualVenue = existingPaper.venue ?? ""
-                            searchSource = .manual
-                        }
-                    }
-                } else {
-                    if semanticID.isEmpty { semanticID = meta.suggestedID }
-                    idConflict = store.isIDTaken(semanticID.trimmingCharacters(in: .whitespaces))
-                    if query.isEmpty { query = meta.title }
-                }
-                phase = .filling
-                triggerSearch()
+                applyMetadataToEditor(
+                    pdfURL: url,
+                    title: meta.title,
+                    authors: meta.authors,
+                    abstract: meta.abstract,
+                    suggestedID: meta.suggestedID
+                )
             }
         }
+    }
+
+    private func selectInboxItem(_ item: InboxItem) {
+        let url = store.inboxPDFURL(for: item.id)
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            resetEditorState(keepingPDF: false)
+            return
+        }
+
+        let cached = item.cachedMetadata
+        applyMetadataToEditor(
+            pdfURL: url,
+            title: cached?.title ?? "",
+            authors: cached?.authors ?? [],
+            abstract: cached?.abstract,
+            suggestedID: cached?.suggestedID ?? "Paper"
+        )
     }
 
     private func triggerSearch() {
         searchTask?.cancel()
         let q = query.trimmingCharacters(in: .whitespaces)
-        guard !q.isEmpty else { searchResults = []; return }
+        guard !q.isEmpty else {
+            searchResults = []
+            return
+        }
         searchTask = Task {
             try? await Task.sleep(nanoseconds: 400_000_000)
             guard !Task.isCancelled else { return }
@@ -297,7 +458,6 @@ struct AddPaperSheet: View {
             if searchSource == .dblp {
                 let dblp = (try? await DBLPService.search(query: q)) ?? []
                 results = dblp.map { .dblp($0) }
-                // Auto-fallback to arXiv if DBLP empty (without changing searchSource to avoid re-trigger)
                 if results.isEmpty {
                     let arxiv = (try? await ArxivService.search(query: q)) ?? []
                     results = arxiv.map { .arxiv($0) }
@@ -307,7 +467,10 @@ struct AddPaperSheet: View {
                 results = arxiv.map { .arxiv($0) }
             }
 
-            await MainActor.run { searchResults = results; isSearching = false }
+            await MainActor.run {
+                searchResults = results
+                isSearching = false
+            }
         }
     }
 
@@ -318,13 +481,16 @@ struct AddPaperSheet: View {
         if let r = selectedResult {
             paper = Paper(id: id, title: r.title, authors: r.authors, year: r.year, venue: r.venue)
             paper.dblpKey = r.dblpKey
-            // arXiv results have abstract; DBLP doesn't — prefer PDF extraction, then fetch from arXiv
             paper.abstract = r.abstract ?? extractedMeta?.abstract
         } else if showManualInput {
             let authors = manualAuthors.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-            paper = Paper(id: id, title: manualTitle.trimmingCharacters(in: .whitespaces),
-                          authors: authors, year: Int(manualYear), venue: manualVenue.isEmpty ? nil : manualVenue)
-            // If duplicate PDF, use the existing paper's abstract rather than re-extracted one
+            paper = Paper(
+                id: id,
+                title: manualTitle.trimmingCharacters(in: .whitespaces),
+                authors: authors,
+                year: Int(manualYear),
+                venue: manualVenue.isEmpty ? nil : manualVenue
+            )
             if pdfExistsElsewhere {
                 paper.abstract = store.projects.flatMap({ $0.papers }).first(where: { $0.id == id })?.abstract
             } else {
@@ -332,20 +498,31 @@ struct AddPaperSheet: View {
             }
         } else {
             let meta = extractedMeta
-            paper = Paper(id: id,
-                          title: meta?.title.isEmpty == false ? meta!.title : (query.isEmpty ? id : query),
-                          authors: meta?.authors ?? [])
+            paper = Paper(
+                id: id,
+                title: meta?.title.isEmpty == false ? meta!.title : (query.isEmpty ? id : query),
+                authors: meta?.authors ?? []
+            )
             paper.abstract = meta?.abstract
         }
 
-        if let url = pdfURL {
-            if (try? store.registerPDF(at: url, forID: id, projectID: project.id)) != nil {
-                paper.hasPDF = true
-            }
+        if let url = pdfURL,
+           (try? store.registerPDF(at: url, forID: id, projectID: project.id)) != nil {
+            paper.hasPDF = true
         }
 
         project.addPaper(paper)
         try? store.save(project)
+
+        if let selectedInboxItemID,
+           let inboxItem = store.inboxItems.first(where: { $0.id == selectedInboxItemID }) {
+            if removeInboxItemAfterAdding {
+                try? store.deleteInboxItem(inboxItem)
+            } else {
+                try? store.updateInboxItemStatus(inboxItem.id, status: .processed)
+            }
+        }
+
         onAdded(id)
         isPresented = false
 
@@ -353,9 +530,11 @@ struct AddPaperSheet: View {
         let projectID = project.id
         Task {
             if let key = dblpKey, let bib = await DBLPService.fetchBibtex(dblpKey: key) {
-                // Use DBLP BibTeX
                 let normalized = bib.replacingOccurrences(
-                    of: #"@\w+\{[^,]+"#, with: "@article{\(id)", options: .regularExpression)
+                    of: #"@\w+\{[^,]+"#,
+                    with: "@article{\(id)",
+                    options: .regularExpression
+                )
                 await MainActor.run {
                     if let idx = store.projects.firstIndex(where: { $0.id == projectID }) {
                         store.projects[idx].bibEntries[id] = normalized
@@ -363,7 +542,6 @@ struct AddPaperSheet: View {
                     }
                 }
             } else {
-                // Generate BibTeX from available info
                 let generated = generateBibtex(for: paper)
                 await MainActor.run {
                     if let idx = store.projects.firstIndex(where: { $0.id == projectID }) {
@@ -433,7 +611,10 @@ struct PDFDropZone: View {
                 guard let url else { return }
                 let copy = FileManager.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
                 try? FileManager.default.copyItem(at: url, to: copy)
-                DispatchQueue.main.async { pdfURL = copy; onDrop(copy) }
+                DispatchQueue.main.async {
+                    pdfURL = copy
+                    onDrop(copy)
+                }
             }
             return true
         }
@@ -447,6 +628,45 @@ struct PDFDropZone: View {
             pdfURL = url
             onDrop(url)
         }
+    }
+}
+
+private struct InboxItemRow: View {
+    let item: InboxItem
+    let isSelected: Bool
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: item.status == .processed ? "tray.full.fill" : "tray")
+                .foregroundStyle(item.status == .processed ? .green : .secondary)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(displayTitle)
+                    .font(.callout)
+                    .lineLimit(2)
+                Text(itemSubtitle)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            Spacer()
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .foregroundStyle(.blue)
+            }
+        }
+        .padding(.vertical, 3)
+        .contentShape(Rectangle())
+    }
+
+    private var displayTitle: String {
+        let title = item.cachedMetadata?.title.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return title.isEmpty ? item.originalFilename : title
+    }
+
+    private var itemSubtitle: String {
+        let authors = item.cachedMetadata?.authors.prefix(2).joined(separator: ", ")
+        let prefix = (authors?.isEmpty == false) ? "\(authors!) · " : ""
+        return "\(prefix)\(item.source.displayName) · \(item.status.rawValue)"
     }
 }
 

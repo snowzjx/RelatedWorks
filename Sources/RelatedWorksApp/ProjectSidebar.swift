@@ -3,6 +3,7 @@ import SwiftUI
 struct ProjectSidebar: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var settings: AppSettings
+    @Environment(\.openWindow) private var openWindow
     @ObservedObject private var reachability = OllamaReachability.shared
     @Binding var selectedProjectID: UUID?
     @State private var showingNewProject = false
@@ -44,6 +45,12 @@ struct ProjectSidebar: View {
             }
         }
         .toolbar {
+            ToolbarItem {
+                Button(action: { openWindow(id: AppWindowID.inbox) }) {
+                    Label("Inbox", systemImage: "tray.full")
+                }
+                .help("Inbox (⌘⇧B)")
+            }
             ToolbarItem {
                 Button(action: { importProject() }) {
                     Label("Import Project", systemImage: "square.and.arrow.down")
@@ -138,6 +145,222 @@ struct ProjectSidebar: View {
             let alert = NSAlert(); alert.messageText = "Import Failed"
             alert.informativeText = error.localizedDescription; alert.runModal()
         }
+    }
+}
+
+struct InboxManagementView: View {
+    @EnvironmentObject var store: Store
+    @EnvironmentObject var inboxProcessingCoordinator: InboxProcessingCoordinator
+    @State private var selectedItemID: UUID?
+
+    private var selectedItem: InboxItem? {
+        store.inboxItems.first(where: { $0.id == selectedItemID })
+    }
+
+    var body: some View {
+        NavigationSplitView {
+            List(store.inboxItems, selection: $selectedItemID) { item in
+                InboxManagementRow(item: item)
+                    .tag(item.id)
+                    .contextMenu {
+                        Button("Open PDF") { openPDF(for: item) }
+                        Button("Reveal in Finder") { revealInFinder(for: item) }
+                        Button(role: .destructive) { delete(item) } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+            }
+            .navigationTitle("Inbox")
+            .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 420)
+        } detail: {
+            if let item = selectedItem {
+                InboxDetailView(
+                    item: item,
+                    onDelete: { delete(item) }
+                )
+            } else {
+                EmptyStateView(
+                    icon: "tray",
+                    title: "No Inbox Item Selected",
+                    message: "Select a synced PDF to inspect or manage it."
+                )
+            }
+        }
+        .onAppear {
+            if selectedItemID == nil {
+                selectedItemID = store.inboxItems.first?.id
+            }
+            inboxProcessingCoordinator.scheduleProcessing(for: store)
+        }
+        .onChange(of: store.inboxItems) { items in
+            if let selectedItemID, items.contains(where: { $0.id == selectedItemID }) {
+                return
+            }
+            self.selectedItemID = items.first?.id
+        }
+        .toolbar {
+            ToolbarItemGroup {
+                Button {
+                    if let item = selectedItem {
+                        openPDF(for: item)
+                    }
+                } label: {
+                    Label("Open PDF", systemImage: "doc.text")
+                }
+                .disabled(selectedItem == nil)
+
+                Button {
+                    if let item = selectedItem {
+                        revealInFinder(for: item)
+                    }
+                } label: {
+                    Label("Reveal", systemImage: "folder")
+                }
+                .disabled(selectedItem == nil)
+                Button(role: .destructive) {
+                    if let item = selectedItem {
+                        delete(item)
+                    }
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .disabled(selectedItem == nil)
+            }
+        }
+    }
+
+    private func openPDF(for item: InboxItem) {
+        NSWorkspace.shared.open(store.inboxPDFURL(for: item.id))
+    }
+
+    private func revealInFinder(for item: InboxItem) {
+        NSWorkspace.shared.activateFileViewerSelecting([store.inboxPDFURL(for: item.id)])
+    }
+
+    private func delete(_ item: InboxItem) {
+        let alert = NSAlert()
+        alert.messageText = "Delete \"\(item.originalFilename)\"?"
+        alert.informativeText = "This removes the inbox PDF and its cached metadata."
+        alert.addButton(withTitle: "Delete")
+        alert.addButton(withTitle: "Cancel")
+        alert.buttons[0].hasDestructiveAction = true
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        try? store.deleteInboxItem(item)
+    }
+}
+
+private struct InboxManagementRow: View {
+    let item: InboxItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: item.status == .processed ? "tray.full.fill" : "tray")
+                    .foregroundStyle(item.status == .processed ? .green : .secondary)
+                Text(title)
+                    .fontWeight(.medium)
+                    .lineLimit(2)
+            }
+            Text("\(item.source.displayName) · \(item.createdAt.formatted(date: .abbreviated, time: .shortened))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            if false { EmptyView() }
+            if let authors, !authors.isEmpty {
+                Text(authors)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .padding(.vertical, 3)
+    }
+
+    private var title: String {
+        let cachedTitle = item.cachedMetadata?.title.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return cachedTitle.isEmpty ? item.originalFilename : cachedTitle
+    }
+
+    private var authors: String? {
+        let list = item.cachedMetadata?.authors ?? []
+        guard !list.isEmpty else { return nil }
+        return list.joined(separator: ", ")
+    }
+}
+
+private struct InboxDetailView: View {
+    let item: InboxItem
+    let onDelete: () -> Void
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    Text(item.originalFilename)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 10) {
+                    InboxStatusTag(label: item.status.rawValue.capitalized, color: item.status == .processed ? .green : .orange)
+                    InboxStatusTag(label: item.source.displayName, color: .blue)
+                    if item.cachedMetadata != nil {
+                        InboxStatusTag(label: "Metadata Cached", color: .secondary)
+                    }
+                }
+
+                HStack(spacing: 24) {
+                    detailBlock("Created", value: item.createdAt.formatted(date: .abbreviated, time: .shortened))
+                }
+
+                if let authors = item.cachedMetadata?.authors, !authors.isEmpty {
+                    detailBlock("Authors", value: authors.joined(separator: ", "))
+                }
+
+                if let suggestedID = item.cachedMetadata?.suggestedID, !suggestedID.isEmpty {
+                    detailBlock("Suggested ID", value: suggestedID)
+                }
+
+                if let abstract = item.cachedMetadata?.abstract, !abstract.isEmpty {
+                    detailBlock("Abstract", value: abstract)
+                }
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var title: String {
+        let cachedTitle = item.cachedMetadata?.title.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return cachedTitle.isEmpty ? "Untitled Inbox Item" : cachedTitle
+    }
+
+    @ViewBuilder
+    private func detailBlock(_ label: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .textSelection(.enabled)
+        }
+    }
+}
+
+private struct InboxStatusTag: View {
+    let label: String
+    let color: Color
+
+    var body: some View {
+        Text(label)
+            .font(.caption)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.12))
+            .foregroundStyle(color)
+            .clipShape(Capsule())
     }
 }
 

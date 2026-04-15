@@ -6,6 +6,7 @@ extension DeepLink.Destination: Equatable {
         switch (lhs, rhs) {
         case (.project(let a), .project(let b)): return a == b
         case (.paper(let a1, let a2), .paper(let b1, let b2)): return a1 == b1 && a2 == b2
+        case (.settings, .settings): return true
         default: return false
         }
     }
@@ -18,6 +19,7 @@ struct RootView: View {
     @Binding var pendingDeepLink: DeepLink.Destination?
     @State private var selectedProjectID: UUID?
     @State private var selectedPaper: PaperDestination?
+    @State private var showSettings = false
 
     var selectedProject: Project? {
         store.projects.first(where: { $0.id == selectedProjectID })
@@ -27,7 +29,8 @@ struct RootView: View {
         NavigationSplitView {
             ProjectListView(
                 pendingDeepLink: $pendingDeepLink,
-                selectedProjectID: $selectedProjectID
+                selectedProjectID: $selectedProjectID,
+                showSettings: $showSettings
             )
         } content: {
             if let id = selectedProjectID {
@@ -60,8 +63,13 @@ struct RootView: View {
                    let paper = project.paper(withID: paperID) {
                     selectedPaper = PaperDestination(paper: paper, projectID: projectID)
                 }
+            case .settings:
+                showSettings = true
             }
             pendingDeepLink = nil
+        }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack { SettingsView() }
         }
     }
 }
@@ -111,8 +119,8 @@ struct ProjectListView: View {
     @EnvironmentObject var store: Store
     @Binding var pendingDeepLink: DeepLink.Destination?
     @Binding var selectedProjectID: UUID?
+    @Binding var showSettings: Bool
     @State private var showImporter = false
-    @State private var showSettings = false
     @State private var importError: String?
     @State private var pendingDeleteOffsets: IndexSet?
     @State private var duplicateProjectID: UUID? = nil
@@ -141,9 +149,6 @@ struct ProjectListView: View {
                     Label("Import", systemImage: "tray.and.arrow.down")
                 }
             }
-        }
-        .sheet(isPresented: $showSettings) {
-            NavigationStack { SettingsView() }
         }
         .fileImporter(
             isPresented: $showImporter,

@@ -6,13 +6,5 @@
 	<array>
 		<string>group.me.snowzjx.relatedworks</string>
 	</array>
-	<key>com.apple.developer.icloud-services</key>
-	<array>
-		<string>CloudDocuments</string>
-	</array>
-	<key>com.apple.developer.ubiquity-container-identifiers</key>
-	<array>
-		<string>iCloud.me.snowzjx.relatedworks</string>
-	</array>
 </dict>
 </plist>

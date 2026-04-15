@@ -162,6 +162,80 @@ struct StoreTests {
         #expect(!FileManager.default.fileExists(atPath: stored.path))
     }
 
+    @Test func addInboxItemPersistsPDFAndMetadata() throws {
+        let store = makeTestStore()
+        let tmpPDF = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-test-\(UUID().uuidString).pdf")
+        try "dummy".data(using: .utf8)!.write(to: tmpPDF)
+        defer { try? FileManager.default.removeItem(at: tmpPDF) }
+
+        let item = try store.addToInbox(from: tmpPDF, originalFilename: "Paper.pdf", source: .shareExtension)
+
+        #expect(item.originalFilename == "Paper.pdf")
+        #expect(item.source == .shareExtension)
+        #expect(item.status == .pending)
+        #expect(FileManager.default.fileExists(atPath: store.inboxPDFURL(for: item.id).path))
+        #expect(FileManager.default.fileExists(atPath: store.inboxMetadataURL(for: item.id).path))
+        #expect(store.inboxItems.contains(where: { $0.id == item.id }))
+    }
+
+    @Test func updateInboxItemStatusAndMetadata() throws {
+        let store = makeTestStore()
+        let tmpPDF = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-test-\(UUID().uuidString).pdf")
+        try "dummy".data(using: .utf8)!.write(to: tmpPDF)
+        defer { try? FileManager.default.removeItem(at: tmpPDF) }
+
+        let item = try store.addToInbox(from: tmpPDF)
+        let metadata = CachedPDFMetadata(
+            title: "Attention Is All You Need",
+            authors: ["Ashish Vaswani"],
+            abstract: "Transformer paper.",
+            suggestedID: "Transformer"
+        )
+
+        try store.updateInboxItemStatus(item.id, status: .processed)
+        try store.updateInboxItemMetadata(item.id, metadata: metadata)
+        store.reloadInbox()
+
+        let updated = try #require(store.inboxItems.first(where: { $0.id == item.id }))
+        #expect(updated.status == .processed)
+        #expect(updated.cachedMetadata == metadata)
+    }
+
+    @Test func addInboxItemDeduplicatesByContentHash() throws {
+        let store = makeTestStore()
+        let tmpPDF1 = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-test-\(UUID().uuidString)-1.pdf")
+        let tmpPDF2 = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-test-\(UUID().uuidString)-2.pdf")
+        try "same-content".data(using: .utf8)!.write(to: tmpPDF1)
+        try "same-content".data(using: .utf8)!.write(to: tmpPDF2)
+        defer {
+            try? FileManager.default.removeItem(at: tmpPDF1)
+            try? FileManager.default.removeItem(at: tmpPDF2)
+        }
+
+        let first = try store.addToInbox(from: tmpPDF1, originalFilename: "Paper.pdf")
+        let second = try store.addToInbox(from: tmpPDF2, originalFilename: "Paper.pdf")
+
+        #expect(first.id == second.id)
+        #expect(store.inboxItems.filter { $0.id == first.id }.count == 1)
+    }
+
+    @Test func deleteInboxItemRemovesPDFAndMetadata() throws {
+        let store = makeTestStore()
+        let tmpPDF = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-test-\(UUID().uuidString).pdf")
+        try "dummy".data(using: .utf8)!.write(to: tmpPDF)
+        defer { try? FileManager.default.removeItem(at: tmpPDF) }
+
+        let item = try store.addToInbox(from: tmpPDF)
+        let pdfURL = store.inboxPDFURL(for: item.id)
+        let metadataURL = store.inboxMetadataURL(for: item.id)
+
+        try store.deleteInboxItem(item)
+
+        #expect(!FileManager.default.fileExists(atPath: pdfURL.path))
+        #expect(!FileManager.default.fileExists(atPath: metadataURL.path))
+        #expect(!store.inboxItems.contains(where: { $0.id == item.id }))
+    }
+
     @Test func importingProjectAssignsNewIDAndPreservesContent() {
         var source = Project(
             name: "Export Test",
@@ -247,6 +321,17 @@ struct DeepLinkTests {
         #expect(DeepLink.parse(url) == nil)
     }
 
+    @Test func parseSettingsURL() {
+        let url = URL(string: "relatedworks://settings")!
+        let dest = DeepLink.parse(url)
+        if case .settings = dest {
+            let matched = true
+            #expect(matched)
+        } else {
+            Issue.record("Expected .settings destination")
+        }
+    }
+
     @Test func generateProjectURL() {
         let project = Project(name: "Test")
         let url = DeepLink.url(for: project)
@@ -260,5 +345,10 @@ struct DeepLinkTests {
         let url = DeepLink.url(for: paper, in: project)
         #expect(url.absoluteString.contains("paper=BERT"))
         #expect(url.absoluteString.contains(project.id.uuidString))
+    }
+
+    @Test func generateSettingsURL() {
+        let url = DeepLink.settingsURL()
+        #expect(url.absoluteString == "relatedworks://settings")
     }
 }

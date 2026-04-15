@@ -39,6 +39,8 @@ struct ContentView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     selectedPaperID = paperID
                 }
+            case .settings:
+                break
             }
             deepLinkHandler.pending = nil
         }
@@ -77,6 +79,7 @@ extension DeepLink.Destination: Equatable {
         switch (lhs, rhs) {
         case (.project(let a), .project(let b)): return a == b
         case (.paper(let a, let b), .paper(let c, let d)): return a == c && b == d
+        case (.settings, .settings): return true
         default: return false
         }
     }
