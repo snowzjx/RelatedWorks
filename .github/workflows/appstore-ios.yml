@@ -30,12 +30,14 @@ jobs:
           security list-keychain -d user -s "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN_PATH"
 
-      - name: Install provisioning profile
+      - name: Install provisioning profiles
         env:
-          PROVISIONING_PROFILE: ${{ secrets.APPSTORE_IOS_PROVISIONING_PROFILE }}
+          APP_PROVISIONING_PROFILE: ${{ secrets.APPSTORE_IOS_PROVISIONING_PROFILE }}
+          SHARE_EXTENSION_PROVISIONING_PROFILE: ${{ secrets.APPSTORE_IOS_SHARE_EXTENSION_PROVISIONING_PROFILE }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksiOS.mobileprovision
+          echo "$APP_PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksiOS.mobileprovision
+          echo "$SHARE_EXTENSION_PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksShareExtension.mobileprovision
 
       - name: Archive
         run: |
@@ -47,7 +49,6 @@ jobs:
             CODE_SIGN_IDENTITY="Apple Distribution" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=${{ secrets.MACOS_TEAM_ID }} \
-            PROVISIONING_PROFILE_SPECIFIER="RelatedWorksiOS" \
             ENABLE_HARDENED_RUNTIME=YES \
             OTHER_CODE_SIGN_FLAGS="--timestamp" \
             MARKETING_VERSION="${{ github.event.inputs.version }}" \
@@ -75,6 +76,8 @@ jobs:
             <dict>
               <key>me.snowzjx.relatedworks</key>
               <string>RelatedWorksiOS</string>
+              <key>me.snowzjx.relatedworks.ShareExtension</key>
+              <string>RelatedWorksShareExtension</string>
             </dict>
             <key>signingStyle</key>
             <string>manual</string>
