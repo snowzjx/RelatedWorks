@@ -55,7 +55,7 @@ jobs:
               return pattern, replacement
 
           ios_pattern, ios_replacement = inject_specifier("BCIOS004", "RelatedWorksIOS", "RelatedWorksiOS")
-          share_pattern, share_replacement = inject_specifier("BCSHARE002", "RelatedWorksShareExtension", "RelatedWorksShareExtension")
+          share_pattern, share_replacement = inject_specifier("BCSHARE002", "RelatedWorksShareExtension", "RelatedWorksExtension")
 
           text, ios_count = re.subn(ios_pattern, ios_replacement, text, count=1, flags=re.S)
           text, share_count = re.subn(share_pattern, share_replacement, text, count=1, flags=re.S)
@@ -102,7 +102,7 @@ jobs:
               <key>me.snowzjx.relatedworks</key>
               <string>RelatedWorksiOS</string>
               <key>me.snowzjx.relatedworks.ShareExtension</key>
-              <string>RelatedWorksShareExtension</string>
+              <string>RelatedWorksExtension</string>
             </dict>
             <key>signingStyle</key>
             <string>manual</string>
