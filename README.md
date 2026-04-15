@@ -17,14 +17,22 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 - iOS/macOS app: [Download on the App Store](https://apps.apple.com/us/app/relatedworks/id6761808445)
 - macOS direct download: [Download from GitHub Releases](https://github.com/snowzjx/RelatedWorks/releases/latest)
 
+## What's New in v2.0.0
+
+- **PDF Inbox via Share Extension** (iOS/macOS) — Share PDFs directly from Safari or Files on iPhone and iPad into RelatedWorks. Shared PDFs land in an Inbox that syncs to macOS, where metadata is extracted automatically and each item waits for you to add it to a project when you're ready.
+- **Per-project generation prompts** (macOS) — Each project can now keep its own AI generation prompt, with built-in presets for **Survey**, **Research Paper**, **Tech Report**, or a fully **Custom** setup. You stay in control of the prompt for every project.
+- **Liquid Glass search box** (macOS) — The search field now follows the macOS 26 Liquid Glass visual style, with updated translucency and background treatment.
+
 ## Features
 
 - **Project-based workspaces** — one project per paper you're writing
 - **Import PDFs with AI-powered metadata extraction** (macOS only)
+- **PDF Inbox via Share Extension** — send PDFs from Safari or Files on iPhone and iPad into an Inbox that syncs to macOS
 - **Search DBLP and arXiv** to fetch bibliographic data automatically (macOS only)
 - **Semantic IDs** — give each paper a short memorable tag like `@Transformer` or `@BERT`
 - **Cross-reference annotations** — link papers using `@mentions` in your notes
 - **Generate a LaTeX-ready Related Works draft** with one click (macOS only)
+- **Per-project generation prompts** with presets for **Survey**, **Research Paper**, **Tech Report**, or **Custom** (macOS only)
 - **Export BibTeX entries** fetched from DBLP or auto-generated (macOS only)
 - **iCloud Drive sync** — keep your library in sync across Mac and iPhone/iPad
 - **Export and import projects** as `.relatedworks` files (macOS); **import projects** on iPhone and iPad
