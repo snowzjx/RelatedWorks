@@ -117,6 +117,21 @@
 
     .screenshots-card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
     .screenshots-note { font-size: 0.9rem; color: #8e8e93; margin-bottom: 16px; }
+    .release-list {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .release-list li {
+      font-size: 0.95rem;
+      color: #d0d0d5;
+      line-height: 1.6;
+    }
+    .release-list strong {
+      color: #f0f0f0;
+      font-weight: 700;
+    }
     .shots {
       display: flex;
       gap: 14px;
@@ -206,6 +221,8 @@
       .hero, .screenshots-card, .tui-card { background: #fff; border-color: #e5e5ea; }
       .features { background: #f2f2f7; }
       .features li { color: #3a3a3c; }
+      .release-list li { color: #3a3a3c; }
+      .release-list strong { color: #1c1c1e; }
       .tagline { color: #6e6e73; }
       .btn-secondary { background: #e5e5ea; color: #1c1c1e; border-color: #d1d1d6; }
       .req { color: #8e8e93; }
@@ -242,10 +259,12 @@
     <ul class="features">
       <li><span class="dot">✦</span> <span>Project-based workspaces — one project per paper you're writing</span></li>
       <li><span class="dot">✦</span> <span>Import PDFs with AI-powered metadata extraction (macOS only)</span></li>
+      <li><span class="dot">✦</span> <span>PDF Inbox via Share Extension — send PDFs from Safari or Files on iPhone and iPad into an Inbox that syncs to macOS</span></li>
       <li><span class="dot">✦</span> <span>Search DBLP and arXiv to fetch bibliographic data automatically (macOS only)</span></li>
       <li><span class="dot">✦</span> <span>Semantic IDs — give each paper a short memorable tag like <code>@Transformer</code> or <code>@BERT</code></span></li>
       <li><span class="dot">✦</span> <span>Cross-reference annotations — link papers using <code>@mentions</code> in your notes</span></li>
       <li><span class="dot yellow">✦</span> <span>Generate a LaTeX-ready Related Works draft with one click (macOS only)</span></li>
+      <li><span class="dot">✦</span> <span>Per-project generation prompts with presets for Survey, Research Paper, Tech Report, or Custom (macOS only)</span></li>
       <li><span class="dot">✦</span> <span>Export BibTeX entries fetched from DBLP or auto-generated (macOS only)</span></li>
       <li><span class="dot">✦</span> <span>iCloud Drive sync — keep your library in sync across Mac and iPhone/iPad</span></li>
       <li><span class="dot">✦</span> <span>Export and import projects as <code>.relatedworks</code> files (macOS); import projects on iPhone and iPad</span></li>
@@ -268,31 +287,49 @@
   </div>
 
   <div class="screenshots-card">
+    <h2>New in v2.0.0</h2>
+    <p class="screenshots-note">A focused release for faster capture, better project-specific generation, and a more polished macOS experience.</p>
+    <ul class="release-list">
+      <li><strong>PDF Inbox via Share Extension</strong> (iOS/macOS) — Share PDFs directly from Safari or Files on iPhone and iPad into RelatedWorks. They land in an Inbox that syncs to macOS, where metadata is extracted automatically and each item waits for you to add it to a project.</li>
+      <li><strong>Per-project generation prompts</strong> (macOS) — Give every project its own AI generation prompt, with presets for Survey, Research Paper, Tech Report, or a fully Custom setup. You stay in control of the prompt for each project.</li>
+      <li><strong>Liquid Glass search box</strong> (macOS) — The search field now matches the macOS 26 Liquid Glass visual style, with updated translucency and background treatment.</li>
+    </ul>
+  </div>
+
+  <div class="screenshots-card">
     <h2>⌘ macOS</h2>
     <p class="screenshots-note">A beautiful and simple native interface.</p>
     <div class="shots">
       <figure class="shot">
-        <img src="assets/screenshots/title-page.jpg" alt="Title Page"/>
+        <img src="assets/screenshots/title-page.jpg" alt="Project Workspace"/>
         <p>Project Workspace</p>
       </figure>
       <figure class="shot">
-        <img src="assets/screenshots/pdf-import.jpg" alt="PDF Import"/>
-        <p>PDF Import with AI Metadata</p>
+        <img src="assets/screenshots/pdf-import.jpg" alt="PDF Inbox"/>
+        <p>PDF Inbox with Automatic Metadata Extraction</p>
       </figure>
       <figure class="shot">
-        <img src="assets/screenshots/cross-reference.jpg" alt="Cross Reference"/>
-        <p>@Cross-Reference Annotations</p>
+        <img src="assets/screenshots/cross-reference.jpg" alt="Cross-Referenced Notes"/>
+        <p>Cross-Referenced Notes</p>
       </figure>
       <figure class="shot">
-        <img src="assets/screenshots/related-works.jpg" alt="Related Works"/>
-        <p>One-Click Related Works Generation</p>
+        <img src="assets/screenshots/related-works.jpg" alt="Related Works Generation"/>
+        <p>Related Works Generation</p>
       </figure>
       <figure class="shot">
         <img src="assets/screenshots/ai-backend.jpg" alt="AI Backend"/>
         <p>AI Backend Configuration</p>
       </figure>
       <figure class="shot">
-        <img src="assets/screenshots/dark-mode.jpg" alt="Dark Mode"/>
+        <img src="assets/screenshots/per-project-prompt.jpg" alt="Per-Project Prompt Presets"/>
+        <p>Per-Project Prompt Presets</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/icloud-sync.jpg" alt="iCloud Sync"/>
+        <p>iCloud Sync</p>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screenshots/dark-mode.jpg" alt="Dark Appearance"/>
         <p>Dark Appearance</p>
       </figure>
     </div>
@@ -303,24 +340,24 @@
     <p class="screenshots-note">Take your research with you, wherever you go.</p>
     <div class="shots">
       <figure class="shot shot-portrait">
-        <img src="assets/screenshots/ios-title-page.jpg" alt="iOS Title Page"/>
-        <p>Title Page</p>
+        <img src="assets/screenshots/ios-title-page.jpg" alt="Project Workspace"/>
+        <p>Project Workspace</p>
       </figure>
       <figure class="shot shot-portrait">
-        <img src="assets/screenshots/ios-paper-list.jpg" alt="iOS Paper List"/>
-        <p>Paper List</p>
+        <img src="assets/screenshots/ios-paper-list.jpg" alt="Project Papers"/>
+        <p>Project Papers</p>
       </figure>
       <figure class="shot shot-portrait">
-        <img src="assets/screenshots/ios-cross-reference.jpg" alt="iOS Cross Reference"/>
-        <p>Cross Reference</p>
+        <img src="assets/screenshots/ios-cross-reference.jpg" alt="Cross-Referenced Notes"/>
+        <p>Cross-Referenced Notes</p>
       </figure>
       <figure class="shot shot-portrait">
-        <img src="assets/screenshots/ios-dark-mode.jpg" alt="iOS Dark Mode"/>
-        <p>Dark Mode</p>
+        <img src="assets/screenshots/ios-dark-mode.jpg" alt="Dark Appearance"/>
+        <p>Dark Appearance</p>
       </figure>
       <figure class="shot shot-portrait">
-        <img src="assets/screenshots/ios-icloud-support.jpg" alt="iOS iCloud Support"/>
-        <p>iCloud Support</p>
+        <img src="assets/screenshots/ios-icloud-support.jpg" alt="iOS Share Extension"/>
+        <p>Share Extension Inbox</p>
       </figure>
     </div>
   </div>
