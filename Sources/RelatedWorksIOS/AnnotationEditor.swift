@@ -35,7 +35,8 @@ struct AnnotationEditor: UIViewRepresentable {
         var isEditing = false
 
         // Suggestion state
-        var suggestionBar: UIView?
+        var suggestionBar: UIInputView?
+        var suggestionStack: UIStackView?
         var currentAtRange: NSRange?
 
         init(_ parent: AnnotationEditor) { self.parent = parent }
@@ -84,7 +85,11 @@ struct AnnotationEditor: UIViewRepresentable {
         // MARK: - Suggestion bar (horizontal scroll above keyboard)
 
         private func showSuggestions(_ items: [String], in tv: UITextView) {
-            hideSuggestions()
+            // If bar already exists, just update the stack contents — no reloadInputViews needed
+            if let stack = suggestionStack {
+                updateStack(stack, items: items)
+                return
+            }
 
             let bar = UIInputView(frame: CGRect(x: 0, y: 0, width: tv.bounds.width, height: 44),
                                   inputViewStyle: .keyboard)
@@ -114,6 +119,17 @@ struct AnnotationEditor: UIViewRepresentable {
                 stack.heightAnchor.constraint(equalTo: scroll.frameLayoutGuide.heightAnchor),
             ])
 
+            updateStack(stack, items: items)
+
+            tv.inputAccessoryView = bar
+            tv.reloadInputViews()
+            suggestionBar = bar
+            suggestionStack = stack
+        }
+
+        private func updateStack(_ stack: UIStackView, items: [String]) {
+            stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            let capturedRange = currentAtRange
             for id in items {
                 var config = UIButton.Configuration.filled()
                 config.title = "@\(id)"
@@ -123,28 +139,27 @@ struct AnnotationEditor: UIViewRepresentable {
                 config.cornerStyle = .medium
                 let btn = UIButton(configuration: config)
                 btn.addAction(UIAction { [weak self] _ in
-                    self?.insertMention(id)
+                    self?.insertMention(id, atRange: capturedRange)
                 }, for: .touchUpInside)
                 stack.addArrangedSubview(btn)
             }
-
-            tv.inputAccessoryView = bar
-            tv.reloadInputViews()
-            suggestionBar = bar
         }
 
         private func hideSuggestions() {
             guard suggestionBar != nil else { return }
+            suggestionBar = nil
+            suggestionStack = nil
+            currentAtRange = nil
             textView?.inputAccessoryView = nil
             textView?.reloadInputViews()
-            suggestionBar = nil
-            currentAtRange = nil
         }
 
-        private func insertMention(_ id: String) {
-            guard let tv = textView, let atRange = currentAtRange else { return }
-            let replacement = "@\(id) "
+        private func insertMention(_ id: String, atRange: NSRange?) {
+            guard let tv = textView, let atRange = atRange else { return }
             let nsText = tv.text as NSString
+            guard atRange.location != NSNotFound,
+                  atRange.location + atRange.length <= nsText.length else { return }
+            let replacement = "@\(id) "
             let newText = nsText.replacingCharacters(in: atRange, with: replacement)
             tv.text = newText
             // Move cursor after inserted mention
