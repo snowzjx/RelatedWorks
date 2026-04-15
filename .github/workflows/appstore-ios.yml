@@ -39,6 +39,78 @@ jobs:
           echo "$APP_PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksiOS.mobileprovision
           echo "$SHARE_EXTENSION_PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/RelatedWorksShareExtension.mobileprovision
 
+      - name: Apply CI signing overrides
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("RelatedWorksApp.xcodeproj/project.pbxproj")
+          text = path.read_text()
+
+          ios_release = """\
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/RelatedWorksIOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RelatedWorks;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.8.3;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;
+				PRODUCT_NAME = RelatedWorksIOS;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+"""
+          ios_release_ci = ios_release.replace(
+              '				PRODUCT_NAME = RelatedWorksIOS;\n',
+              '				PRODUCT_NAME = RelatedWorksIOS;\n				PROVISIONING_PROFILE_SPECIFIER = RelatedWorksiOS;\n'
+          )
+
+          share_release = """\
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/RelatedWorksShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.8.3;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.ShareExtension;
+				PRODUCT_NAME = RelatedWorksShareExtension;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+"""
+          share_release_ci = share_release.replace(
+              '				PRODUCT_NAME = RelatedWorksShareExtension;\n',
+              '				PRODUCT_NAME = RelatedWorksShareExtension;\n				PROVISIONING_PROFILE_SPECIFIER = RelatedWorksShareExtension;\n'
+          )
+
+          if ios_release not in text or share_release not in text:
+              raise SystemExit("Expected Release signing blocks not found in project.pbxproj")
+
+          text = text.replace(ios_release, ios_release_ci, 1)
+          text = text.replace(share_release, share_release_ci, 1)
+          path.write_text(text)
+          PY
+
       - name: Archive
         run: |
           xcodebuild \
