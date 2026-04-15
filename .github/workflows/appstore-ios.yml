@@ -42,75 +42,27 @@ jobs:
       - name: Apply CI signing overrides
         run: |
           python3 - <<'PY'
+          import re
           from pathlib import Path
 
           path = Path("RelatedWorksApp.xcodeproj/project.pbxproj")
           text = path.read_text()
 
-          t = "\t"
-          ios_release = "\n".join([
-              f"{t}{t}{t}{t}CODE_SIGN_ENTITLEMENTS = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements;",
-              f"{t}{t}{t}{t}CODE_SIGN_STYLE = Automatic;",
-              f"{t}{t}{t}{t}CURRENT_PROJECT_VERSION = 1;",
-              f"{t}{t}{t}{t}DEVELOPMENT_TEAM = A47Y4XPLXR;",
-              f"{t}{t}{t}{t}GENERATE_INFOPLIST_FILE = NO;",
-              f"{t}{t}{t}{t}INFOPLIST_FILE = Sources/RelatedWorksIOS/Info.plist;",
-              f"{t}{t}{t}{t}INFOPLIST_KEY_CFBundleDisplayName = RelatedWorks;",
-              f'{t}{t}{t}{t}INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";',
-              f"{t}{t}{t}{t}IPHONEOS_DEPLOYMENT_TARGET = 26.0;",
-              f"{t}{t}{t}{t}LD_RUNPATH_SEARCH_PATHS = (",
-              f'{t}{t}{t}{t}{t}"$(inherited)",',
-              f'{t}{t}{t}{t}{t}"@executable_path/Frameworks",',
-              f"{t}{t}{t}{t});",
-              f"{t}{t}{t}{t}MARKETING_VERSION = 1.8.3;",
-              f"{t}{t}{t}{t}PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks;",
-              f"{t}{t}{t}{t}PRODUCT_NAME = RelatedWorksIOS;",
-              f"{t}{t}{t}{t}SDKROOT = iphoneos;",
-              f"{t}{t}{t}{t}SWIFT_EMIT_LOC_STRINGS = YES;",
-              f"{t}{t}{t}{t}SWIFT_VERSION = 5.0;",
-              f'{t}{t}{t}{t}TARGETED_DEVICE_FAMILY = "1,2";',
-              "",
-          ])
-          ios_release_ci = ios_release.replace(
-              f"{t}{t}{t}{t}PRODUCT_NAME = RelatedWorksIOS;\n",
-              f"{t}{t}{t}{t}PRODUCT_NAME = RelatedWorksIOS;\n{t}{t}{t}{t}PROVISIONING_PROFILE_SPECIFIER = RelatedWorksiOS;\n"
-          )
+          def inject_specifier(block_id: str, product_name: str, profile: str) -> None:
+              nonlocal_text = None
+              pattern = rf"({re.escape(block_id)} /\* Release \*/ = \{{.*?PRODUCT_NAME = {re.escape(product_name)};\n)(?!\t{{4}}PROVISIONING_PROFILE_SPECIFIER = )"
+              replacement = rf"\1\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = {profile};\n"
+              return pattern, replacement
 
-          share_release = "\n".join([
-              f"{t}{t}{t}{t}APPLICATION_EXTENSION_API_ONLY = YES;",
-              f"{t}{t}{t}{t}CODE_SIGN_ENTITLEMENTS = RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements;",
-              f"{t}{t}{t}{t}CODE_SIGN_STYLE = Automatic;",
-              f"{t}{t}{t}{t}CURRENT_PROJECT_VERSION = 1;",
-              f"{t}{t}{t}{t}DEVELOPMENT_TEAM = A47Y4XPLXR;",
-              f"{t}{t}{t}{t}GENERATE_INFOPLIST_FILE = NO;",
-              f"{t}{t}{t}{t}INFOPLIST_FILE = Sources/RelatedWorksShareExtension/Info.plist;",
-              f"{t}{t}{t}{t}IPHONEOS_DEPLOYMENT_TARGET = 26.0;",
-              f"{t}{t}{t}{t}LD_RUNPATH_SEARCH_PATHS = (",
-              f'{t}{t}{t}{t}{t}"$(inherited)",',
-              f'{t}{t}{t}{t}{t}"@executable_path/Frameworks",',
-              f'{t}{t}{t}{t}{t}"@executable_path/../../Frameworks",',
-              f"{t}{t}{t}{t});",
-              f"{t}{t}{t}{t}MARKETING_VERSION = 1.8.3;",
-              f"{t}{t}{t}{t}PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.ShareExtension;",
-              f"{t}{t}{t}{t}PRODUCT_NAME = RelatedWorksShareExtension;",
-              f"{t}{t}{t}{t}SDKROOT = iphoneos;",
-              f"{t}{t}{t}{t}SKIP_INSTALL = YES;",
-              f"{t}{t}{t}{t}SWIFT_EMIT_LOC_STRINGS = YES;",
-              f'{t}{t}{t}{t}SWIFT_OPTIMIZATION_LEVEL = "-O";',
-              f"{t}{t}{t}{t}SWIFT_VERSION = 5.0;",
-              f'{t}{t}{t}{t}TARGETED_DEVICE_FAMILY = "1,2";',
-              "",
-          ])
-          share_release_ci = share_release.replace(
-              f"{t}{t}{t}{t}PRODUCT_NAME = RelatedWorksShareExtension;\n",
-              f"{t}{t}{t}{t}PRODUCT_NAME = RelatedWorksShareExtension;\n{t}{t}{t}{t}PROVISIONING_PROFILE_SPECIFIER = RelatedWorksShareExtension;\n"
-          )
+          ios_pattern, ios_replacement = inject_specifier("BCIOS004", "RelatedWorksIOS", "RelatedWorksiOS")
+          share_pattern, share_replacement = inject_specifier("BCSHARE002", "RelatedWorksShareExtension", "RelatedWorksShareExtension")
 
-          if ios_release not in text or share_release not in text:
-              raise SystemExit("Expected Release signing blocks not found in project.pbxproj")
+          text, ios_count = re.subn(ios_pattern, ios_replacement, text, count=1, flags=re.S)
+          text, share_count = re.subn(share_pattern, share_replacement, text, count=1, flags=re.S)
 
-          text = text.replace(ios_release, ios_release_ci, 1)
-          text = text.replace(share_release, share_release_ci, 1)
+          if ios_count != 1 or share_count != 1:
+              raise SystemExit(f"Failed to inject provisioning profile specifiers (ios={ios_count}, share={share_count})")
+
           path.write_text(text)
           PY
 
