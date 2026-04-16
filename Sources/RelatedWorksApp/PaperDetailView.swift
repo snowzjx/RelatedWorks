@@ -18,7 +18,7 @@ func highlighted(_ string: String, query: String) -> AttributedString {
 
 struct PaperDetailView: View {
     @Binding var paper: Paper
-    let project: Project
+    @Binding var project: Project
     var onSelectPaper: (String) -> Void = { _ in }
     var highlight: String = ""
     var onClearSearch: (() -> Void)? = nil
@@ -170,7 +170,9 @@ struct PaperDetailView: View {
             }
         }
         .onChange(of: paper.annotation) { _ in
-            try? store.save(project)
+            DispatchQueue.main.async {
+                try? store.save(project)
+            }
         }
     }
 

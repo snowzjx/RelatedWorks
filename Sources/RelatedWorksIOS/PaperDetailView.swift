@@ -179,10 +179,12 @@ struct PaperDetailView: View {
     }
 
     private func saveAnnotation(_ newValue: String) {
-        guard var proj = store.projects.first(where: { $0.id == projectID }),
-              let idx = proj.papers.firstIndex(where: { $0.id == paper.id }) else { return }
-        proj.papers[idx].annotation = newValue
-        try? store.save(proj)
+        DispatchQueue.main.async {
+            guard var proj = store.projects.first(where: { $0.id == projectID }),
+                  let idx = proj.papers.firstIndex(where: { $0.id == paper.id }) else { return }
+            proj.papers[idx].annotation = newValue
+            try? store.save(proj)
+        }
     }
 }
 

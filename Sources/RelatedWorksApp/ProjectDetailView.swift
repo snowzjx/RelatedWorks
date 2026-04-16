@@ -117,7 +117,7 @@ struct ProjectDetailView: View {
 
                 // Right: paper detail
                 if let idx = selectedIndex {
-                    PaperDetailView(paper: $project.papers[idx], project: project,
+                    PaperDetailView(paper: $project.papers[idx], project: $project,
                                     onSelectPaper: { id in selectedPaperID = id },
                                     highlight: searchQuery.trimmingCharacters(in: .whitespaces),
                                     onClearSearch: { searchQuery = "" })
