@@ -432,9 +432,11 @@ struct AddPaperSheet: View {
             await MainActor.run { isSearching = true }
 
             var results: [SearchResult] = []
+            var defaultSelection: SearchResult?
             if searchSource == .dblp {
                 let dblp = (try? await DBLPService.search(query: q)) ?? []
                 results = dblp.map { .dblp($0) }
+                defaultSelection = results.first
                 if results.isEmpty {
                     let arxiv = (try? await ArxivService.search(query: q)) ?? []
                     results = arxiv.map { .arxiv($0) }
@@ -446,6 +448,7 @@ struct AddPaperSheet: View {
 
             await MainActor.run {
                 searchResults = results
+                selectedResult = defaultSelection
                 isSearching = false
             }
         }
