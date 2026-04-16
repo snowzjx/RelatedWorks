@@ -9,28 +9,48 @@ public class Store: ObservableObject {
 
     private var metadataQuery: NSMetadataQuery?
 
+    public struct StartupProgress: Sendable {
+        public let completedUnitCount: Int
+        public let totalUnitCount: Int
+        public let message: String
+
+        public var fractionCompleted: Double {
+            guard totalUnitCount > 0 else { return 0 }
+            return Double(completedUnitCount) / Double(totalUnitCount)
+        }
+    }
+
+    public struct StartupSnapshot: Sendable {
+        let projectsDir: URL
+        let inboxDir: URL
+        let projects: [Project]
+        let inboxItems: [InboxItem]
+        let shouldStartMetadataQuery: Bool
+    }
+
     // MARK: - Init
 
     public init() {
         let useICloud = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
-        if useICloud {
-            var icloudURL: URL? = nil
-            let sem = DispatchSemaphore(value: 0)
-            DispatchQueue.global().async {
-                icloudURL = Store.iCloudProjectsDir()
-                sem.signal()
-            }
-            sem.wait()
-            projectsDir = icloudURL ?? Store.localProjectsDir()
-        } else {
-            projectsDir = Store.localProjectsDir()
+        let resolvedProjectsDir = useICloud ? (Store.iCloudProjectsDir() ?? Store.localProjectsDir()) : Store.localProjectsDir()
+        let resolvedInboxDir = Store.inboxDir(forProjectsDir: resolvedProjectsDir)
+        try? FileManager.default.createDirectory(at: resolvedProjectsDir, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: resolvedInboxDir, withIntermediateDirectories: true)
+
+        let snapshot = StartupSnapshot(
+            projectsDir: resolvedProjectsDir,
+            inboxDir: resolvedInboxDir,
+            projects: (try? Self.loadAll(from: resolvedProjectsDir)) ?? [],
+            inboxItems: (try? Self.loadAllInboxItems(from: resolvedInboxDir)) ?? [],
+            shouldStartMetadataQuery: useICloud
+        )
+        self.projectsDir = snapshot.projectsDir
+        self.inboxDir = snapshot.inboxDir
+        self.projects = snapshot.projects
+        self.inboxItems = snapshot.inboxItems
+        if snapshot.shouldStartMetadataQuery {
+            startMetadataQuery()
         }
-        inboxDir = Store.inboxDir(forProjectsDir: projectsDir)
-        try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
-        try? FileManager.default.createDirectory(at: inboxDir, withIntermediateDirectories: true)
-        projects = (try? loadAll()) ?? []
-        inboxItems = (try? loadAllInboxItems()) ?? []
-        startMetadataQuery()
     }
 
     public init(projectsDir: URL) {
@@ -40,6 +60,62 @@ public class Store: ObservableObject {
         try? FileManager.default.createDirectory(at: inboxDir, withIntermediateDirectories: true)
         projects = (try? loadAll()) ?? []
         inboxItems = (try? loadAllInboxItems()) ?? []
+    }
+
+    public init(startupSnapshot: StartupSnapshot) {
+        self.projectsDir = startupSnapshot.projectsDir
+        self.inboxDir = startupSnapshot.inboxDir
+        self.projects = startupSnapshot.projects
+        self.inboxItems = startupSnapshot.inboxItems
+        if startupSnapshot.shouldStartMetadataQuery {
+            startMetadataQuery()
+        }
+    }
+
+    public static func prepareStartupSnapshot(
+        progress: (@Sendable (StartupProgress) -> Void)? = nil
+    ) async -> StartupSnapshot {
+        await Task.detached(priority: .userInitiated) {
+            let useICloud = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
+            let totalSteps = 4
+            var completedSteps = 0
+
+            func report(_ message: String) {
+                completedSteps += 1
+                progress?(StartupProgress(
+                    completedUnitCount: completedSteps,
+                    totalUnitCount: totalSteps,
+                    message: message
+                ))
+            }
+
+            let projectsDir: URL
+            if useICloud {
+                projectsDir = Store.iCloudProjectsDir() ?? Store.localProjectsDir()
+            } else {
+                projectsDir = Store.localProjectsDir()
+            }
+            let inboxDir = Store.inboxDir(forProjectsDir: projectsDir)
+            report(useICloud ? "Resolving iCloud storage" : "Resolving local storage")
+
+            try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
+            try? FileManager.default.createDirectory(at: inboxDir, withIntermediateDirectories: true)
+            report("Preparing project folders")
+
+            let projects = (try? Store.loadAll(from: projectsDir)) ?? []
+            report("Loading projects")
+
+            let inboxItems = (try? Store.loadAllInboxItems(from: inboxDir)) ?? []
+            report("Loading inbox")
+
+            return StartupSnapshot(
+                projectsDir: projectsDir,
+                inboxDir: inboxDir,
+                projects: projects,
+                inboxItems: inboxItems,
+                shouldStartMetadataQuery: useICloud
+            )
+        }.value
     }
 
     // MARK: - iCloud URL resolution
@@ -160,16 +236,7 @@ public class Store: ObservableObject {
     }
 
     public func loadAllInboxItems() throws -> [InboxItem] {
-        let files = try FileManager.default.contentsOfDirectory(at: inboxDir, includingPropertiesForKeys: nil)
-        return files.filter { $0.pathExtension == "json" }.compactMap { fileURL -> InboxItem? in
-            var result: InboxItem?
-            var coordinatorError: NSError?
-            let coordinator = NSFileCoordinator()
-            coordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &coordinatorError) { url in
-                result = try? JSONDecoder().decode(InboxItem.self, from: Data(contentsOf: url))
-            }
-            return result
-        }.sorted { $0.createdAt > $1.createdAt }
+        try Self.loadAllInboxItems(from: inboxDir)
     }
 
     public func reloadInbox() {
@@ -225,16 +292,7 @@ public class Store: ObservableObject {
     }
 
     public func loadAll() throws -> [Project] {
-        let files = try FileManager.default.contentsOfDirectory(at: projectsDir, includingPropertiesForKeys: nil)
-        return files.filter { $0.pathExtension == "json" }.compactMap { fileURL -> Project? in
-            var result: Project?
-            var coordinatorError: NSError?
-            let coordinator = NSFileCoordinator()
-            coordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &coordinatorError) { url in
-                result = try? JSONDecoder().decode(Project.self, from: Data(contentsOf: url))
-            }
-            return result
-        }.sorted { $0.createdAt > $1.createdAt }
+        try Self.loadAll(from: projectsDir)
     }
 
     public func delete(_ project: Project) throws {
@@ -327,5 +385,31 @@ public class Store: ObservableObject {
     private func sha256(_ url: URL) -> String? {
         guard let data = try? Data(contentsOf: url) else { return nil }
         return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    }
+
+    private static func loadAll(from projectsDir: URL) throws -> [Project] {
+        let files = try FileManager.default.contentsOfDirectory(at: projectsDir, includingPropertiesForKeys: nil)
+        return files.filter { $0.pathExtension == "json" }.compactMap { fileURL -> Project? in
+            var result: Project?
+            var coordinatorError: NSError?
+            let coordinator = NSFileCoordinator()
+            coordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &coordinatorError) { url in
+                result = try? JSONDecoder().decode(Project.self, from: Data(contentsOf: url))
+            }
+            return result
+        }.sorted { $0.createdAt > $1.createdAt }
+    }
+
+    private static func loadAllInboxItems(from inboxDir: URL) throws -> [InboxItem] {
+        let files = try FileManager.default.contentsOfDirectory(at: inboxDir, includingPropertiesForKeys: nil)
+        return files.filter { $0.pathExtension == "json" }.compactMap { fileURL -> InboxItem? in
+            var result: InboxItem?
+            var coordinatorError: NSError?
+            let coordinator = NSFileCoordinator()
+            coordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &coordinatorError) { url in
+                result = try? JSONDecoder().decode(InboxItem.self, from: Data(contentsOf: url))
+            }
+            return result
+        }.sorted { $0.createdAt > $1.createdAt }
     }
 }

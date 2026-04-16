@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Core Models
 
-public enum ProjectType: String, Codable, CaseIterable, Hashable {
+public enum ProjectType: String, Codable, CaseIterable, Hashable, Sendable {
     case survey
     case researchPaper
     case techReport
@@ -58,7 +58,7 @@ public enum ProjectType: String, Codable, CaseIterable, Hashable {
     }
 }
 
-public struct Paper: Codable, Identifiable, Hashable {
+public struct Paper: Codable, Identifiable, Hashable, Sendable {
     public var id: String
     public var title: String
     public var authors: [String]
@@ -120,7 +120,7 @@ public struct Paper: Codable, Identifiable, Hashable {
     }
 }
 
-public struct Project: Codable, Identifiable, Hashable {
+public struct Project: Codable, Identifiable, Hashable, Sendable {
     public var id: UUID
     public var name: String
     public var description: String

@@ -1,11 +1,11 @@
 import Foundation
 
-public enum InboxItemStatus: String, Codable, CaseIterable, Hashable {
+public enum InboxItemStatus: String, Codable, CaseIterable, Hashable, Sendable {
     case pending
     case processed
 }
 
-public enum InboxItemSource: String, Codable, CaseIterable, Hashable {
+public enum InboxItemSource: String, Codable, CaseIterable, Hashable, Sendable {
     case appImport
     case shareExtension
     case unknown
@@ -22,7 +22,7 @@ public enum InboxItemSource: String, Codable, CaseIterable, Hashable {
     }
 }
 
-public struct CachedPDFMetadata: Codable, Hashable {
+public struct CachedPDFMetadata: Codable, Hashable, Sendable {
     public var title: String
     public var authors: [String]
     public var abstract: String?
@@ -36,7 +36,7 @@ public struct CachedPDFMetadata: Codable, Hashable {
     }
 }
 
-public struct InboxItem: Codable, Identifiable, Hashable {
+public struct InboxItem: Codable, Identifiable, Hashable, Sendable {
     public var id: UUID
     public var originalFilename: String
     public var source: InboxItemSource

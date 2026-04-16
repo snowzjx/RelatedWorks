@@ -177,35 +177,105 @@ private final class InboxProcessingNotifier: NSObject, UNUserNotificationCenterD
     }
 }
 
+@MainActor
+final class AppLaunchCoordinator: ObservableObject {
+    @Published private(set) var store: Store?
+    @Published private(set) var progress = Store.StartupProgress(
+        completedUnitCount: 0,
+        totalUnitCount: 4,
+        message: "Starting RelatedWorks"
+    )
+
+    func launch() {
+        guard store == nil else { return }
+
+        Task {
+            let snapshot = await Store.prepareStartupSnapshot { progress in
+                Task { @MainActor in
+                    self.progress = progress
+                }
+            }
+            self.store = Store(startupSnapshot: snapshot)
+        }
+    }
+
+    func reload() {
+        store = nil
+        progress = Store.StartupProgress(
+            completedUnitCount: 0,
+            totalUnitCount: 4,
+            message: "Reloading library"
+        )
+        launch()
+    }
+}
+
+struct AppLaunchView: View {
+    @ObservedObject var coordinator: AppLaunchCoordinator
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Image(systemName: "books.vertical.fill")
+                .font(.system(size: 42))
+                .foregroundStyle(Color.accentColor)
+
+            VStack(spacing: 6) {
+                Text("Loading Library")
+                    .font(.headline)
+                Text(coordinator.progress.message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            ProgressView(value: coordinator.progress.fractionCompleted)
+                .progressViewStyle(.linear)
+                .frame(width: 280)
+
+            Text("\(coordinator.progress.completedUnitCount) of \(coordinator.progress.totalUnitCount)")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+        }
+        .frame(minWidth: 960, minHeight: 620)
+        .task {
+            coordinator.launch()
+        }
+    }
+}
+
 @main
 struct RelatedWorksApp: App {
-    @State private var store = Store()
     @StateObject private var settings = AppSettings.shared
     @StateObject private var deepLinkHandler = DeepLinkHandler()
     @StateObject private var inboxProcessingCoordinator = InboxProcessingCoordinator()
+    @StateObject private var launchCoordinator = AppLaunchCoordinator()
     @State private var showHelp = false
 
     var body: some Scene {
         Window("Main Window", id: AppWindowID.main) {
-            ContentView(deepLinkHandler: deepLinkHandler)
-                .environmentObject(store)
-                .environmentObject(settings)
-                .environmentObject(inboxProcessingCoordinator)
-                .onOpenURL { url in deepLinkHandler.handle(url) }
-                .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
-                .sheet(isPresented: $showHelp) { HelpView() }
-                .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
-                .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
-                    store = Store()
-                    inboxProcessingCoordinator.scheduleProcessing(for: store)
+            Group {
+                if let store = launchCoordinator.store {
+                    ContentView(deepLinkHandler: deepLinkHandler)
+                        .environmentObject(store)
+                        .environmentObject(settings)
+                        .environmentObject(inboxProcessingCoordinator)
+                        .onOpenURL { url in deepLinkHandler.handle(url) }
+                        .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
+                        .sheet(isPresented: $showHelp) { HelpView() }
+                        .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
+                        .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
+                            launchCoordinator.reload()
+                        }
+                        .onAppear {
+                            inboxProcessingCoordinator.prepareNotifications()
+                            inboxProcessingCoordinator.scheduleProcessing(for: store)
+                        }
+                        .onReceive(store.$inboxItems) { _ in
+                            inboxProcessingCoordinator.scheduleProcessing(for: store)
+                        }
+                } else {
+                    AppLaunchView(coordinator: launchCoordinator)
                 }
-                .onAppear {
-                    inboxProcessingCoordinator.prepareNotifications()
-                    inboxProcessingCoordinator.scheduleProcessing(for: store)
-                }
-                .onReceive(store.$inboxItems) { _ in
-                    inboxProcessingCoordinator.scheduleProcessing(for: store)
-                }
+            }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
@@ -237,23 +307,35 @@ struct RelatedWorksApp: App {
         }
 
         Settings {
-            PreferencesView()
-                .environmentObject(store)
+            if let store = launchCoordinator.store {
+                PreferencesView()
+                    .environmentObject(store)
+            } else {
+                AppLaunchView(coordinator: launchCoordinator)
+            }
         }
 
         WindowGroup(id: AppWindowID.generate, for: UUID.self) { $projectID in
-            GenerateWindowView(projectID: projectID)
-                .environmentObject(store)
+            if let store = launchCoordinator.store {
+                GenerateWindowView(projectID: projectID)
+                    .environmentObject(store)
+            } else {
+                AppLaunchView(coordinator: launchCoordinator)
+            }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
         .defaultSize(width: 720, height: 540)
 
         Window("Inbox", id: AppWindowID.inbox) {
-            InboxManagementView()
-                .environmentObject(store)
-                .environmentObject(inboxProcessingCoordinator)
-                .onAppear { inboxProcessingCoordinator.scheduleProcessing(for: store) }
+            if let store = launchCoordinator.store {
+                InboxManagementView()
+                    .environmentObject(store)
+                    .environmentObject(inboxProcessingCoordinator)
+                    .onAppear { inboxProcessingCoordinator.scheduleProcessing(for: store) }
+            } else {
+                AppLaunchView(coordinator: launchCoordinator)
+            }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
