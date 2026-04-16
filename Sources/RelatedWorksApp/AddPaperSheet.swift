@@ -62,8 +62,6 @@ struct AddPaperSheet: View {
     @State private var sourceMode: SourceMode = .importPDF
     @State private var semanticID = ""
     @State private var idConflict = false
-    @State private var pdfAlreadyInProject = false
-    @State private var pdfExistsElsewhere = false
     @State private var query = ""
     @State private var searchResults: [SearchResult] = []
     @State private var searchSource: SearchSource = .dblp
@@ -112,22 +110,12 @@ struct AddPaperSheet: View {
                     TextField("e.g. Transformer, BERT, GPT4", text: $semanticID)
                         .textFieldStyle(.roundedBorder)
                         .focused($idFocused)
-                        .disabled(pdfExistsElsewhere)
                         .onChange(of: semanticID) { _ in
-                            idConflict = store.isIDTaken(semanticID.trimmingCharacters(in: .whitespaces))
+                            idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
                         }
                     if idConflict {
                         Label("This ID is already taken — choose a different one", systemImage: "exclamationmark.triangle.fill")
                             .font(.caption2).foregroundStyle(.orange)
-                    } else if pdfAlreadyInProject {
-                        Label("This PDF is already in this project", systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption2).foregroundStyle(.orange)
-                    } else if pdfExistsElsewhere {
-                        HStack(spacing: 6) {
-                            Image(systemName: "info.circle.fill").foregroundStyle(.blue)
-                            Text("This PDF is already in the system as \"\(semanticID)\" — it will be shared, not duplicated.")
-                                .font(.caption2).foregroundStyle(.secondary)
-                        }
                     } else {
                         Text("Short memorable name used for [@cross-references]")
                             .font(.caption2).foregroundStyle(.tertiary)
@@ -184,7 +172,6 @@ struct AddPaperSheet: View {
                             }
                         }
                     }
-                    .disabled(pdfExistsElsewhere)
                 } else {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -205,7 +192,6 @@ struct AddPaperSheet: View {
                             TextField("Venue / Conference", text: $manualVenue).textFieldStyle(.roundedBorder)
                         }
                     }
-                    .disabled(pdfExistsElsewhere)
                 }
 
                 if let r = selectedResult {
@@ -246,7 +232,14 @@ struct AddPaperSheet: View {
                 sourceMode = .inbox
                 selectedInboxItemID = store.inboxItems.first?.id
                 if let item = store.inboxItems.first {
-                    selectInboxItem(item)
+                    // Let the sheet appear first before running inbox prefill work.
+                    Task { @MainActor in
+                        await Task.yield()
+                        guard isPresented,
+                              sourceMode == .inbox,
+                              selectedInboxItemID == item.id else { return }
+                        selectInboxItem(item)
+                    }
                 }
             }
             idFocused = true
@@ -279,7 +272,7 @@ struct AddPaperSheet: View {
 
     private var isAddDisabled: Bool {
         let id = semanticID.trimmingCharacters(in: .whitespaces)
-        if id.isEmpty || phase == .extracting || idConflict || pdfAlreadyInProject { return true }
+        if id.isEmpty || phase == .extracting || idConflict { return true }
         if sourceMode == .inbox && selectedInboxItemID == nil { return true }
         if showManualInput && manualTitle.trimmingCharacters(in: .whitespaces).isEmpty { return true }
         return false
@@ -338,13 +331,15 @@ struct AddPaperSheet: View {
         return lines.joined(separator: "\n")
     }
 
-    private func resetEditorState(keepingPDF: Bool) {
+    private func resetEditorState(keepingPDF: Bool, clearIdentityFields: Bool = true) {
         phase = .idle
-        semanticID = ""
-        idConflict = false
-        pdfAlreadyInProject = false
-        pdfExistsElsewhere = false
-        query = ""
+        if clearIdentityFields {
+            semanticID = ""
+            idConflict = false
+            query = ""
+        } else {
+            idConflict = false
+        }
         searchResults = []
         searchSource = .dblp
         isSearching = false
@@ -366,7 +361,7 @@ struct AddPaperSheet: View {
         abstract: String?,
         suggestedID: String
     ) {
-        resetEditorState(keepingPDF: true)
+        resetEditorState(keepingPDF: true, clearIdentityFields: false)
         self.pdfURL = pdfURL
         extractedMeta = ExtractedMetadata(
             title: title,
@@ -375,28 +370,9 @@ struct AddPaperSheet: View {
             suggestedID: suggestedID.isEmpty ? "Paper" : suggestedID
         )
 
-        if let existingID = store.existingID(forPDFAt: pdfURL, title: title) {
-            if project.papers.contains(where: { $0.id.lowercased() == existingID.lowercased() }) {
-                pdfAlreadyInProject = true
-                semanticID = existingID
-            } else {
-                pdfExistsElsewhere = true
-                semanticID = existingID
-                if let existingPaper = store.projects
-                    .flatMap({ $0.papers })
-                    .first(where: { $0.id.lowercased() == existingID.lowercased() }) {
-                    manualTitle = existingPaper.title
-                    manualAuthors = existingPaper.authors.joined(separator: ", ")
-                    manualYear = existingPaper.year.map(String.init) ?? ""
-                    manualVenue = existingPaper.venue ?? ""
-                    searchSource = .manual
-                }
-            }
-        } else {
-            semanticID = suggestedID.isEmpty ? "Paper" : suggestedID
-            idConflict = store.isIDTaken(semanticID.trimmingCharacters(in: .whitespaces))
-            query = title
-        }
+        semanticID = suggestedID.isEmpty ? "Paper" : suggestedID
+        idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
+        query = title
 
         if !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             manualTitle = title
@@ -412,7 +388,8 @@ struct AddPaperSheet: View {
     private func selectImportedPDF(_ url: URL) {
         phase = .extracting
         Task {
-            let meta = await PDFImporter.extractMetadata(from: url, takenIDs: store.allPaperIDs)
+            let takenIDs = Set(project.papers.map { $0.id.lowercased() })
+            let meta = await PDFImporter.extractMetadata(from: url, takenIDs: takenIDs)
             await MainActor.run {
                 applyMetadataToEditor(
                     pdfURL: url,
@@ -491,11 +468,7 @@ struct AddPaperSheet: View {
                 year: Int(manualYear),
                 venue: manualVenue.isEmpty ? nil : manualVenue
             )
-            if pdfExistsElsewhere {
-                paper.abstract = store.projects.flatMap({ $0.papers }).first(where: { $0.id == id })?.abstract
-            } else {
-                paper.abstract = extractedMeta?.abstract
-            }
+            paper.abstract = extractedMeta?.abstract
         } else {
             let meta = extractedMeta
             paper = Paper(

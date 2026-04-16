@@ -14,6 +14,7 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             ProjectSidebar(selectedProjectID: $selectedProjectID)
+                .navigationSplitViewColumnWidth(min: 320, ideal: 360, max: 460)
         } detail: {
             if let idx = selectedIndex {
                 ProjectDetailView(project: $store.projects[idx], externalPaperID: $selectedPaperID)

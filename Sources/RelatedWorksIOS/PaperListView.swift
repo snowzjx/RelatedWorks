@@ -10,8 +10,6 @@ struct PaperListView: View {
     @State private var showRename = false
     @State private var editName = ""
     @State private var editDescription = ""
-    @State private var editProjectType: ProjectType = .custom
-    @State private var editGenerationPrompt = ""
 
     var project: Project? { store.projects.first(where: { $0.id == projectID }) }
 
@@ -51,8 +49,6 @@ struct PaperListView: View {
             if autoRename {
                 editName = project?.name ?? ""
                 editDescription = project?.description ?? ""
-                editProjectType = project?.projectType ?? .custom
-                editGenerationPrompt = project?.generationPrompt ?? ""
                 showRename = true
             }
         }
@@ -62,8 +58,6 @@ struct PaperListView: View {
                     guard let proj = project else { return }
                     editName = proj.name
                     editDescription = proj.description
-                    editProjectType = proj.projectType
-                    editGenerationPrompt = proj.generationPrompt
                     showRename = true
                 } label: {
                     Image(systemName: "pencil")
@@ -78,35 +72,6 @@ struct PaperListView: View {
                         TextField("Description", text: $editDescription, axis: .vertical)
                             .lineLimit(3...6)
                     }
-                    Section("Project Type") {
-                        Picker("Project Type", selection: $editProjectType) {
-                            ForEach(ProjectType.allCases, id: \.self) { type in
-                                Text(type.displayName).tag(type)
-                            }
-                        }
-                        .onChange(of: editProjectType) { _, newValue in
-                            if let preset = newValue.presetPrompt {
-                                editGenerationPrompt = preset
-                            }
-                        }
-                    }
-                    Section("Project Prompt") {
-                        TextEditor(text: $editGenerationPrompt)
-                            .frame(minHeight: 140)
-                        if let preset = editProjectType.presetPrompt {
-                            Button("Use \(editProjectType.displayName) Preset") {
-                                editGenerationPrompt = preset
-                            }
-                        }
-                        Text(editProjectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(editProjectType.displayName). Editing it will switch the type to Custom.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Section("Effective Prompt") {
-                        Text(effectivePromptPreview)
-                            .font(.system(.caption, design: .monospaced))
-                            .textSelection(.enabled)
-                    }
                 }
                 .navigationTitle("Edit Project")
                 .navigationBarTitleDisplayMode(.inline)
@@ -118,28 +83,17 @@ struct PaperListView: View {
                                   let idx = store.projects.firstIndex(where: { $0.id == projectID }) else { return }
                             proj.name = editName.trimmingCharacters(in: .whitespaces)
                             proj.description = editDescription
-                            proj.projectType = editProjectType
-                            proj.generationPrompt = editGenerationPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
                             store.projects[idx] = proj
                             try? store.save(proj)
                             showRename = false
                         }
                         .disabled(editName.trimmingCharacters(in: .whitespaces).isEmpty ||
-                                  editGenerationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                                   (editName == project?.name &&
-                                   editDescription == project?.description &&
-                                   editProjectType == project?.projectType &&
-                                   editGenerationPrompt == project?.generationPrompt))
+                                   editDescription == project?.description))
                     }
                 }
             }
             .presentationDetents([.medium, .large])
-            .onChange(of: editGenerationPrompt) { _, newValue in
-                guard editProjectType != .custom, let preset = editProjectType.presetPrompt else { return }
-                if newValue != preset {
-                    editProjectType = .custom
-                }
-            }
         }
         .alert("Delete Paper", isPresented: Binding(
             get: { pendingDeleteOffsets != nil },
@@ -168,11 +122,6 @@ struct PaperListView: View {
         }
         store.projects[storeIdx] = proj
         try? store.save(proj)
-    }
-
-    private var effectivePromptPreview: String {
-        let draft = Project(name: editName, description: editDescription, projectType: editProjectType, generationPrompt: editGenerationPrompt)
-        return draft.generationPrompt
     }
 }
 

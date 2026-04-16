@@ -110,25 +110,17 @@ struct StoreTests {
         #expect(!store.projects.contains { $0.id == project.id })
     }
 
-    @Test func globalIDRegistry() throws {
+    @Test func sameIDAllowedAcrossProjects() throws {
         let store = makeTestStore()
         var p1 = Project(name: "Project 1")
         p1.addPaper(Paper(id: "BERT", title: "BERT"))
         try store.save(p1)
-        #expect(store.isIDTaken("BERT"))
-        #expect(store.isIDTaken("bert"))
-        #expect(!store.isIDTaken("GPT"))
-    }
+        var p2 = Project(name: "Project 2")
+        p2.addPaper(Paper(id: "BERT", title: "BERT Again"))
+        try store.save(p2)
 
-    @Test func duplicatePDFDetectedByTitle() throws {
-        let store = makeTestStore()
-        var project = Project(name: "Project")
-        project.addPaper(Paper(id: "BERT", title: "BERT: Pre-training"))
-        try store.save(project)
-
-        // existingID by title match (no PDF file needed)
-        let id = store.existingID(forPDFAt: URL(fileURLWithPath: "/nonexistent.pdf"), title: "BERT: Pre-training")
-        #expect(id == "BERT")
+        #expect(store.projects.first(where: { $0.id == p1.id })?.papers.first?.id == "BERT")
+        #expect(store.projects.first(where: { $0.id == p2.id })?.papers.first?.id == "BERT")
     }
 
     @Test func perProjectPDFDirectory() throws {

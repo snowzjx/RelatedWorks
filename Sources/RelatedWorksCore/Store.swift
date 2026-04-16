@@ -200,35 +200,6 @@ public class Store: ObservableObject {
         try saveInboxItem(item)
     }
 
-    // MARK: - ID Registry
-
-    public var allPaperIDs: Set<String> {
-        Set(projects.flatMap { $0.papers.map { $0.id.lowercased() } })
-    }
-
-    public func isIDTaken(_ id: String) -> Bool {
-        allPaperIDs.contains(id.lowercased())
-    }
-
-    public func existingID(forPDFAt url: URL, title: String? = nil) -> String? {
-        if let hash = sha256(url) {
-            for project in projects {
-                for paper in project.papers where paper.hasPDF {
-                    let paperURL = pdfURL(for: paper.id, projectID: project.id)
-                    if let h = sha256(paperURL), h == hash { return paper.id }
-                }
-            }
-        }
-        if let title = title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), !title.isEmpty {
-            for project in projects {
-                if let paper = project.papers.first(where: { $0.title.lowercased() == title }) {
-                    return paper.id
-                }
-            }
-        }
-        return nil
-    }
-
     // MARK: - Persistence (NSFileCoordinator-aware)
 
     private func url(for project: Project) -> URL {
@@ -351,7 +322,6 @@ public class Store: ObservableObject {
             "iCloud Drive is not available. Make sure you are signed in to iCloud and iCloud Drive is enabled."
         }
     }
-
     // MARK: - Helpers
 
     private func sha256(_ url: URL) -> String? {

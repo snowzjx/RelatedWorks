@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 enum AppWindowID {
     static let main = "main"
@@ -9,9 +10,14 @@ enum AppWindowID {
 @MainActor
 final class InboxProcessingCoordinator: ObservableObject {
     private var inFlightItemIDs = Set<UUID>()
+    private let notifier = InboxProcessingNotifier()
+
+    func prepareNotifications() {
+        notifier.prepareNotifications()
+    }
 
     func scheduleProcessing(for store: Store) {
-        let candidates = store.inboxItems.compactMap { item -> (UUID, URL, Set<String>)? in
+        let candidates = store.inboxItems.compactMap { item -> (InboxItem, URL)? in
             guard !inFlightItemIDs.contains(item.id) else { return nil }
 
             let pdfURL = store.inboxPDFURL(for: item.id)
@@ -26,13 +32,13 @@ final class InboxProcessingCoordinator: ObservableObject {
                 )
 
             guard needsMetadata else { return nil }
-            return (item.id, pdfURL, store.allPaperIDs)
+            return (item, pdfURL)
         }
 
-        for (itemID, pdfURL, takenIDs) in candidates {
-            inFlightItemIDs.insert(itemID)
+        for (item, pdfURL) in candidates {
+            inFlightItemIDs.insert(item.id)
             Task.detached(priority: .utility) {
-                let extracted = await PDFImporter.extractMetadata(from: pdfURL, takenIDs: takenIDs)
+                let extracted = await PDFImporter.extractMetadata(from: pdfURL)
                 let cached = CachedPDFMetadata(
                     title: extracted.title,
                     authors: extracted.authors,
@@ -41,9 +47,18 @@ final class InboxProcessingCoordinator: ObservableObject {
                 )
 
                 await MainActor.run {
-                    defer { self.inFlightItemIDs.remove(itemID) }
-                    try? store.updateInboxItemMetadata(itemID, metadata: cached)
-                    try? store.updateInboxItemStatus(itemID, status: .processed)
+                    defer { self.inFlightItemIDs.remove(item.id) }
+
+                    do {
+                        try store.updateInboxItemMetadata(item.id, metadata: cached)
+                        try store.updateInboxItemStatus(item.id, status: .processed)
+                        if item.status != .processed,
+                           let updatedItem = store.inboxItems.first(where: { $0.id == item.id }) {
+                            self.notifier.notifyProcessedInboxItem(updatedItem)
+                        }
+                    } catch {
+                        return
+                    }
                 }
             }
         }
@@ -54,6 +69,111 @@ final class InboxProcessingCoordinator: ObservableObject {
         try? store.updateInboxItemMetadata(itemID, metadata: nil)
         try? store.updateInboxItemStatus(itemID, status: .pending)
         scheduleProcessing(for: store)
+    }
+}
+
+@MainActor
+private final class InboxProcessingNotifier: NSObject, UNUserNotificationCenterDelegate {
+    private enum DefaultsKey {
+        static let didDeferEnablingNotifications = "didDeferEnablingNotifications"
+    }
+
+    private let center = UNUserNotificationCenter.current()
+    private var didPrepareNotifications = false
+    private var didPromptToEnableNotifications = false
+
+    override init() {
+        super.init()
+        center.delegate = self
+    }
+
+    func prepareNotifications() {
+        guard !didPrepareNotifications else { return }
+        didPrepareNotifications = true
+
+        center.getNotificationSettings { settings in
+            Task { @MainActor in
+                switch settings.authorizationStatus {
+                case .notDetermined:
+                    let granted = (try? await self.center.requestAuthorization(options: [.alert, .sound])) ?? false
+                    if !granted {
+                        self.promptToEnableNotifications()
+                    }
+                case .authorized, .provisional, .ephemeral:
+                    self.clearDeferredNotificationPrompt()
+                    break
+                case .denied:
+                    self.promptToEnableNotifications()
+                @unknown default:
+                    break
+                }
+            }
+        }
+    }
+
+    func notifyProcessedInboxItem(_ item: InboxItem) {
+        let semanticID = item.cachedMetadata?.suggestedID?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard let semanticID, !semanticID.isEmpty else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Inbox Processing Complete"
+        content.body = "\(semanticID) has been added in inbox, you can add it to a project via add paper."
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: "inbox-processed-\(item.id.uuidString)",
+            content: content,
+            trigger: nil
+        )
+        center.add(request) { _ in }
+    }
+
+    private func promptToEnableNotifications() {
+        guard !didPromptToEnableNotifications else { return }
+        guard !didDeferEnablingNotifications else { return }
+        didPromptToEnableNotifications = true
+
+        let alert = NSAlert()
+        alert.messageText = "Enable Notifications"
+        alert.informativeText = "RelatedWorks notifications are turned off. Enable them in System Settings if you want inbox processing to notify you when a paper is ready to add."
+        alert.addButton(withTitle: "Open System Settings")
+        alert.addButton(withTitle: "Not Now")
+
+        guard alert.runModal() == .alertFirstButtonReturn else {
+            didDeferEnablingNotifications = true
+            return
+        }
+        openNotificationSettings()
+    }
+
+    private var didDeferEnablingNotifications: Bool {
+        get { UserDefaults.standard.bool(forKey: DefaultsKey.didDeferEnablingNotifications) }
+        set { UserDefaults.standard.set(newValue, forKey: DefaultsKey.didDeferEnablingNotifications) }
+    }
+
+    private func clearDeferredNotificationPrompt() {
+        guard didDeferEnablingNotifications else { return }
+        didDeferEnablingNotifications = false
+    }
+
+    private func openNotificationSettings() {
+        let urls = [
+            "x-apple.systempreferences:com.apple.preference.notifications",
+            "x-apple.systempreferences:com.apple.Notifications-Settings.extension"
+        ].compactMap(URL.init(string:))
+
+        for url in urls where NSWorkspace.shared.open(url) {
+            return
+        }
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .list, .sound]
     }
 }
 
@@ -79,7 +199,10 @@ struct RelatedWorksApp: App {
                     store = Store()
                     inboxProcessingCoordinator.scheduleProcessing(for: store)
                 }
-                .onAppear { inboxProcessingCoordinator.scheduleProcessing(for: store) }
+                .onAppear {
+                    inboxProcessingCoordinator.prepareNotifications()
+                    inboxProcessingCoordinator.scheduleProcessing(for: store)
+                }
                 .onReceive(store.$inboxItems) { _ in
                     inboxProcessingCoordinator.scheduleProcessing(for: store)
                 }

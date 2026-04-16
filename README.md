@@ -139,5 +139,5 @@ Works on both macOS and iOS.
 
 | Mode | Location |
 |------|----------|
-| Local | `~/Library/Application Support/RelatedWorks/projects/` |
-| iCloud | `~/Library/Mobile Documents/iCloud~me~snowzjx~relatedworks/Documents/projects/` |
+| Local | `~/Library/Application Support/RelatedWorks/` |
+| iCloud | `~/Library/Mobile Documents/iCloud~me~snowzjx~relatedworks/Documents/` |
