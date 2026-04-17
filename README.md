@@ -16,6 +16,7 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 
 - iOS/macOS app: [Download on the App Store](https://apps.apple.com/us/app/relatedworks/id6761808445)
 - macOS direct download: [Download from GitHub Releases](https://github.com/snowzjx/RelatedWorks/releases/latest)
+- Beta test: [Join TestFlight](https://testflight.apple.com/join/B1VxbrDv)
 
 ## What's New in v2.0.0
 
