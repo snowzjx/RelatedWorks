@@ -255,7 +255,7 @@ struct RelatedWorksApp: App {
     @State private var showHelp = false
 
     var body: some Scene {
-        Window(appLocalized("Main Window"), id: AppWindowID.main) {
+        Window(appLocalized("Library"), id: AppWindowID.main) {
             Group {
                 if let store = launchCoordinator.store {
                     ContentView(deepLinkHandler: deepLinkHandler)

@@ -14,7 +14,7 @@ final class ShareViewController: UIViewController {
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.numberOfLines = 0
         statusLabel.textAlignment = .center
-        statusLabel.text = "Preparing PDF for RelatedWorks Inbox…"
+        statusLabel.text = String(localized: "Preparing PDF for RelatedWorks Inbox…")
 
         view.addSubview(statusLabel)
 
@@ -35,7 +35,7 @@ final class ShareViewController: UIViewController {
     private func handleShare() async {
         guard let item = extensionContext?.inputItems.first as? NSExtensionItem,
               let provider = item.attachments?.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.pdf.identifier) }) else {
-            finish(with: "Only PDF files can be sent to RelatedWorks Inbox.", success: false)
+            finish(with: String(localized: "Only PDF files can be sent to RelatedWorks Inbox."), success: false)
             return
         }
 
@@ -45,7 +45,7 @@ final class ShareViewController: UIViewController {
             let inboxItem = try buildInboxItem(from: sharedFile.url, originalFilename: sharedFile.originalFilename)
 
             if let existing = try existingInboxItem(in: inboxURL, matching: inboxItem.contentHash) {
-                finish(with: "\"\(existing.originalFilename)\" is already in RelatedWorks Inbox.", success: true)
+                finish(with: String(format: String(localized: "\"%@\" is already in RelatedWorks Inbox."), existing.originalFilename), success: true)
                 return
             }
 
@@ -63,7 +63,7 @@ final class ShareViewController: UIViewController {
             let data = try JSONEncoder().encode(inboxItem)
             try data.write(to: metadataDestination, options: .atomic)
 
-            finish(with: "Saved to RelatedWorks Inbox.", success: true)
+            finish(with: String(localized: "Saved to RelatedWorks Inbox."), success: true)
         } catch {
             finish(with: error.localizedDescription, success: false)
         }

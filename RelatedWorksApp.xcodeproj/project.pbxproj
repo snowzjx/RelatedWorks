@@ -56,6 +56,7 @@
 		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
 		IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */; };
 		LOC002 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
+		LOC004 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FIOSSHAREAPP /* RelatedWorksShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
 		MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
@@ -445,6 +446,7 @@
 			buildConfigurationList = BCLSHARE /* Build configuration list for PBXNativeTarget "RelatedWorksShareExtension" */;
 			buildPhases = (
 				BPSHARE /* Sources */,
+				BPSHARERES /* Resources */,
 			);
 			buildRules = (
 			);
@@ -599,6 +601,14 @@
 			files = (
 				SHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift in Sources */,
 				SHARE002 /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPSHARERES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LOC004 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

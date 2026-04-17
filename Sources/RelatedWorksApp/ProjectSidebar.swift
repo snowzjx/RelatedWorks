@@ -307,7 +307,7 @@ private struct InboxDetailView: View {
                     InboxStatusTag(label: item.status.displayName, color: item.status == .processed ? .green : .orange)
                     InboxStatusTag(label: item.source.displayName, color: .blue)
                     if item.cachedMetadata != nil {
-                        InboxStatusTag(label: "Metadata Cached", color: .secondary)
+                        InboxStatusTag(label: appLocalized("Metadata Cached"), color: .secondary)
                     }
                 }
 
@@ -373,7 +373,7 @@ struct ProjectRow: View {
             HStack(spacing: 4) {
                 Image(systemName: "doc.text").font(.caption2)
                 Text(String(
-                    format: appLocalized(project.papers.count == 1 ? "%lld paper" : "%lld papers"),
+                    format: appLocalized("%lld paper"),
                     project.papers.count
                 )).font(.caption)
             }

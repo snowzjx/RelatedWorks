@@ -109,7 +109,7 @@ struct ProjectDetailView: View {
                     .foregroundStyle(.blue)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .help("Add Paper (⌘⇧A)")
+                    .help(appLocalized("Add Paper (⌘⇧A)"))
                 }
                 .frame(width: 260)
 

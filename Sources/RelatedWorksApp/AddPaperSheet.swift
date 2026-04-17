@@ -308,7 +308,7 @@ struct AddPaperSheet: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text(String(
-                    format: appLocalized(store.inboxItems.count == 1 ? "%lld item" : "%lld items"),
+                    format: appLocalized("%lld item"),
                     store.inboxItems.count
                 ))
                     .font(.caption2)

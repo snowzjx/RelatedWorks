@@ -47,7 +47,7 @@ struct GeneralSettingsView: View {
 
                 HStack(spacing: 12) {
                     Text(appLocalized("Language")).frame(width: 80, alignment: .leading)
-                    Picker(appLocalized("Language"), selection: $settings.appLanguage) {
+                    Picker("", selection: $settings.appLanguage) {
                         ForEach(AppLanguage.allCases) { language in
                             Text(language.displayName).tag(language)
                         }
