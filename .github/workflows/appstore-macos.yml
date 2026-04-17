@@ -56,6 +56,7 @@ jobs:
             OTHER_CODE_SIGN_FLAGS="--timestamp" \
             CODE_SIGN_ENTITLEMENTS="RelatedWorksApp/RelatedWorksApp.AppStore.entitlements" \
             MARKETING_VERSION="${{ github.event.inputs.version }}" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             -archivePath /tmp/RelatedWorks.xcarchive \
             archive
 
