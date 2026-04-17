@@ -105,136 +105,144 @@ struct AddPaperSheet: View {
     var showManualInput: Bool { searchSource == .manual }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text(appLocalized("Add Paper")).font(.title3).fontWeight(.semibold)
+        VStack(alignment: .leading, spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text(appLocalized("Add Paper")).font(.title3).fontWeight(.semibold)
 
-            if !store.inboxItems.isEmpty {
-                Picker(appLocalized("Source"), selection: $sourceMode) {
-                    ForEach(SourceMode.allCases) { mode in
-                        Text(mode.displayName).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-            }
-
-            if sourceMode == .importPDF {
-                PDFDropZone(pdfURL: $pdfURL, isExtracting: phase == .extracting) { url in
-                    selectImportedPDF(url)
-                }
-            } else {
-                inboxSection
-            }
-
-            if phase == .filling || phase == .idle {
-                VStack(alignment: .leading, spacing: 6) {
-                    Label(appLocalized("Semantic ID"), systemImage: "tag")
-                        .font(.caption).foregroundStyle(.secondary)
-                    TextField(appLocalized("e.g. Transformer, BERT, GPT4"), text: $semanticID)
-                        .textFieldStyle(.roundedBorder)
-                        .focused($idFocused)
-                        .onChange(of: semanticID) { _ in
-                            idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
+                    if !store.inboxItems.isEmpty {
+                        Picker(appLocalized("Source"), selection: $sourceMode) {
+                            ForEach(SourceMode.allCases) { mode in
+                                Text(mode.displayName).tag(mode)
+                            }
                         }
-                    if idConflict {
-                        Label(appLocalized("This ID is already taken — choose a different one"), systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption2).foregroundStyle(.orange)
+                        .pickerStyle(.segmented)
+                    }
+
+                    if sourceMode == .importPDF {
+                        PDFDropZone(pdfURL: $pdfURL, isExtracting: phase == .extracting) { url in
+                            selectImportedPDF(url)
+                        }
                     } else {
-                        Text(appLocalized("Short memorable name used for [@cross-references]"))
-                            .font(.caption2).foregroundStyle(.tertiary)
+                        inboxSection
                     }
-                }
 
-                if !showManualInput {
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Label(appLocalizedFormat("Search %@", searchSource.displayName), systemImage: "magnifyingglass")
+                    if phase == .filling || phase == .idle {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(appLocalized("Semantic ID"), systemImage: "tag")
                                 .font(.caption).foregroundStyle(.secondary)
-                            Spacer()
-                            if searchSource == .arxiv {
-                                Text(appLocalized("DBLP returned no results")).font(.caption2).foregroundStyle(.orange)
+                            TextField(appLocalized("e.g. Transformer, BERT, GPT4"), text: $semanticID)
+                                .textFieldStyle(.roundedBorder)
+                                .focused($idFocused)
+                                .onChange(of: semanticID) { _ in
+                                    idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
+                                }
+                            if idConflict {
+                                Label(appLocalized("This ID is already taken — choose a different one"), systemImage: "exclamationmark.triangle.fill")
+                                    .font(.caption2).foregroundStyle(.orange)
+                            } else {
+                                Text(appLocalized("Short memorable name used for [@cross-references]"))
+                                    .font(.caption2).foregroundStyle(.tertiary)
                             }
                         }
-                        HStack {
-                            LiquidGlassSearchField(prompt: LocalizedStringKey(appLocalized("Paper title or keywords")), text: $query)
-                                .onChange(of: query) { _ in triggerSearch() }
-                            if isSearching { ProgressView().scaleEffect(0.7).frame(width: 20) }
-                        }
 
-                        if !searchResults.isEmpty {
-                            ScrollView {
-                                VStack(spacing: 0) {
-                                    ForEach(searchResults) { result in
-                                        UnifiedResultRow(result: result, isSelected: selectedResult == result)
-                                            .onTapGesture { selectedResult = result }
-                                        Divider()
+                        if !showManualInput {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Label(appLocalizedFormat("Search %@", searchSource.displayName), systemImage: "magnifyingglass")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                    Spacer()
+                                    if searchSource == .arxiv {
+                                        Text(appLocalized("DBLP returned no results")).font(.caption2).foregroundStyle(.orange)
+                                    }
+                                }
+                                HStack {
+                                    LiquidGlassSearchField(prompt: LocalizedStringKey(appLocalized("Paper title or keywords")), text: $query)
+                                        .onChange(of: query) { _ in triggerSearch() }
+                                    if isSearching { ProgressView().scaleEffect(0.7).frame(width: 20) }
+                                }
+
+                                if !searchResults.isEmpty {
+                                    ScrollView {
+                                        VStack(spacing: 0) {
+                                            ForEach(searchResults) { result in
+                                                UnifiedResultRow(result: result, isSelected: selectedResult == result)
+                                                    .onTapGesture { selectedResult = result }
+                                                Divider()
+                                            }
+                                        }
+                                    }
+                                    .frame(height: 180)
+                                    .background(Color(nsColor: .controlBackgroundColor))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
+                                } else if !query.isEmpty && !isSearching {
+                                    HStack {
+                                        Text(appLocalizedFormat("No results from %@", searchSource.displayName))
+                                            .font(.caption2).foregroundStyle(.secondary)
+                                        Spacer()
+                                        Button(searchSource == .dblp ? appLocalized("Try arXiv") : appLocalized("Enter manually")) {
+                                            if searchSource == .dblp {
+                                                searchSource = .arxiv
+                                                triggerSearch()
+                                            } else {
+                                                searchSource = .manual
+                                                manualTitle = query
+                                            }
+                                        }
+                                        .font(.caption2)
+                                        .buttonStyle(.borderless)
+                                        .foregroundStyle(.blue)
                                     }
                                 }
                             }
-                            .frame(height: 180)
-                            .background(Color(nsColor: .controlBackgroundColor))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
-                        } else if !query.isEmpty && !isSearching {
-                            HStack {
-                                Text(appLocalizedFormat("No results from %@", searchSource.displayName))
-                                    .font(.caption2).foregroundStyle(.secondary)
-                                Spacer()
-                                Button(searchSource == .dblp ? appLocalized("Try arXiv") : appLocalized("Enter manually")) {
-                                    if searchSource == .dblp {
-                                        searchSource = .arxiv
+                        } else {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Label(appLocalized("Manual Entry"), systemImage: "pencil")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Button(appLocalized("Try search again")) {
+                                        searchSource = .dblp
+                                        searchResults = []
                                         triggerSearch()
-                                    } else {
-                                        searchSource = .manual
-                                        manualTitle = query
                                     }
+                                    .font(.caption2).buttonStyle(.borderless).foregroundStyle(.blue)
                                 }
-                                .font(.caption2)
-                                .buttonStyle(.borderless)
-                                .foregroundStyle(.blue)
+                                TextField(appLocalized("Title"), text: $manualTitle).textFieldStyle(.roundedBorder)
+                                TextField(appLocalized("Authors (comma separated)"), text: $manualAuthors).textFieldStyle(.roundedBorder)
+                                HStack(spacing: 8) {
+                                    TextField(appLocalized("Year"), text: $manualYear).textFieldStyle(.roundedBorder).frame(width: 80)
+                                    TextField(appLocalized("Venue / Conference"), text: $manualVenue).textFieldStyle(.roundedBorder)
+                                }
                             }
                         }
-                    }
-                } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Label(appLocalized("Manual Entry"), systemImage: "pencil")
-                                .font(.caption).foregroundStyle(.secondary)
-                            Spacer()
-                            Button(appLocalized("Try search again")) {
-                                searchSource = .dblp
-                                searchResults = []
-                                triggerSearch()
-                            }
-                            .font(.caption2).buttonStyle(.borderless).foregroundStyle(.blue)
-                        }
-                        TextField(appLocalized("Title"), text: $manualTitle).textFieldStyle(.roundedBorder)
-                        TextField(appLocalized("Authors (comma separated)"), text: $manualAuthors).textFieldStyle(.roundedBorder)
-                        HStack(spacing: 8) {
-                            TextField(appLocalized("Year"), text: $manualYear).textFieldStyle(.roundedBorder).frame(width: 80)
-                            TextField(appLocalized("Venue / Conference"), text: $manualVenue).textFieldStyle(.roundedBorder)
-                        }
-                    }
-                }
 
-                if let r = selectedResult {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(r.title).font(.caption).fontWeight(.medium).lineLimit(1)
-                            Text("\(r.authors.prefix(2).joined(separator: ", ")) · \(r.venue ?? "") · \(r.year.map(String.init) ?? "") · \(r.source)")
-                                .font(.caption2).foregroundStyle(.secondary)
+                        if let r = selectedResult {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(r.title).font(.caption).fontWeight(.medium).lineLimit(1)
+                                    Text("\(r.authors.prefix(2).joined(separator: ", ")) · \(r.venue ?? "") · \(r.year.map(String.init) ?? "") · \(r.source)")
+                                        .font(.caption2).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Button { selectedResult = nil } label: {
+                                    Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .padding(10)
+                            .background(Color.green.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        Spacer()
-                        Button { selectedResult = nil } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                        }
-                        .buttonStyle(.plain)
                     }
-                    .padding(10)
-                    .background(Color.green.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                .padding(24)
+                .padding(.bottom, 8)
             }
+
+            Divider()
 
             HStack {
                 Spacer()
@@ -244,9 +252,10 @@ struct AddPaperSheet: View {
                     .keyboardShortcut(.return)
                     .disabled(isAddDisabled)
             }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
         }
-        .padding(24)
-        .frame(width: 540)
+        .frame(width: 540, height: min(NSScreen.main.map { $0.visibleFrame.height * 0.85 } ?? 700, 700))
         .onAppear {
             if store.inboxItems.isEmpty {
                 sourceMode = .importPDF
