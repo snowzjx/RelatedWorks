@@ -25,14 +25,22 @@ struct PaperDetailView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var settings: AppSettings
     @State private var copiedLink = false
+    @State private var isDownloadingPDF = false
 
     var crossRefs: [Paper] { project.crossReferences(for: paper.id) }
     var otherPaperIDs: [String] { project.papers.filter { $0.id != paper.id }.map(\.id) }
 
-    var resolvedPDFURL: URL? {
+    var pdfURL: URL? {
         guard paper.hasPDF else { return nil }
         let url = store.pdfURL(for: paper.id, projectID: project.id)
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    var isPDFDownloaded: Bool {
+        guard let url = pdfURL else { return false }
+        let vals = try? url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
+        let status = vals?.ubiquitousItemDownloadingStatus
+        return status == .current || status == nil
     }
 
     var body: some View {
@@ -65,13 +73,41 @@ struct PaperDetailView: View {
                     HStack(spacing: 8) {
                         if paper.hasPDF {
                             Button {
-                                let resolved = resolvedPDFURL
-                                if let url = resolved { NSWorkspace.shared.open(url) }
+                                guard let url = pdfURL else { return }
+                                if isPDFDownloaded {
+                                    NSWorkspace.shared.open(url)
+                                } else {
+                                    isDownloadingPDF = true
+                                    Task.detached(priority: .userInitiated) {
+                                        try? FileManager.default.startDownloadingUbiquitousItem(at: url)
+                                        for _ in 0..<120 {
+                                            try? await Task.sleep(nanoseconds: 500_000_000)
+                                            (url as NSURL).removeCachedResourceValue(forKey: .ubiquitousItemDownloadingStatusKey)
+                                            let vals = try? url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
+                                            if vals?.ubiquitousItemDownloadingStatus == .current { break }
+                                        }
+                                        await MainActor.run {
+                                            isDownloadingPDF = false
+                                            NSWorkspace.shared.open(url)
+                                        }
+                                    }
+                                }
                             } label: {
-                                Label("Open PDF", systemImage: "doc.fill")
+                                if isDownloadingPDF {
+                                    Label("Open PDF", systemImage: "icloud.and.arrow.down")
+                                } else if let url = pdfURL, !isPDFDownloaded {
+                                    if #available(macOS 14.0, *) {
+                                        Label("Open PDF", systemImage: "icloud.and.arrow.down")
+                                            .symbolEffect(.pulse)
+                                    } else {
+                                        Label("Open PDF", systemImage: "icloud.and.arrow.down")
+                                    }
+                                } else {
+                                    Label("Open PDF", systemImage: "doc.fill")
+                                }
                             }
                             .buttonStyle(.bordered).controlSize(.small)
-                            .disabled(resolvedPDFURL == nil)
+                            .disabled(pdfURL == nil || isDownloadingPDF)
                         } else {
                             Button(action: attachPDF) {
                                 Label("Attach PDF", systemImage: "doc.badge.plus")
