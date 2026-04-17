@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LiquidGlassSearchField: View {
-    let prompt: String
+    let prompt: LocalizedStringKey
     @Binding var text: String
 
     var body: some View {
@@ -83,10 +83,10 @@ struct ProjectDetailView: View {
                             .tag(paper.id)
                             .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
                             .contextMenu {
-                                Button("Edit Metadata") { editingPaper = paper }
+                                Button(appLocalized("Edit Metadata")) { editingPaper = paper }
                                 Divider()
                                 Button(role: .destructive) { deletePaper(paper) } label: {
-                                    Label("Remove Paper", systemImage: "trash")
+                                    Label(appLocalized("Remove Paper"), systemImage: "trash")
                                 }
                             }
                     }
@@ -99,7 +99,7 @@ struct ProjectDetailView: View {
                         HStack {
                             Image(systemName: "plus.circle.fill")
                                 .font(.system(size: 16))
-                            Text("Add Paper")
+                            Text(appLocalized("Add Paper"))
                                 .fontWeight(.medium)
                         }
                         .frame(maxWidth: .infinity)
@@ -126,8 +126,8 @@ struct ProjectDetailView: View {
                 } else {
                     EmptyStateView(
                         icon: "doc.text.magnifyingglass",
-                        title: "No Paper Selected",
-                        message: "Add a paper or select one from the list."
+                        title: LocalizedStringKey(appLocalized("No Paper Selected")),
+                        message: LocalizedStringKey(appLocalized("Add a paper or select one from the list."))
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -135,7 +135,7 @@ struct ProjectDetailView: View {
         }
         .navigationTitle(project.name)
         .navigationSubtitle(projectSubtitle)
-        .searchable(text: $searchQuery, prompt: "Search papers…")
+        .searchable(text: $searchQuery, prompt: appLocalized("Search papers…"))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 GenerateButton(project: $project)
@@ -159,10 +159,10 @@ struct ProjectDetailView: View {
 
     private func deletePaper(_ paper: Paper) {
         let alert = NSAlert()
-        alert.messageText = "Remove \"\(paper.title)\"?"
-        alert.informativeText = "This will remove the paper and its PDF from this project."
-        alert.addButton(withTitle: "Remove")
-        alert.addButton(withTitle: "Cancel")
+        alert.messageText = appLocalizedFormat("Remove \"%@\"?", paper.title)
+        alert.informativeText = appLocalized("This will remove the paper and its PDF from this project.")
+        alert.addButton(withTitle: appLocalized("Remove"))
+        alert.addButton(withTitle: appLocalized("Cancel"))
         alert.buttons[0].hasDestructiveAction = true
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         if selectedPaperID == paper.id { selectedPaperID = nil }
@@ -236,21 +236,21 @@ struct EditMetadataSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text("Edit Metadata").font(.title3).fontWeight(.semibold)
+                Text(appLocalized("Edit Metadata")).font(.title3).fontWeight(.semibold)
                 Spacer()
                 Tag("@\(paper.id)", color: .blue)
-                Text("ID cannot be changed").font(.caption2).foregroundStyle(.tertiary)
+                Text(appLocalized("ID cannot be changed")).font(.caption2).foregroundStyle(.tertiary)
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                field("Title", text: $title)
-                field("Authors (comma separated)", text: $authors)
+                field(LocalizedStringKey(appLocalized("Title")), text: $title)
+                field(LocalizedStringKey(appLocalized("Authors (comma separated)")), text: $authors)
                 HStack(spacing: 8) {
-                    field("Year", text: $year).frame(width: 100)
-                    field("Venue / Conference", text: $venue)
+                    field(LocalizedStringKey(appLocalized("Year")), text: $year).frame(width: 100)
+                    field(LocalizedStringKey(appLocalized("Venue / Conference")), text: $venue)
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Abstract").font(.caption).foregroundStyle(.secondary)
+                    Text(appLocalized("Abstract")).font(.caption).foregroundStyle(.secondary)
                     TextEditor(text: $abstract)
                         .font(.callout)
                         .frame(height: 100)
@@ -263,8 +263,8 @@ struct EditMetadataSheet: View {
 
             HStack {
                 Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.escape)
-                Button("Save") { save() }
+                Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
+                Button(appLocalized("Save")) { save() }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.return)
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -275,7 +275,7 @@ struct EditMetadataSheet: View {
     }
 
     @ViewBuilder
-    private func field(_ label: String, text: Binding<String>) -> some View {
+    private func field(_ label: LocalizedStringKey, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption).foregroundStyle(.secondary)
             TextField(label, text: text).textFieldStyle(.roundedBorder)

@@ -10,10 +10,14 @@ public enum ProjectType: String, Codable, CaseIterable, Hashable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .survey: return "Survey"
-        case .researchPaper: return "Research Paper"
-        case .techReport: return "Tech Report"
-        case .custom: return "Custom"
+        case .survey:
+            return appLocalized("Survey")
+        case .researchPaper:
+            return appLocalized("Research Paper")
+        case .techReport:
+            return appLocalized("Tech Report")
+        case .custom:
+            return appLocalized("Custom")
         }
     }
 

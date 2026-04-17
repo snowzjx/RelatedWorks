@@ -12,7 +12,7 @@ public struct NoBackend: AIBackend {
     public init() {}
     public func generate(prompt: String) async throws -> String {
         throw NSError(domain: "AIBackend", code: 0,
-                      userInfo: [NSLocalizedDescriptionKey: "No AI backend configured. Please configure one in Settings."])
+                      userInfo: [NSLocalizedDescriptionKey: appLocalized("No AI backend configured. Please configure one in Settings.")])
     }
 }
 

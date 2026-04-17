@@ -23,7 +23,7 @@ struct ContentView: View {
                 EmptyStateView(
                     icon: "books.vertical",
                     title: "No Project Selected",
-                    message: "Create a project to start organizing your literature."
+                    message: "Select or create a project to start organizing your literature."
                 )
             }
         }
@@ -88,8 +88,9 @@ extension DeepLink.Destination: Equatable {
 
 struct EmptyStateView: View {
     let icon: String
-    let title: String
-    let message: String
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey
+
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon).font(.system(size: 48)).foregroundStyle(.tertiary)

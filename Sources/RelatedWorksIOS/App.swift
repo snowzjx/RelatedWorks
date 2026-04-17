@@ -33,6 +33,8 @@ struct RelatedWorksIOSApp: App {
             RootView(pendingDeepLink: $pendingDeepLink)
                 .environmentObject(store)
                 .environmentObject(settings)
+                .environment(\.locale, settings.locale)
+                .id(settings.appLanguage.rawValue)
                 .onChange(of: settings.iCloudSyncEnabled) {
                     store = Store()
                     Task {
