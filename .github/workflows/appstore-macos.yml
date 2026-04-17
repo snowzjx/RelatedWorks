@@ -1,4 +1,4 @@
-name: App Store
+name: App Store macOS
 
 on:
   workflow_dispatch:
