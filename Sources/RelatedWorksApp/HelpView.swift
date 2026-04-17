@@ -66,6 +66,7 @@ struct HelpView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("relatedworks://open?project=<UUID>").monospaced().font(.callout)
                         Text("relatedworks://open?project=<UUID>&paper=<SemanticID>").monospaced().font(.callout)
+                        Text("relatedworks://settings").monospaced().font(.callout)
                     }
                 }
 

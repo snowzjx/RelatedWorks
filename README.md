@@ -131,6 +131,7 @@ Configure in **Settings → AI Backends** and **Settings → Models**.
 ```
 relatedworks://open?project=<UUID>
 relatedworks://open?project=<UUID>&paper=<SemanticID>
+relatedworks://settings
 ```
 
 Works on both macOS and iOS.
