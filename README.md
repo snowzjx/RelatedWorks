@@ -140,5 +140,6 @@ Works on both macOS and iOS.
 
 | Mode | Location |
 |------|----------|
-| Local | `~/Library/Application Support/RelatedWorks/` |
+| Local (direct download / source build) | `~/Library/Application Support/RelatedWorks/` |
+| Local (Mac App Store) | `~/Library/Containers/me.snowzjx.relatedworks/Data/Library/Application Support/RelatedWorks/` |
 | iCloud | `~/Library/Mobile Documents/iCloud~me~snowzjx~relatedworks/Documents/` |
