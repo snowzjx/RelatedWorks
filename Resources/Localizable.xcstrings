@@ -25,30 +25,51 @@
       }
     },
     "%@ · %@": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
             "value": "%1$@ · %2$@"
           }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
+          }
         }
       }
     },
     "%@ · %@ · %@": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
             "value": "%1$@ · %2$@ · %3$@"
           }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@ · %3$@"
+          }
         }
       }
     },
     "%@ · %@ · %@ · %@": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
+            "value": "%1$@ · %2$@ · %3$@ · %4$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
             "value": "%1$@ · %2$@ · %3$@ · %4$@"
           }
         }
@@ -100,11 +121,18 @@
       }
     },
     "%lld paper%@": {
+      "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "new",
             "value": "%1$lld paper%2$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld 篇论文"
           }
         }
       }
@@ -259,7 +287,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "注释"
+            "value": "笔记"
           }
         }
       }
@@ -418,7 +446,6 @@
         }
       }
     },
-    "Clear search to edit annotation": {},
     "Click Generate Related Works in the project view. RelatedWorks synthesizes your notes and paper metadata into a LaTeX-ready draft.": {
       "extractionState": "manual",
       "localizations": {
@@ -430,7 +457,17 @@
         }
       }
     },
-    "Click Regenerate to generate a Related Works section.": {},
+    "Click Regenerate to generate a Related Works section.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点击\u201c重新生成\u201d以生成相关工作章节。"
+          }
+        }
+      }
+    },
     "Close": {
       "extractionState": "manual",
       "localizations": {
@@ -739,7 +776,17 @@
         }
       }
     },
-    "Done": {},
+    "Done": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        }
+      }
+    },
     "Draft": {
       "extractionState": "manual",
       "localizations": {
@@ -1219,7 +1266,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在加载资料库"
+            "value": "正在加载论文库"
           }
         }
       }
@@ -1803,7 +1850,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在重新加载资料库"
+            "value": "正在重新加载论文库"
           }
         }
       }
@@ -2408,7 +2455,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在编辑器中撰写注释笔记。使用 @ 语义ID 语法链接到其他论文，它们会显示为可点击链接。"
+            "value": "在编辑器中撰写笔记。使用 @ 语义ID 语法链接到其他论文，它们会显示为可点击链接。"
           }
         }
       }

@@ -159,7 +159,6 @@ struct PaperDetailView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .padding(6)
-                                .help("Clear search to edit annotation")
                             }
                     }
 
