@@ -95,7 +95,7 @@ struct PaperDetailView: View {
                             } label: {
                                 if isDownloadingPDF {
                                     Label("Open PDF", systemImage: "icloud.and.arrow.down")
-                                } else if let url = pdfURL, !isPDFDownloaded {
+                                } else if let _ = pdfURL, !isPDFDownloaded {
                                     if #available(macOS 14.0, *) {
                                         Label("Open PDF", systemImage: "icloud.and.arrow.down")
                                             .symbolEffect(.pulse)
