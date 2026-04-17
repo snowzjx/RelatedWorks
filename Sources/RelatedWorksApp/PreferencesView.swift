@@ -10,15 +10,15 @@ struct PreferencesView: View {
     var body: some View {
         TabView(selection: $tab) {
             GeneralSettingsView(settings: settings)
-                .tabItem { Label("General", systemImage: "gearshape") }
+                .tabItem { Label(appLocalized("General"), systemImage: "gearshape") }
                 .tag(Tab.general)
 
             ModelsSettingsView(settings: settings)
-                .tabItem { Label("Models", systemImage: "slider.horizontal.3") }
+                .tabItem { Label(appLocalized("Models"), systemImage: "slider.horizontal.3") }
                 .tag(Tab.models)
 
             BackendsSettingsView(settings: settings)
-                .tabItem { Label("AI Backends", systemImage: "cpu") }
+                .tabItem { Label(appLocalized("AI Backends"), systemImage: "cpu") }
                 .tag(Tab.backends)
         }
         .padding(20)
@@ -39,19 +39,34 @@ struct GeneralSettingsView: View {
         Form {
             Section {
                 HStack(spacing: 12) {
-                    Text("Font Size").frame(width: 80, alignment: .leading)
+                    Text(appLocalized("Font Size")).frame(width: 80, alignment: .leading)
                     Slider(value: $settings.fontSize, in: 11...20, step: 1)
-                    Text("\(Int(settings.fontSize)) pt")
+                    Text(appLocalizedFormat("%lld pt", Int(settings.fontSize)))
                         .monospacedDigit().foregroundStyle(.secondary).frame(width: 36, alignment: .trailing)
                 }
-            } header: { Text("Appearance") }
+
+                HStack(spacing: 12) {
+                    Text(appLocalized("Language")).frame(width: 80, alignment: .leading)
+                    Picker("", selection: $settings.appLanguage) {
+                        ForEach(AppLanguage.allCases) { language in
+                            Text(language.displayName).tag(language)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                Text(appLocalized("Changes apply immediately to the app interface."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } header: { Text(appLocalized("Appearance")) }
 
             Section {
-                Toggle("Sync via iCloud Drive", isOn: Binding(
+                Toggle(appLocalized("Sync via iCloud Drive"), isOn: Binding(
                     get: { settings.iCloudSyncEnabled },
                     set: { newValue in Task { await toggleICloud(newValue) } }
                 ))
-                Text("Stores all projects and PDFs in iCloud Drive, synced across your Mac and iPhone.")
+                Text(appLocalized("Stores all projects and PDFs in iCloud Drive, synced across your Mac and iPhone."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 if let progress = migrationProgress {
@@ -63,18 +78,18 @@ struct GeneralSettingsView: View {
             } header: { Text("iCloud") }
         }
         .formStyle(.grouped)
-        .alert("Migration Failed", isPresented: Binding(
+        .alert(appLocalized("Migration Failed"), isPresented: Binding(
             get: { migrationError != nil },
             set: { if !$0 { migrationError = nil } }
         )) {
-            Button("OK") { migrationError = nil }
+            Button(appLocalized("OK")) { migrationError = nil }
         } message: { Text(migrationError ?? "") }
     }
 
     private func toggleICloud(_ enable: Bool) async {
         await MainActor.run {
             migrationProgress = 0
-            migrationLabel = enable ? "Copying to iCloud Drive…" : "Copying to local storage…"
+            migrationLabel = enable ? appLocalized("Copying to iCloud Drive…") : appLocalized("Copying to local storage…")
         }
         do {
             if enable {
@@ -116,31 +131,31 @@ struct ModelsSettingsView: View {
         Form {
             Section {
                 HStack(spacing: 8) {
-                    Text("Backend").frame(width: 80, alignment: .leading)
+                    Text(appLocalized("Backend")).frame(width: 80, alignment: .leading)
                     Picker("", selection: $settings.extractionBackend) {
-                        ForEach(availableBackends, id: \.self) { Text($0.rawValue).tag($0) }
+                        ForEach(availableBackends, id: \.self) { Text($0.displayName).tag($0) }
                     }.frame(width: 110)
                     if settings.extractionBackend == .ollama {
-                        modelPicker(models: ollamaModels, selection: $settings.extractionModel, placeholder: "model name")
+                        modelPicker(models: ollamaModels, selection: $settings.extractionModel, placeholder: appLocalized("model name"))
                     } else if settings.extractionBackend == .gemini {
-                        modelPicker(models: geminiModels, selection: $settings.geminiExtractionModel, placeholder: "gemini-2.5-flash", isGemini: true)
+                        modelPicker(models: geminiModels, selection: $settings.geminiExtractionModel, placeholder: appLocalized("gemini-2.5-flash"), isGemini: true)
                     }
                 }
-            } header: { Text("PDF Extraction") }
+            } header: { Text(appLocalized("PDF Extraction")) }
 
             Section {
                 HStack(spacing: 8) {
-                    Text("Backend").frame(width: 80, alignment: .leading)
+                    Text(appLocalized("Backend")).frame(width: 80, alignment: .leading)
                     Picker("", selection: $settings.generationBackend) {
-                        ForEach(availableBackends, id: \.self) { Text($0.rawValue).tag($0) }
+                        ForEach(availableBackends, id: \.self) { Text($0.displayName).tag($0) }
                     }.frame(width: 110)
                     if settings.generationBackend == .ollama {
-                        modelPicker(models: ollamaModels, selection: $settings.generationModel, placeholder: "model name")
+                        modelPicker(models: ollamaModels, selection: $settings.generationModel, placeholder: appLocalized("model name"))
                     } else if settings.generationBackend == .gemini {
-                        modelPicker(models: geminiModels, selection: $settings.geminiGenerationModel, placeholder: "gemini-2.5-flash", isGemini: true)
+                        modelPicker(models: geminiModels, selection: $settings.geminiGenerationModel, placeholder: appLocalized("gemini-2.5-flash"), isGemini: true)
                     }
                 }
-            } header: { Text("Related Works Generation") }
+            } header: { Text(appLocalized("Related Works Generation")) }
 
         }
         .formStyle(.grouped)
@@ -150,12 +165,12 @@ struct ModelsSettingsView: View {
     @ViewBuilder
     private func modelPicker(models: [String], selection: Binding<String>, placeholder: String, isGemini: Bool = false) -> some View {
         if models.isEmpty {
-            Text(selection.wrappedValue.isEmpty ? "No models available" : selection.wrappedValue)
+            Text(selection.wrappedValue.isEmpty ? appLocalized("No models available") : selection.wrappedValue)
                 .foregroundStyle(.secondary)
                 .font(.callout)
         } else {
             Picker("", selection: selection) {
-                Text("Select model…").tag("").foregroundStyle(.secondary)
+                Text(appLocalized("Select model…")).tag("").foregroundStyle(.secondary)
                 ForEach(models, id: \.self) { model in
                     let incompatible = isGemini && AppSettings.incompatibleGeminiModels.contains(model)
                     if incompatible {
@@ -241,57 +256,57 @@ struct BackendsSettingsView: View {
                 HStack(spacing: 8) {
                     Text(settings.ollamaBaseURL).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                     Spacer()
-                    Button("Configure") { showingURLEditor = true }.controlSize(.small)
-                    Button("Refresh") { Task { await settings.checkOllama() } }.controlSize(.small)
+                    Button(appLocalized("Configure")) { showingURLEditor = true }.controlSize(.small)
+                    Button(appLocalized("Refresh")) { Task { await settings.checkOllama() } }.controlSize(.small)
                 }
                 HStack(spacing: 6) {
                     if reachability.reachable {
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                        Text("Ollama is running").font(.caption).foregroundStyle(.secondary)
+                        Text(appLocalized("Ollama is running")).font(.caption).foregroundStyle(.secondary)
                     } else {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
-                        Text("Cannot connect to Ollama").font(.caption).foregroundStyle(.secondary)
+                        Text(appLocalized("Cannot connect to Ollama")).font(.caption).foregroundStyle(.secondary)
                     }
                 }
-            } header: { Text("Ollama") }
+            } header: { Text(appLocalized("Ollama")) }
 
             // ── Gemini ───────────────────────────────────────────────
             Section {
                 HStack(spacing: 8) {
-                    Text(settings.geminiAPIKey.isEmpty ? "No API key set" : "••••••••••••••••")
+                    Text(settings.geminiAPIKey.isEmpty ? appLocalized("No API key set") : "••••••••••••••••")
                         .foregroundStyle(.secondary).lineLimit(1)
                     Spacer()
-                    Button("Configure") { showingGeminiKeyEditor = true }.controlSize(.small)
-                    Button("Refresh") { fetchGeminiModels() }
+                    Button(appLocalized("Configure")) { showingGeminiKeyEditor = true }.controlSize(.small)
+                    Button(appLocalized("Refresh")) { fetchGeminiModels() }
                         .disabled(settings.geminiAPIKey.isEmpty)
                         .controlSize(.small)
-                    Button("Delete", role: .destructive) { settings.deleteGeminiConfig() }
+                    Button(appLocalized("Delete"), role: .destructive) { settings.deleteGeminiConfig() }
                         .controlSize(.small).foregroundStyle(.red)
                 }
                 if !settings.geminiAPIKey.isEmpty {
-                    Label("API key stored in Keychain", systemImage: "lock.fill")
+                    Label(appLocalized("API key stored in Keychain"), systemImage: "lock.fill")
                         .font(.caption2).foregroundStyle(.secondary)
                 }
                 HStack(spacing: 6) {
                     if isFetchingGemini {
                         ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
-                        Text("Fetching models…").font(.caption).foregroundStyle(.secondary)
+                        Text(appLocalized("Fetching models…")).font(.caption).foregroundStyle(.secondary)
                     } else {
                         switch geminiTestStatus {
                         case .idle: EmptyView()
                         case .testing:
                             ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
-                            Text("Testing…").font(.caption).foregroundStyle(.secondary)
+                            Text(appLocalized("Testing…")).font(.caption).foregroundStyle(.secondary)
                         case .ok:
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                            Text("\(geminiModels.count) model(s) available").font(.caption).foregroundStyle(.secondary)
+                            Text(appLocalizedFormat("%lld model(s) available", geminiModels.count)).font(.caption).foregroundStyle(.secondary)
                         case .failed(let msg):
                             Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
                             Text(msg).font(.caption).foregroundStyle(.red).lineLimit(2)
                         }
                     }
                 }
-            } header: { Text("Gemini") }
+            } header: { Text(appLocalized("Gemini")) }
         }
         .formStyle(.grouped)
         .onAppear { Task { await settings.checkOllama() }; fetchGeminiModels() }
@@ -311,13 +326,13 @@ struct BackendsSettingsView: View {
         geminiTestStatus = .idle
         Task {
             guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models") else {
-                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Network error") }
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed(appLocalized("Network error")) }
                 return
             }
             var geminiReq = URLRequest(url: url)
             geminiReq.setValue(key, forHTTPHeaderField: "x-goog-api-key")
             guard let (data, response) = try? await URLSession.shared.data(for: geminiReq) else {
-                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Network error") }
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed(appLocalized("Network error")) }
                 return
             }
             if let http = response as? HTTPURLResponse, http.statusCode != 200 {
@@ -328,7 +343,7 @@ struct BackendsSettingsView: View {
             }
             guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let models = json["models"] as? [[String: Any]] else {
-                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed("Could not parse response") }
+                await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed(appLocalized("Could not parse response")) }
                 return
             }
             // Only include models that support generateContent
@@ -358,14 +373,14 @@ struct GeminiKeyEditorSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Configure Gemini API Key").font(.headline)
-            SecureField("AIza...", text: $draft)
+            Text(appLocalized("Configure Gemini API Key")).font(.headline)
+            SecureField(appLocalized("AIza..."), text: $draft)
                 .textFieldStyle(.roundedBorder)
                 .focused($focused)
             HStack {
                 Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.escape)
-                Button("Save") { settings.geminiAPIKey = draft; onSave(); dismiss() }
+                Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
+                Button(appLocalized("Save")) { settings.geminiAPIKey = draft; onSave(); dismiss() }
                     .buttonStyle(.borderedProminent).keyboardShortcut(.return)
                     .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
             }
@@ -384,12 +399,12 @@ struct URLEditorSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Configure Ollama URL").font(.headline)
-            TextField("http://localhost:11434", text: $draft).textFieldStyle(.roundedBorder).focused($focused)
+            Text(appLocalized("Configure Ollama URL")).font(.headline)
+            TextField(appLocalized("http://localhost:11434"), text: $draft).textFieldStyle(.roundedBorder).focused($focused)
             HStack {
                 Spacer()
-                Button("Cancel") { dismiss() }.keyboardShortcut(.escape)
-                Button("Save") { url = draft; onSave(); dismiss() }
+                Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
+                Button(appLocalized("Save")) { url = draft; onSave(); dismiss() }
                     .buttonStyle(.borderedProminent).keyboardShortcut(.return)
                     .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
             }

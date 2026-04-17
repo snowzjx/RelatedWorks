@@ -1,10 +1,51 @@
 import Foundation
 import Combine
 
+public enum AppLanguage: String, CaseIterable, Identifiable {
+    case system
+    case english = "en"
+    case chineseSimplified = "zh-Hans"
+
+    public var id: String { rawValue }
+
+    public var displayName: String {
+        switch self {
+        case .system:
+            return appLocalized("Follow System")
+        case .english:
+            return appLocalized("English")
+        case .chineseSimplified:
+            return appLocalized("Chinese (Simplified)")
+        }
+    }
+
+    public var locale: Locale {
+        switch self {
+        case .system:
+            return .autoupdatingCurrent
+        case .english:
+            return Locale(identifier: rawValue)
+        case .chineseSimplified:
+            return Locale(identifier: rawValue)
+        }
+    }
+}
+
 public enum AIBackendType: String, CaseIterable {
     case none = "None"
     case ollama = "Ollama"
     case gemini = "Gemini"
+
+    public var displayName: String {
+        switch self {
+        case .none:
+            return appLocalized("None")
+        case .ollama:
+            return appLocalized("Ollama")
+        case .gemini:
+            return appLocalized("Gemini")
+        }
+    }
 }
 
 public class AppSettings: ObservableObject {
@@ -12,6 +53,13 @@ public class AppSettings: ObservableObject {
 
     @Published public var fontSize: Double {
         didSet { UserDefaults.standard.set(fontSize, forKey: "fontSize") }
+    }
+
+    @Published public var appLanguage: AppLanguage {
+        didSet {
+            UserDefaults.standard.set(appLanguage.rawValue, forKey: "appLanguage")
+            applyLanguagePreference()
+        }
     }
 
     // Ollama
@@ -73,6 +121,7 @@ public class AppSettings: ObservableObject {
 
     public init() {
         fontSize = UserDefaults.standard.double(forKey: "fontSize").nonZero ?? 14
+        appLanguage = AppLanguage(rawValue: UserDefaults.standard.string(forKey: "appLanguage") ?? "") ?? .system
         ollamaBaseURL = UserDefaults.standard.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
         extractionModel = UserDefaults.standard.string(forKey: "extractionModel") ?? ""
         generationModel = UserDefaults.standard.string(forKey: "generationModel") ?? ""
@@ -82,7 +131,25 @@ public class AppSettings: ObservableObject {
         geminiGenerationModel = UserDefaults.standard.string(forKey: "geminiGenerationModel") ?? ""
         generationPrompt = UserDefaults.standard.string(forKey: "generationPrompt") ?? AppSettings.defaultGenerationPrompt
         iCloudSyncEnabled = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
+        applyLanguagePreference()
         startPolling()
+    }
+
+    public var locale: Locale {
+        appLanguage.locale
+    }
+
+    public var localizationBundle: Bundle {
+        guard appLanguage != .system,
+              let path = Bundle.main.path(forResource: appLanguage.rawValue, ofType: "lproj"),
+              let bundle = Bundle(path: path) else {
+            return .main
+        }
+        return bundle
+    }
+
+    public func localizedString(_ key: String, defaultValue: String? = nil) -> String {
+        localizationBundle.localizedString(forKey: key, value: defaultValue ?? key, table: nil)
     }
 
     public static let incompatibleGeminiModels: Set<String> = {
@@ -194,8 +261,29 @@ public class AppSettings: ObservableObject {
         if generationBackend == .gemini { generationBackend = .none }
         objectWillChange.send()
     }
+
+    private func applyLanguagePreference() {
+        switch appLanguage {
+        case .system:
+            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+        case .english, .chineseSimplified:
+            UserDefaults.standard.set([appLanguage.rawValue], forKey: "AppleLanguages")
+        }
+    }
 }
 
 private extension Double {
     var nonZero: Double? { self == 0 ? nil : self }
+}
+
+public func appLocalized(_ key: String) -> String {
+    AppSettings.shared.localizedString(key)
+}
+
+public func appLocalizedFormat(_ key: String, _ arguments: CVarArg...) -> String {
+    String(
+        format: AppSettings.shared.localizedString(key),
+        locale: AppSettings.shared.locale,
+        arguments: arguments
+    )
 }

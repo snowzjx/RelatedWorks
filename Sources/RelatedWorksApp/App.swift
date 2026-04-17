@@ -118,8 +118,8 @@ private final class InboxProcessingNotifier: NSObject, UNUserNotificationCenterD
         guard let semanticID, !semanticID.isEmpty else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = "Inbox Processing Complete"
-        content.body = "\(semanticID) has been added in inbox, you can add it to a project via add paper."
+        content.title = appLocalized("Inbox Processing Complete")
+        content.body = appLocalizedFormat("%@ is ready in Inbox. You can add it to a project from Add Paper.", semanticID)
         content.sound = .default
 
         let request = UNNotificationRequest(
@@ -136,10 +136,10 @@ private final class InboxProcessingNotifier: NSObject, UNUserNotificationCenterD
         didPromptToEnableNotifications = true
 
         let alert = NSAlert()
-        alert.messageText = "Enable Notifications"
-        alert.informativeText = "RelatedWorks notifications are turned off. Enable them in System Settings if you want inbox processing to notify you when a paper is ready to add."
-        alert.addButton(withTitle: "Open System Settings")
-        alert.addButton(withTitle: "Not Now")
+        alert.messageText = appLocalized("Enable Notifications")
+        alert.informativeText = appLocalized("RelatedWorks notifications are turned off. Enable them in System Settings if you want inbox processing to notify you when a paper is ready to add.")
+        alert.addButton(withTitle: appLocalized("Open System Settings"))
+        alert.addButton(withTitle: appLocalized("Not Now"))
 
         guard alert.runModal() == .alertFirstButtonReturn else {
             didDeferEnablingNotifications = true
@@ -183,7 +183,7 @@ final class AppLaunchCoordinator: ObservableObject {
     @Published private(set) var progress = Store.StartupProgress(
         completedUnitCount: 0,
         totalUnitCount: 4,
-        message: "Starting RelatedWorks"
+        message: appLocalized("Starting RelatedWorks")
     )
 
     func launch() {
@@ -204,7 +204,7 @@ final class AppLaunchCoordinator: ObservableObject {
         progress = Store.StartupProgress(
             completedUnitCount: 0,
             totalUnitCount: 4,
-            message: "Reloading library"
+            message: appLocalized("Reloading library")
         )
         launch()
     }
@@ -220,7 +220,7 @@ struct AppLaunchView: View {
                 .foregroundStyle(Color.accentColor)
 
             VStack(spacing: 6) {
-                Text("Loading Library")
+                Text(appLocalized("Loading Library"))
                     .font(.headline)
                 Text(coordinator.progress.message)
                     .font(.subheadline)
@@ -231,7 +231,11 @@ struct AppLaunchView: View {
                 .progressViewStyle(.linear)
                 .frame(width: 280)
 
-            Text("\(coordinator.progress.completedUnitCount) of \(coordinator.progress.totalUnitCount)")
+            Text(String(
+                format: appLocalized("%lld of %lld"),
+                coordinator.progress.completedUnitCount,
+                coordinator.progress.totalUnitCount
+            ))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
@@ -251,16 +255,18 @@ struct RelatedWorksApp: App {
     @State private var showHelp = false
 
     var body: some Scene {
-        Window("Main Window", id: AppWindowID.main) {
+        Window(appLocalized("Library"), id: AppWindowID.main) {
             Group {
                 if let store = launchCoordinator.store {
                     ContentView(deepLinkHandler: deepLinkHandler)
                         .environmentObject(store)
                         .environmentObject(settings)
                         .environmentObject(inboxProcessingCoordinator)
+                        .environment(\.locale, settings.locale)
+                        .id(settings.appLanguage.rawValue)
                         .onOpenURL { url in deepLinkHandler.handle(url) }
                         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
-                        .sheet(isPresented: $showHelp) { HelpView() }
+                        .sheet(isPresented: $showHelp) { HelpView().id(settings.appLanguage.rawValue) }
                         .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
                         .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
                             launchCoordinator.reload()
@@ -274,6 +280,8 @@ struct RelatedWorksApp: App {
                         }
                 } else {
                     AppLaunchView(coordinator: launchCoordinator)
+                        .environment(\.locale, settings.locale)
+                        .id(settings.appLanguage.rawValue)
                 }
             }
         }
@@ -282,7 +290,7 @@ struct RelatedWorksApp: App {
         .handlesExternalEvents(matching: ["*"])
         .commands {
             CommandGroup(replacing: .newItem) {
-                Button("New Project") {
+                Button(appLocalized("New Project")) {
                     NotificationCenter.default.post(name: .newProject, object: nil)
                 }
                 .keyboardShortcut("n", modifiers: .command)
@@ -291,7 +299,7 @@ struct RelatedWorksApp: App {
                 AddPaperMenuButton()
                 OpenInboxWindowButton()
 
-                Button("Import Project…") {
+                Button(appLocalized("Import Project")) {
                     NotificationCenter.default.post(name: .importProject, object: nil)
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
@@ -299,7 +307,7 @@ struct RelatedWorksApp: App {
                 ExportMenuButton()
             }
             CommandGroup(replacing: .help) {
-                Button("User Guide") {
+                Button(appLocalized("User Guide")) {
                     NotificationCenter.default.post(name: .showHelp, object: nil)
                 }
                 .keyboardShortcut("/", modifiers: [.command, .shift])
@@ -310,8 +318,12 @@ struct RelatedWorksApp: App {
             if let store = launchCoordinator.store {
                 PreferencesView()
                     .environmentObject(store)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
             } else {
                 AppLaunchView(coordinator: launchCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
             }
         }
 
@@ -319,22 +331,30 @@ struct RelatedWorksApp: App {
             if let store = launchCoordinator.store {
                 GenerateWindowView(projectID: projectID)
                     .environmentObject(store)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
             } else {
                 AppLaunchView(coordinator: launchCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
             }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
         .defaultSize(width: 720, height: 540)
 
-        Window("Inbox", id: AppWindowID.inbox) {
+        Window(appLocalized("Inbox"), id: AppWindowID.inbox) {
             if let store = launchCoordinator.store {
                 InboxManagementView()
                     .environmentObject(store)
                     .environmentObject(inboxProcessingCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
                     .onAppear { inboxProcessingCoordinator.scheduleProcessing(for: store) }
             } else {
                 AppLaunchView(coordinator: launchCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
             }
         }
         .windowStyle(.titleBar)
@@ -358,7 +378,7 @@ extension FocusedValues {
 struct ExportMenuButton: View {
     @FocusedValue(\.selectedProjectID) var selectedProjectID
     var body: some View {
-        Button("Export Project…") {
+        Button(appLocalized("Export Project…")) {
             NotificationCenter.default.post(name: .exportProject, object: nil)
         }
         .keyboardShortcut("e", modifiers: .command)
@@ -370,7 +390,7 @@ struct AddPaperMenuButton: View {
     @FocusedValue(\.selectedProjectID) var selectedProjectID
 
     var body: some View {
-        Button("Add Paper…") {
+        Button(appLocalized("Add Paper")) {
             NotificationCenter.default.post(name: .addPaper, object: nil)
         }
         .keyboardShortcut("a", modifiers: [.command, .shift])
@@ -382,7 +402,7 @@ struct OpenInboxWindowButton: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Button("Inbox") {
+        Button(appLocalized("Inbox")) {
             openWindow(id: AppWindowID.inbox)
         }
         .keyboardShortcut("b", modifiers: [.command, .shift])

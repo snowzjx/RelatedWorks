@@ -14,25 +14,25 @@ struct ProjectSidebar: View {
             ProjectRow(project: project)
                 .tag(project.id)
                 .contextMenu {
-                    Button("Edit") {
+                    Button(appLocalized("Edit")) {
                         renameTarget = project
                     }
-                    Button("Export…") {
+                    Button(appLocalized("Export…")) {
                         exportProject(project)
                     }
                     Divider()
                     Button(role: .destructive) {
                         let alert = NSAlert()
-                        alert.messageText = "Delete \"\(project.name)\"?"
-                        alert.informativeText = "This will permanently delete the project and all its PDFs. This cannot be undone."
-                        alert.addButton(withTitle: "Delete")
-                        alert.addButton(withTitle: "Cancel")
+                        alert.messageText = appLocalizedFormat("Delete \"%@\"?", project.name)
+                        alert.informativeText = appLocalized("This will permanently delete the project and all its PDFs. This cannot be undone.")
+                        alert.addButton(withTitle: appLocalized("Delete"))
+                        alert.addButton(withTitle: appLocalized("Cancel"))
                         alert.buttons[0].hasDestructiveAction = true
                         guard alert.runModal() == .alertFirstButtonReturn else { return }
                         if selectedProjectID == project.id { selectedProjectID = nil }
                         try? store.delete(project)
                     } label: {
-                        Label("Delete Project", systemImage: "trash")
+                        Label(appLocalized("Delete Project"), systemImage: "trash")
                     }
                 }
         }
@@ -47,22 +47,22 @@ struct ProjectSidebar: View {
         .toolbar {
             ToolbarItem {
                 Button(action: { openWindow(id: AppWindowID.inbox) }) {
-                    Label("Inbox", systemImage: "tray.full")
+                    Label(appLocalized("Inbox"), systemImage: "tray.full")
                 }
-                .help("Inbox (⌘⇧B)")
+                .help(appLocalized("Inbox (⌘⇧B)"))
             }
             ToolbarItem {
                 Button(action: { importProject() }) {
-                    Label("Import Project", systemImage: "square.and.arrow.down")
+                    Label(appLocalized("Import Project"), systemImage: "square.and.arrow.down")
                 }
-                .help("Import Project (⌘⇧I)")
+                .help(appLocalized("Import Project (⌘⇧I)"))
             }
             ToolbarItem {
                 Button(action: { showingNewProject = true }) {
-                    Label("New Project", systemImage: "plus")
+                    Label(appLocalized("New Project"), systemImage: "plus")
                 }
                 .keyboardShortcut("n", modifiers: .command)
-                .help("New Project (⌘N)")
+                .help(appLocalized("New Project (⌘N)"))
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .importProject)) { _ in
@@ -90,13 +90,13 @@ struct ProjectSidebar: View {
         .overlay {
             if store.projects.isEmpty {
                 VStack(spacing: 12) {
-                    Text("No projects yet")
+                    Text(appLocalized("No projects yet"))
                         .foregroundStyle(.secondary)
                         .font(.subheadline)
-                    Button("New Project") { showingNewProject = true }
+                    Button(appLocalized("New Project")) { showingNewProject = true }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.small)
-                    Button("Import Project…") { importProject() }
+                    Button(appLocalized("Import Project")) { importProject() }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                 }
@@ -113,7 +113,7 @@ struct ProjectSidebar: View {
         do {
             try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: destination)
         } catch {
-            let alert = NSAlert(); alert.messageText = "Export Failed"
+            let alert = NSAlert(); alert.messageText = appLocalized("Export Failed")
             alert.informativeText = error.localizedDescription; alert.runModal()
         }
     }
@@ -136,13 +136,13 @@ struct ProjectSidebar: View {
             let project = try ProjectExporter.import(from: url, into: store)
             if store.projects.contains(where: { $0.name == project.name && $0.id != project.id }) {
                 let alert = NSAlert()
-                alert.messageText = "Duplicate Project"
-                alert.informativeText = "A project named \"\(project.name)\" already exists. Please rename one of them to avoid confusion."
+                alert.messageText = appLocalized("Duplicate Project")
+                alert.informativeText = appLocalizedFormat("A project named \"%@\" already exists. Please rename one of them to avoid confusion.", project.name)
                 alert.runModal()
             }
             selectedProjectID = project.id
         } catch {
-            let alert = NSAlert(); alert.messageText = "Import Failed"
+            let alert = NSAlert(); alert.messageText = appLocalized("Import Failed")
             alert.informativeText = error.localizedDescription; alert.runModal()
         }
     }
@@ -239,10 +239,10 @@ struct InboxManagementView: View {
 
     private func delete(_ item: InboxItem) {
         let alert = NSAlert()
-        alert.messageText = "Delete \"\(item.originalFilename)\"?"
-        alert.informativeText = "This removes the inbox PDF and its cached metadata."
-        alert.addButton(withTitle: "Delete")
-        alert.addButton(withTitle: "Cancel")
+        alert.messageText = appLocalizedFormat("Delete \"%@\"?", item.originalFilename)
+        alert.informativeText = appLocalized("This removes the inbox PDF and its cached metadata.")
+        alert.addButton(withTitle: appLocalized("Delete"))
+        alert.addButton(withTitle: appLocalized("Cancel"))
         alert.buttons[0].hasDestructiveAction = true
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         try? store.deleteInboxItem(item)
@@ -304,10 +304,10 @@ private struct InboxDetailView: View {
                 }
 
                 HStack(spacing: 10) {
-                    InboxStatusTag(label: item.status.rawValue.capitalized, color: item.status == .processed ? .green : .orange)
+                    InboxStatusTag(label: item.status.displayName, color: item.status == .processed ? .green : .orange)
                     InboxStatusTag(label: item.source.displayName, color: .blue)
                     if item.cachedMetadata != nil {
-                        InboxStatusTag(label: "Metadata Cached", color: .secondary)
+                        InboxStatusTag(label: appLocalized("Metadata Cached"), color: .secondary)
                     }
                 }
 
@@ -334,11 +334,11 @@ private struct InboxDetailView: View {
 
     private var title: String {
         let cachedTitle = item.cachedMetadata?.title.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return cachedTitle.isEmpty ? "Untitled Inbox Item" : cachedTitle
+        return cachedTitle.isEmpty ? appLocalized("Untitled Inbox Item") : cachedTitle
     }
 
     @ViewBuilder
-    private func detailBlock(_ label: String, value: String) -> some View {
+    private func detailBlock(_ label: LocalizedStringKey, value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.caption)
@@ -372,7 +372,10 @@ struct ProjectRow: View {
             Text(project.name).fontWeight(.medium).lineLimit(1)
             HStack(spacing: 4) {
                 Image(systemName: "doc.text").font(.caption2)
-                Text("\(project.papers.count) paper\(project.papers.count == 1 ? "" : "s")").font(.caption)
+                Text(String(
+                    format: appLocalized("%lld paper"),
+                    project.papers.count
+                )).font(.caption)
             }
             .foregroundStyle(.secondary)
         }
@@ -393,25 +396,25 @@ struct RenameProjectSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Edit Project").font(.title3).fontWeight(.semibold)
+            Text(appLocalized("Edit Project")).font(.title3).fontWeight(.semibold)
             VStack(alignment: .leading, spacing: 8) {
-                Label("Project Name", systemImage: "folder")
+                Label(appLocalized("Project Name"), systemImage: "folder")
                     .font(.caption).foregroundStyle(.secondary)
-                TextField("Project name", text: $name)
+                TextField(appLocalized("Project Name"), text: $name)
                     .textFieldStyle(.roundedBorder)
                     .focused($focused)
             }
             VStack(alignment: .leading, spacing: 8) {
-                Label("Description (optional)", systemImage: "text.alignleft")
+                Label(appLocalized("Description (optional)"), systemImage: "text.alignleft")
                     .font(.caption).foregroundStyle(.secondary)
-                TextField("What paper are you writing?", text: $description)
+                TextField(appLocalized("What paper are you writing?"), text: $description)
                     .textFieldStyle(.roundedBorder)
             }
             projectPromptFields
             HStack {
                 Spacer()
-                Button("Cancel") { isPresented = false }.keyboardShortcut(.escape)
-                Button("Save") {
+                Button(appLocalized("Cancel")) { isPresented = false }.keyboardShortcut(.escape)
+                Button(appLocalized("Save")) {
                     var updated = project
                     updated.name = name.trimmingCharacters(in: .whitespaces)
                     updated.description = description.trimmingCharacters(in: .whitespaces)
@@ -442,10 +445,10 @@ struct RenameProjectSheet: View {
     @ViewBuilder
     private var projectPromptFields: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Project Type", systemImage: "square.stack.3d.up")
+            Label(appLocalized("Project Type"), systemImage: "square.stack.3d.up")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            Picker("Project Type", selection: $projectType) {
+            Picker(appLocalized("Project Type"), selection: $projectType) {
                 ForEach(ProjectType.allCases, id: \.self) { type in
                     Text(type.displayName).tag(type)
                 }
@@ -459,7 +462,7 @@ struct RenameProjectSheet: View {
                 }
             }
 
-            Label("Project Prompt", systemImage: "text.badge.star")
+            Label(appLocalized("Project Prompt"), systemImage: "text.badge.star")
                 .font(.caption).foregroundStyle(.secondary)
             TextEditor(text: $generationPrompt)
                 .font(.system(.caption, design: .monospaced))
@@ -470,12 +473,14 @@ struct RenameProjectSheet: View {
                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
 
             HStack {
-                Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName).")
+                Text(projectType == .custom
+                    ? appLocalized("Custom prompt for this project.")
+                    : appLocalizedFormat("Prompt preset for %@.", projectType.displayName))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                 Spacer()
                 if let preset = projectType.presetPrompt {
-                    Button("Reset to Preset") { generationPrompt = preset }
+                    Button(appLocalized("Reset to Preset")) { generationPrompt = preset }
                         .buttonStyle(.borderless)
                         .controlSize(.small)
                 }
@@ -504,29 +509,29 @@ struct NewProjectSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("New Project")
+            Text(appLocalized("New Project"))
                 .font(.title3).fontWeight(.semibold)
 
             VStack(alignment: .leading, spacing: 8) {
-                Label("Project Name", systemImage: "folder")
+                Label(appLocalized("Project Name"), systemImage: "folder")
                     .font(.caption).foregroundStyle(.secondary)
-                TextField("e.g. Attention Mechanisms Survey", text: $name)
+                TextField(appLocalized("e.g. Attention Mechanisms Survey"), text: $name)
                     .textFieldStyle(.roundedBorder)
                     .focused($focused)
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Label("Description (optional)", systemImage: "text.alignleft")
+                Label(appLocalized("Description (optional)"), systemImage: "text.alignleft")
                     .font(.caption).foregroundStyle(.secondary)
-                TextField("What paper are you writing?", text: $description)
+                TextField(appLocalized("What paper are you writing?"), text: $description)
                     .textFieldStyle(.roundedBorder)
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Label("Project Type", systemImage: "square.stack.3d.up")
+                Label(appLocalized("Project Type"), systemImage: "square.stack.3d.up")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Picker("Project Type", selection: $projectType) {
+                Picker(appLocalized("Project Type"), selection: $projectType) {
                     ForEach(ProjectType.allCases, id: \.self) { type in
                         Text(type.displayName).tag(type)
                     }
@@ -542,7 +547,7 @@ struct NewProjectSheet: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Label("Project Prompt", systemImage: "text.badge.star")
+                Label(appLocalized("Project Prompt"), systemImage: "text.badge.star")
                     .font(.caption).foregroundStyle(.secondary)
                 TextEditor(text: $generationPrompt)
                     .font(.system(.caption, design: .monospaced))
@@ -552,12 +557,14 @@ struct NewProjectSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                     .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.2)))
                 HStack {
-                    Text(projectType == .custom ? "Custom prompt for this project." : "Prompt preset for \(projectType.displayName).")
+                    Text(projectType == .custom
+                        ? appLocalized("Custom prompt for this project.")
+                        : appLocalizedFormat("Prompt preset for %@.", projectType.displayName))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     Spacer()
                     if let preset = projectType.presetPrompt {
-                        Button("Reset to Preset") { generationPrompt = preset }
+                        Button(appLocalized("Reset to Preset")) { generationPrompt = preset }
                             .buttonStyle(.borderless)
                             .controlSize(.small)
                     }
@@ -566,9 +573,9 @@ struct NewProjectSheet: View {
 
             HStack {
                 Spacer()
-                Button("Cancel") { isPresented = false }
+                Button(appLocalized("Cancel")) { isPresented = false }
                     .keyboardShortcut(.escape)
-                Button("Create") { create() }
+                Button(appLocalized("Create")) { create() }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.return)
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty ||

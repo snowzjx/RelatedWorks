@@ -50,12 +50,34 @@ struct AddPaperSheet: View {
     var onAdded: (String) -> Void = { _ in }
 
     enum Phase { case idle, extracting, filling }
-    enum SearchSource { case dblp, arxiv, manual }
+    enum SearchSource {
+        case dblp, arxiv, manual
+
+        var displayName: String {
+            switch self {
+            case .dblp:
+                return "DBLP"
+            case .arxiv:
+                return "arXiv"
+            case .manual:
+                return appLocalized("Manual Entry")
+            }
+        }
+    }
     enum SourceMode: String, CaseIterable, Identifiable {
         case importPDF = "Import PDF"
         case inbox = "Inbox"
 
         var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .importPDF:
+                return appLocalized("Import PDF")
+            case .inbox:
+                return appLocalized("Inbox")
+            }
+        }
     }
 
     @State private var phase: Phase = .idle
@@ -83,148 +105,157 @@ struct AddPaperSheet: View {
     var showManualInput: Bool { searchSource == .manual }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Add Paper").font(.title3).fontWeight(.semibold)
+        VStack(alignment: .leading, spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text(appLocalized("Add Paper")).font(.title3).fontWeight(.semibold)
 
-            if !store.inboxItems.isEmpty {
-                Picker("Source", selection: $sourceMode) {
-                    ForEach(SourceMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-            }
-
-            if sourceMode == .importPDF {
-                PDFDropZone(pdfURL: $pdfURL, isExtracting: phase == .extracting) { url in
-                    selectImportedPDF(url)
-                }
-            } else {
-                inboxSection
-            }
-
-            if phase == .filling || phase == .idle {
-                VStack(alignment: .leading, spacing: 6) {
-                    Label("Semantic ID", systemImage: "tag")
-                        .font(.caption).foregroundStyle(.secondary)
-                    TextField("e.g. Transformer, BERT, GPT4", text: $semanticID)
-                        .textFieldStyle(.roundedBorder)
-                        .focused($idFocused)
-                        .onChange(of: semanticID) { _ in
-                            idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
+                    if !store.inboxItems.isEmpty {
+                        Picker(appLocalized("Source"), selection: $sourceMode) {
+                            ForEach(SourceMode.allCases) { mode in
+                                Text(mode.displayName).tag(mode)
+                            }
                         }
-                    if idConflict {
-                        Label("This ID is already taken — choose a different one", systemImage: "exclamationmark.triangle.fill")
-                            .font(.caption2).foregroundStyle(.orange)
+                        .pickerStyle(.segmented)
+                    }
+
+                    if sourceMode == .importPDF {
+                        PDFDropZone(pdfURL: $pdfURL, isExtracting: phase == .extracting) { url in
+                            selectImportedPDF(url)
+                        }
                     } else {
-                        Text("Short memorable name used for [@cross-references]")
-                            .font(.caption2).foregroundStyle(.tertiary)
+                        inboxSection
                     }
-                }
 
-                if !showManualInput {
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Label("Search \(searchSource == .dblp ? "DBLP" : "arXiv")", systemImage: "magnifyingglass")
+                    if phase == .filling || phase == .idle {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(appLocalized("Semantic ID"), systemImage: "tag")
                                 .font(.caption).foregroundStyle(.secondary)
-                            Spacer()
-                            if searchSource == .arxiv {
-                                Text("DBLP returned no results").font(.caption2).foregroundStyle(.orange)
+                            TextField(appLocalized("e.g. Transformer, BERT, GPT4"), text: $semanticID)
+                                .textFieldStyle(.roundedBorder)
+                                .focused($idFocused)
+                                .onChange(of: semanticID) { _ in
+                                    idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
+                                }
+                            if idConflict {
+                                Label(appLocalized("This ID is already taken — choose a different one"), systemImage: "exclamationmark.triangle.fill")
+                                    .font(.caption2).foregroundStyle(.orange)
+                            } else {
+                                Text(appLocalized("Short memorable name used for [@cross-references]"))
+                                    .font(.caption2).foregroundStyle(.tertiary)
                             }
                         }
-                        HStack {
-                            LiquidGlassSearchField(prompt: "Paper title or keywords", text: $query)
-                                .onChange(of: query) { _ in triggerSearch() }
-                            if isSearching { ProgressView().scaleEffect(0.7).frame(width: 20) }
-                        }
 
-                        if !searchResults.isEmpty {
-                            ScrollView {
-                                VStack(spacing: 0) {
-                                    ForEach(searchResults) { result in
-                                        UnifiedResultRow(result: result, isSelected: selectedResult == result)
-                                            .onTapGesture { selectedResult = result }
-                                        Divider()
+                        if !showManualInput {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Label(appLocalizedFormat("Search %@", searchSource.displayName), systemImage: "magnifyingglass")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                    Spacer()
+                                    if searchSource == .arxiv {
+                                        Text(appLocalized("DBLP returned no results")).font(.caption2).foregroundStyle(.orange)
+                                    }
+                                }
+                                HStack {
+                                    LiquidGlassSearchField(prompt: LocalizedStringKey(appLocalized("Paper title or keywords")), text: $query)
+                                        .onChange(of: query) { _ in triggerSearch() }
+                                    if isSearching { ProgressView().scaleEffect(0.7).frame(width: 20) }
+                                }
+
+                                if !searchResults.isEmpty {
+                                    ScrollView {
+                                        VStack(spacing: 0) {
+                                            ForEach(searchResults) { result in
+                                                UnifiedResultRow(result: result, isSelected: selectedResult == result)
+                                                    .onTapGesture { selectedResult = result }
+                                                Divider()
+                                            }
+                                        }
+                                    }
+                                    .frame(height: 180)
+                                    .background(Color(nsColor: .controlBackgroundColor))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
+                                } else if !query.isEmpty && !isSearching {
+                                    HStack {
+                                        Text(appLocalizedFormat("No results from %@", searchSource.displayName))
+                                            .font(.caption2).foregroundStyle(.secondary)
+                                        Spacer()
+                                        Button(searchSource == .dblp ? appLocalized("Try arXiv") : appLocalized("Enter manually")) {
+                                            if searchSource == .dblp {
+                                                searchSource = .arxiv
+                                                triggerSearch()
+                                            } else {
+                                                searchSource = .manual
+                                                manualTitle = query
+                                            }
+                                        }
+                                        .font(.caption2)
+                                        .buttonStyle(.borderless)
+                                        .foregroundStyle(.blue)
                                     }
                                 }
                             }
-                            .frame(height: 180)
-                            .background(Color(nsColor: .controlBackgroundColor))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
-                        } else if !query.isEmpty && !isSearching {
-                            HStack {
-                                Text("No results from \(searchSource == .dblp ? "DBLP" : "arXiv")")
-                                    .font(.caption2).foregroundStyle(.secondary)
-                                Spacer()
-                                Button(searchSource == .dblp ? "Try arXiv" : "Enter manually") {
-                                    if searchSource == .dblp {
-                                        searchSource = .arxiv
+                        } else {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Label(appLocalized("Manual Entry"), systemImage: "pencil")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Button(appLocalized("Try search again")) {
+                                        searchSource = .dblp
+                                        searchResults = []
                                         triggerSearch()
-                                    } else {
-                                        searchSource = .manual
-                                        manualTitle = query
                                     }
+                                    .font(.caption2).buttonStyle(.borderless).foregroundStyle(.blue)
                                 }
-                                .font(.caption2)
-                                .buttonStyle(.borderless)
-                                .foregroundStyle(.blue)
+                                TextField(appLocalized("Title"), text: $manualTitle).textFieldStyle(.roundedBorder)
+                                TextField(appLocalized("Authors (comma separated)"), text: $manualAuthors).textFieldStyle(.roundedBorder)
+                                HStack(spacing: 8) {
+                                    TextField(appLocalized("Year"), text: $manualYear).textFieldStyle(.roundedBorder).frame(width: 80)
+                                    TextField(appLocalized("Venue / Conference"), text: $manualVenue).textFieldStyle(.roundedBorder)
+                                }
                             }
                         }
-                    }
-                } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Label("Manual Entry", systemImage: "pencil")
-                                .font(.caption).foregroundStyle(.secondary)
-                            Spacer()
-                            Button("Try search again") {
-                                searchSource = .dblp
-                                searchResults = []
-                                triggerSearch()
-                            }
-                            .font(.caption2).buttonStyle(.borderless).foregroundStyle(.blue)
-                        }
-                        TextField("Title *", text: $manualTitle).textFieldStyle(.roundedBorder)
-                        TextField("Authors (comma separated)", text: $manualAuthors).textFieldStyle(.roundedBorder)
-                        HStack(spacing: 8) {
-                            TextField("Year", text: $manualYear).textFieldStyle(.roundedBorder).frame(width: 80)
-                            TextField("Venue / Conference", text: $manualVenue).textFieldStyle(.roundedBorder)
-                        }
-                    }
-                }
 
-                if let r = selectedResult {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(r.title).font(.caption).fontWeight(.medium).lineLimit(1)
-                            Text("\(r.authors.prefix(2).joined(separator: ", ")) · \(r.venue ?? "") · \(r.year.map(String.init) ?? "") · \(r.source)")
-                                .font(.caption2).foregroundStyle(.secondary)
+                        if let r = selectedResult {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(r.title).font(.caption).fontWeight(.medium).lineLimit(1)
+                                    Text("\(r.authors.prefix(2).joined(separator: ", ")) · \(r.venue ?? "") · \(r.year.map(String.init) ?? "") · \(r.source)")
+                                        .font(.caption2).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Button { selectedResult = nil } label: {
+                                    Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            .padding(10)
+                            .background(Color.green.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        Spacer()
-                        Button { selectedResult = nil } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                        }
-                        .buttonStyle(.plain)
                     }
-                    .padding(10)
-                    .background(Color.green.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                .padding(24)
+                .padding(.bottom, 8)
             }
+
+            Divider()
 
             HStack {
                 Spacer()
-                Button("Cancel") { isPresented = false }.keyboardShortcut(.escape)
-                Button("Add Paper") { addPaper() }
+                Button(appLocalized("Cancel")) { isPresented = false }.keyboardShortcut(.escape)
+                Button(appLocalized("Add Paper")) { addPaper() }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.return)
                     .disabled(isAddDisabled)
             }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
         }
-        .padding(24)
-        .frame(width: 540)
+        .frame(width: 540, height: min(NSScreen.main.map { $0.visibleFrame.height * 0.85 } ?? 700, 700))
         .onAppear {
             if store.inboxItems.isEmpty {
                 sourceMode = .importPDF
@@ -281,11 +312,14 @@ struct AddPaperSheet: View {
     private var inboxSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label("Inbox", systemImage: "tray.full")
+                Label(appLocalized("Inbox"), systemImage: "tray.full")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Text("\(store.inboxItems.count) item\(store.inboxItems.count == 1 ? "" : "s")")
+                Text(String(
+                    format: appLocalized("%lld item"),
+                    store.inboxItems.count
+                ))
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -295,9 +329,9 @@ struct AddPaperSheet: View {
                     Image(systemName: "tray")
                         .font(.title2)
                         .foregroundStyle(.tertiary)
-                    Text("Inbox is Empty")
+                    Text(appLocalized("Inbox is Empty"))
                         .font(.headline)
-                    Text("Shared PDFs will appear here when they sync in.")
+                    Text(appLocalized("Shared PDFs will appear here when they sync in."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -312,7 +346,7 @@ struct AddPaperSheet: View {
                 .frame(height: 180)
                 .listStyle(.plain)
 
-                Toggle("Remove from Inbox after adding", isOn: $removeInboxItemAfterAdding)
+                Toggle(appLocalized("Remove from Inbox after adding"), isOn: $removeInboxItemAfterAdding)
                     .font(.caption)
             }
         }
@@ -551,14 +585,18 @@ struct PDFDropZone: View {
                 HStack(spacing: 10) {
                     ProgressView().scaleEffect(0.8)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Extracting metadata with AI…")
-                        Text("Using \(AppSettings.shared.activeExtractionModelName) via \(AppSettings.shared.extractionBackend.rawValue)")
+                        Text(appLocalized("Extracting metadata with AI…"))
+                        Text(String(
+                            format: appLocalized("Using %@ via %@"),
+                            AppSettings.shared.activeExtractionModelName,
+                            AppSettings.shared.extractionBackend.displayName
+                        ))
                             .font(.caption2).foregroundStyle(.tertiary)
                     }
                     .foregroundStyle(.secondary)
                 }
             } else if !AppSettings.shared.isExtractionConfigured {
-                Label("No AI extraction model configured — open Settings to configure one. PDF metadata will not be extracted automatically.", systemImage: "exclamationmark.triangle.fill")
+                Label(appLocalized("No AI extraction model configured — open Settings to configure one. PDF metadata will not be extracted automatically."), systemImage: "exclamationmark.triangle.fill")
                     .font(.caption2).foregroundStyle(.orange)
                     .fixedSize(horizontal: false, vertical: true)
             } else if let url = pdfURL {
@@ -574,7 +612,7 @@ struct PDFDropZone: View {
             } else {
                 VStack(spacing: 6) {
                     Image(systemName: "arrow.down.doc").font(.title2).foregroundStyle(.secondary)
-                    Text("Drop PDF here or click to browse")
+                    Text(appLocalized("Drop PDF here or click to browse"))
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
             }
@@ -642,7 +680,7 @@ private struct InboxItemRow: View {
     private var itemSubtitle: String {
         let authors = item.cachedMetadata?.authors.prefix(2).joined(separator: ", ")
         let prefix = (authors?.isEmpty == false) ? "\(authors!) · " : ""
-        return "\(prefix)\(item.source.displayName) · \(item.status.rawValue)"
+        return "\(prefix)\(item.source.displayName) · \(item.status.displayName)"
     }
 }
 

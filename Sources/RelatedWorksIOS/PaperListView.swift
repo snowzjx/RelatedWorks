@@ -42,9 +42,9 @@ struct PaperListView: View {
                     .tint(.red)
                 }
         }
-        .navigationTitle(project?.name ?? "Papers")
+        .navigationTitle(project?.name ?? appLocalized("Papers"))
         .navigationBarTitleDisplayMode(.large)
-        .searchable(text: $searchQuery, prompt: "Search papers…")
+        .searchable(text: $searchQuery, prompt: appLocalized("Search papers…"))
         .onAppear {
             if autoRename {
                 editName = project?.name ?? ""

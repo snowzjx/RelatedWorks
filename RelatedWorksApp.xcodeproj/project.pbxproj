@@ -33,6 +33,7 @@
 		A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* Sources/RelatedWorksApp/HelpView.swift */; };
 		A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */; };
+		LOC001 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
 		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
 		IOS003 /* Sources/RelatedWorksIOS/PaperListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */; };
@@ -54,6 +55,8 @@
 		IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
 		IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */; };
+		LOC002 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
+		LOC004 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FIOSSHAREAPP /* RelatedWorksShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
 		MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
@@ -187,6 +190,7 @@
 		FIOSSHAREAPP /* RelatedWorksShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelatedWorksShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
 		FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sources/RelatedWorksIOS/SampleProject.relatedworks; sourceTree = SOURCE_ROOT; };
+		LOC003 /* Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = SOURCE_ROOT; };
 		FSHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksShareExtension/ShareViewController.swift; sourceTree = SOURCE_ROOT; };
 		FSHARE_ENT /* RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements; sourceTree = SOURCE_ROOT; };
 		FSHARE_INFO /* Sources/RelatedWorksShareExtension/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksShareExtension/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -329,6 +333,7 @@
 				GTEST /* RelatedWorksTests */,
 				GZF /* ZIPFoundation */,
 				GPROD /* Products */,
+				LOC003 /* Resources/Localizable.xcstrings */,
 				80939E9E2F8A75040094ACE5 /* AppIcon.icon */,
 			);
 			sourceTree = "<group>";
@@ -441,6 +446,7 @@
 			buildConfigurationList = BCLSHARE /* Build configuration list for PBXNativeTarget "RelatedWorksShareExtension" */;
 			buildPhases = (
 				BPSHARE /* Sources */,
+				BPSHARERES /* Resources */,
 			);
 			buildRules = (
 			);
@@ -498,6 +504,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				zh-Hans,
 				Base,
 			);
 			mainGroup = GROOT;
@@ -523,6 +530,7 @@
 				80939EA02F8A75040094ACE5 /* AppIcon.icon in Resources */,
 				IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */,
 				IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */,
+				LOC002 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,6 +541,7 @@
 				A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */,
 				A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
 				80939E9F2F8A75040094ACE5 /* AppIcon.icon in Resources */,
+				LOC001 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -592,6 +601,14 @@
 			files = (
 				SHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift in Sources */,
 				SHARE002 /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPSHARERES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LOC004 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

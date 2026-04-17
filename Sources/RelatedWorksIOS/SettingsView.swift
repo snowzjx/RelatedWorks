@@ -25,7 +25,10 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("RelatedWorks")
                             .font(.headline)
-                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—")")
+                        Text(String(
+                            format: appLocalized("Version %@"),
+                            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+                        ))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Text("© 2026 Junxue ZHANG")
