@@ -267,8 +267,9 @@ struct RelatedWorksApp: App {
     @State private var showFirstLaunchTutorial = false
     @State private var didRequestFirstLaunchTutorial = false
     @State private var preferencesTab: PreferencesView.Tab = .general
-    @State private var firstLaunchIncludesAISetup = false
-    @State private var firstLaunchStep: FirstLaunchStep = .projectCreate
+    @State private var firstLaunchStep: FirstLaunchStep = .aiSetup
+    @State private var selectedProjectID: UUID?
+    @State private var selectedPaperID: String?
 
     private enum DefaultsKey {
         static let didShowFirstLaunchTutorial = "didShowFirstLaunchTutorial"
@@ -287,7 +288,6 @@ struct RelatedWorksApp: App {
     }
 
     private func configureFirstLaunchStartState() {
-        firstLaunchIncludesAISetup = true
         firstLaunchStep = .aiSetup
         preferencesTab = .backends
     }
@@ -297,16 +297,18 @@ struct RelatedWorksApp: App {
             Group {
                 if let store = launchCoordinator.store {
                     FirstLaunchTutorialHost(
-                        scene: .main,
-                        includesAISetup: firstLaunchIncludesAISetup,
                         isPresented: $showFirstLaunchTutorial,
                         step: $firstLaunchStep,
+                        selectedProjectID: $selectedProjectID,
+                        selectedPaperID: $selectedPaperID,
                         onFinish: {
                             UserDefaults.standard.set(true, forKey: DefaultsKey.didShowFirstLaunchTutorial)
                             showFirstLaunchTutorial = false
                         }
                     ) {
-                        ContentView(deepLinkHandler: deepLinkHandler)
+                        ContentView(deepLinkHandler: deepLinkHandler,
+                                    selectedProjectID: $selectedProjectID,
+                                    selectedPaperID: $selectedPaperID)
                             .environmentObject(settings)
                             .environmentObject(inboxProcessingCoordinator)
                             .environment(\.locale, settings.locale)
@@ -380,21 +382,10 @@ struct RelatedWorksApp: App {
 
         Settings {
             if let store = launchCoordinator.store {
-                FirstLaunchTutorialHost(
-                    scene: .settings,
-                    includesAISetup: firstLaunchIncludesAISetup,
-                    isPresented: $showFirstLaunchTutorial,
-                    step: $firstLaunchStep,
-                    onFinish: {
-                        UserDefaults.standard.set(true, forKey: DefaultsKey.didShowFirstLaunchTutorial)
-                        showFirstLaunchTutorial = false
-                    }
-                ) {
-                    PreferencesView(tab: $preferencesTab)
-                        .environment(\.locale, settings.locale)
-                        .id(settings.appLanguage.rawValue)
-                }
-                .environmentObject(store)
+                PreferencesView(tab: $preferencesTab)
+                    .environmentObject(store)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
             } else {
                 AppLaunchView(coordinator: launchCoordinator)
                     .environment(\.locale, settings.locale)

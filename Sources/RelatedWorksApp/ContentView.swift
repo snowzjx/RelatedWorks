@@ -4,8 +4,8 @@ struct ContentView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var settings: AppSettings
     @ObservedObject var deepLinkHandler: DeepLinkHandler
-    @State private var selectedProjectID: UUID?
-    @State private var selectedPaperID: String?
+    @Binding var selectedProjectID: UUID?
+    @Binding var selectedPaperID: String?
 
     var selectedIndex: Int? {
         store.projects.firstIndex(where: { $0.id == selectedProjectID })

@@ -95,427 +95,6 @@ struct HelpView: View {
     }
 }
 
-struct FirstLaunchTutorialView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.openWindow) private var openWindow
-    @State private var step: TutorialStepID = .project
-    @State private var projectType: ProjectPreset = .research
-    @State private var intakeStage: IntakeStage = .drop
-    @State private var semanticID = "Transformer"
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading, spacing: 8) {
-                Label(appLocalized("Welcome to RelatedWorks"), systemImage: "books.vertical.fill")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-            Text(appLocalized("This walkthrough is interactive. Try each control as you go."))
-                    .foregroundStyle(.secondary)
-            }
-
-            GroupBox {
-                VStack(alignment: .leading, spacing: 16) {
-                    stepHeader
-
-                    switch step {
-                    case .project:
-                        projectStep
-                    case .ingest:
-                        ingestStep
-                    case .semantic:
-                        semanticStep
-                    case .sync:
-                        syncStep
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            Text(appLocalized("You can reopen this tutorial from the Help menu anytime."))
-                .font(.callout)
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 10) {
-                Button(appLocalized("Back")) { goBack() }
-                    .disabled(step == .project)
-
-                Spacer()
-
-                Button(appLocalized("Skip")) { dismiss() }
-
-                Button(step == .sync ? appLocalized("Start Exploring") : appLocalized("Next")) {
-                    goForward()
-                }
-                .keyboardShortcut(.defaultAction)
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-            }
-        }
-        .padding(24)
-        .frame(width: 720)
-    }
-
-    private var stepHeader: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(step.title)
-                    .font(.headline)
-                Spacer()
-                Text(step.progressLabel)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            ProgressView(value: Double(step.rawValue + 1), total: Double(TutorialStepID.allCases.count))
-        }
-    }
-
-    private var projectStep: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(appLocalized("Each project represents a paper you're writing. Click the + button in the sidebar or press ⌘N to create one."))
-                .foregroundStyle(.secondary)
-
-            Picker(appLocalized("Project Type"), selection: $projectType) {
-                ForEach(ProjectPreset.allCases) { preset in
-                    Text(preset.title).tag(preset)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            InteractiveCallout(
-                title: projectType.title,
-                detail: projectType.detail
-            )
-
-            HStack {
-                Button(appLocalized("Open New Project")) {
-                    NotificationCenter.default.post(name: .newProject, object: nil)
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-
-                Spacer()
-
-                Text(appLocalized("You can change presets or write a custom prompt later."))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private var ingestStep: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(appLocalized("Import a PDF. RelatedWorks automatically extracts metadata and searches DBLP or arXiv."))
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 8) {
-                ForEach(IntakeStage.allCases) { stage in
-                    if stage == intakeStage {
-                        Button(stage.title) {
-                            intakeStage = stage
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .inactiveAwareProminentButtonForeground()
-                    } else {
-                        Button(stage.title) {
-                            intakeStage = stage
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-            }
-
-            InteractivePipeline(stage: intakeStage)
-
-            HStack {
-                Button(appLocalized("Open Add Paper")) {
-                    NotificationCenter.default.post(name: .addPaper, object: nil)
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-
-                Spacer()
-
-                Text(appLocalized("You can also drag a PDF into the sheet or paper list."))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    private var semanticStep: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(appLocalized("Every paper gets a short memorable ID (e.g. Transformer, BERT, GPT4) used to cross-reference papers in notes."))
-                .foregroundStyle(.secondary)
-
-            TextField(appLocalized("Semantic ID"), text: $semanticID)
-                .textFieldStyle(.roundedBorder)
-                .frame(maxWidth: 280)
-
-            InteractiveCallout(
-                title: appLocalized("Annotation preview"),
-                detail: appLocalizedFormat("Use @SemanticID syntax to link to other papers — they render as clickable links.")
-            )
-
-            Text(appLocalized("These links feed the final Related Works section."))
-                .font(.callout)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    private var syncStep: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(appLocalized("When enabled, projects are read from iCloud Drive and synced across your devices. Existing local data is not moved."))
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 10) {
-                Label(appLocalized("Mac"), systemImage: "desktopcomputer")
-                Label(appLocalized("iPhone"), systemImage: "iphone")
-                Label(appLocalized("iPad"), systemImage: "ipad")
-            }
-            .font(.callout)
-
-            InteractiveCallout(
-                title: appLocalized("Inbox Flow"),
-                detail: appLocalized("On iPhone or iPad, share a PDF from Safari or Files to RelatedWorks. Mac processes it, sends a notification, and you can add it to your project.")
-            )
-
-            HStack {
-                Button(appLocalized("Open Inbox")) {
-                    openWindow(id: AppWindowID.inbox)
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-
-                Button(appLocalized("Open User Guide")) {
-                    NotificationCenter.default.post(name: .showHelp, object: nil)
-                }
-
-                Spacer()
-            }
-        }
-    }
-
-    private func goBack() {
-        step = TutorialStepID(rawValue: max(step.rawValue - 1, 0)) ?? .project
-    }
-
-    private func goForward() {
-        guard let next = TutorialStepID(rawValue: step.rawValue + 1) else {
-            dismiss()
-            return
-        }
-        step = next
-    }
-}
-
-struct FirstLaunchCoachmarkView: View {
-    @EnvironmentObject var store: Store
-    @Environment(\.openWindow) private var openWindow
-    let onFinish: () -> Void
-    @State private var step: CoachmarkStep = .project
-    @State private var projectType: ProjectPreset = .research
-    @State private var semanticID = "Transformer"
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(appLocalized("Welcome to RelatedWorks"))
-                        .font(.headline)
-                    Text(step.subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Button(appLocalized("Skip")) { onFinish() }
-                    .buttonStyle(.borderless)
-            }
-
-            Divider().padding(.vertical, 12)
-
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: step.arrowSymbol)
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(Color.accentColor)
-                    .frame(width: 34)
-
-                VStack(alignment: .leading, spacing: 14) {
-                    HStack {
-                        Text(step.title)
-                            .font(.headline)
-                        Spacer()
-                        Text(step.progressLabel)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    ProgressView(value: Double(step.rawValue + 1), total: Double(CoachmarkStep.allCases.count))
-
-                    switch step {
-                    case .project:
-                        projectStep
-                    case .ingest:
-                        ingestStep
-                    case .semantic:
-                        semanticStep
-                    case .sync:
-                        syncStep
-                    }
-                }
-            }
-
-            Divider().padding(.vertical, 12)
-
-            HStack(spacing: 10) {
-                Button(appLocalized("Back")) { goBack() }
-                    .disabled(step == .project)
-
-                Spacer()
-
-                Button(appLocalized("Close Tutorial")) { onFinish() }
-                Button(step == .sync ? appLocalized("Done") : appLocalized("Next")) {
-                    goForward()
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-            }
-        }
-        .padding(18)
-        .frame(width: 430)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.16), radius: 18, x: 0, y: 8)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: step.alignment)
-        .padding(step.padding)
-    }
-
-    private var projectStep: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(appLocalized("One project belongs to one paper. The project stores the related papers, annotations, the generation prompt, and the BibTeX output for that paper."))
-                .foregroundStyle(.secondary)
-
-            Picker(appLocalized("Project Type"), selection: $projectType) {
-                ForEach(ProjectPreset.allCases) { preset in
-                    Text(preset.title).tag(preset)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            InteractiveCallout(
-                title: projectType.title,
-                detail: projectType.detail
-            )
-
-            HStack {
-                Button(appLocalized("Open New Project")) {
-                    NotificationCenter.default.post(name: .newProject, object: nil)
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-
-                Spacer()
-            }
-        }
-    }
-
-    private var ingestStep: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(appLocalized("Add Paper is a sheet inside a project. Drop a PDF there and RelatedWorks extracts the metadata, then looks it up on DBLP or arXiv."))
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 8) {
-                ForEach(IntakeStage.allCases) { stage in
-                    Button(stage.title) { }
-                        .buttonStyle(.bordered)
-                        .disabled(true)
-                }
-            }
-
-            InteractivePipeline(stage: .drop)
-
-            if store.projects.isEmpty {
-                Text(appLocalized("Create a project first, then use Add Paper from that project."))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } else {
-                Button(appLocalized("Open Add Paper")) {
-                    NotificationCenter.default.post(name: .addPaper, object: nil)
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-            }
-        }
-    }
-
-    private var semanticStep: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(appLocalized("Each paper gets a semantic ID, often suggested from the algorithm or system name in the paper. You can change it later and reference it in annotations like @Transformer."))
-                .foregroundStyle(.secondary)
-
-            TextField(appLocalized("Semantic ID"), text: $semanticID)
-                .textFieldStyle(.roundedBorder)
-
-            InteractiveCallout(
-                title: appLocalized("Live preview"),
-                detail: appLocalizedFormat("Try writing relationships like %@", "@\(semanticID)")
-            )
-
-            Text(appLocalized("Those relationships are considered when generating the Related Works section."))
-                .font(.callout)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    private var syncStep: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(appLocalized("Your library syncs across Mac, iPhone, and iPad with iCloud. On iPhone and iPad, share a PDF from Safari or Files to RelatedWorks. Mac processes it automatically, sends a notification, and you can add it to your project."))
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 10) {
-                Label(appLocalized("Mac"), systemImage: "desktopcomputer")
-                Label(appLocalized("iPhone"), systemImage: "iphone")
-                Label(appLocalized("iPad"), systemImage: "ipad")
-            }
-            .font(.callout)
-
-            InteractiveCallout(
-                title: appLocalized("Inbox Flow"),
-                detail: appLocalized("Share from Safari or Files -> RelatedWorks Inbox -> Mac processes it -> notification.")
-            )
-
-            HStack {
-                Button(appLocalized("Open Inbox")) {
-                    openWindow(id: AppWindowID.inbox)
-                }
-                .buttonStyle(.borderedProminent)
-                .inactiveAwareProminentButtonForeground()
-
-                Button(appLocalized("Open User Guide")) {
-                    NotificationCenter.default.post(name: .showHelp, object: nil)
-                }
-
-                Spacer()
-            }
-        }
-    }
-
-    private func goBack() {
-        step = CoachmarkStep(rawValue: max(step.rawValue - 1, 0)) ?? .project
-    }
-
-    private func goForward() {
-        guard let next = CoachmarkStep(rawValue: step.rawValue + 1) else {
-            onFinish()
-            return
-        }
-        step = next
-    }
-}
-
-enum FirstLaunchScene {
-    case main
-    case settings
-}
-
 enum FirstLaunchTarget: Hashable {
     case projectCreateEmpty
     case projectCreateToolbar
@@ -554,19 +133,8 @@ enum FirstLaunchStep: Int, CaseIterable {
         }
     }
 
-    func progressLabel(includingAISetup: Bool) -> String {
-        let total = includingAISetup ? 7 : 6
-        let index: Int
-        switch self {
-        case .aiSetup: index = 1
-        case .projectCreate: index = includingAISetup ? 2 : 1
-        case .projectSelect: index = includingAISetup ? 3 : 2
-        case .ingest: index = includingAISetup ? 4 : 3
-        case .semantic: index = includingAISetup ? 5 : 4
-        case .generate: index = includingAISetup ? 6 : 5
-        case .sync: index = includingAISetup ? 7 : 6
-        }
-        return appLocalizedFormat("%lld of %lld", index, total)
+    var progressLabel: String {
+        return appLocalizedFormat("%lld of %lld", rawValue + 1, FirstLaunchStep.allCases.count)
     }
 
     var target: FirstLaunchTarget {
@@ -578,14 +146,6 @@ enum FirstLaunchStep: Int, CaseIterable {
         case .semantic: return .annotation
         case .generate: return .generateButton
         case .sync: return .iCloudToggle
-        }
-    }
-
-    var scene: FirstLaunchScene {
-        switch self {
-        case .aiSetup: return .main
-        case .sync: return .main
-        default: return .main
         }
     }
 
@@ -619,45 +179,43 @@ struct FirstLaunchAnchorPreferenceKey: PreferenceKey {
 }
 
 struct FirstLaunchTutorialHost<Content: View>: View {
-    let scene: FirstLaunchScene
-    let includesAISetup: Bool
     @Binding var isPresented: Bool
     @Binding var step: FirstLaunchStep
+    @Binding var selectedProjectID: UUID?
+    @Binding var selectedPaperID: String?
     let onFinish: () -> Void
     let content: Content
 
     init(
-        scene: FirstLaunchScene,
-        includesAISetup: Bool,
         isPresented: Binding<Bool>,
         step: Binding<FirstLaunchStep>,
+        selectedProjectID: Binding<UUID?>,
+        selectedPaperID: Binding<String?>,
         onFinish: @escaping () -> Void,
         @ViewBuilder content: () -> Content
     ) {
-        self.scene = scene
-        self.includesAISetup = includesAISetup
         self._isPresented = isPresented
         self._step = step
+        self._selectedProjectID = selectedProjectID
+        self._selectedPaperID = selectedPaperID
         self.onFinish = onFinish
         self.content = content()
     }
 
-    @FocusedValue(\.selectedProjectID) private var selectedProjectID
-    @FocusedValue(\.selectedPaperID) private var selectedPaperID
-    @EnvironmentObject private var store: Store
+    @State private var navigatingBack = false
 
     var body: some View {
         content
             .overlayPreferenceValue(FirstLaunchAnchorPreferenceKey.self) { anchors in
                 GeometryReader { proxy in
-                    if isPresented, step.scene == scene {
+                    if isPresented {
                         let targetFrame = targetFrame(from: anchors, proxy: proxy)
                         FirstLaunchCoachmarkBubble(
                             step: step,
-                            progressLabel: step.progressLabel(includingAISetup: includesAISetup),
+                            progressLabel: step.progressLabel,
                             targetFrame: targetFrame,
                             selectedProjectID: selectedProjectID,
-                            canGoBack: step != .aiSetup,
+                            canGoBack: step.rawValue > FirstLaunchStep.aiSetup.rawValue,
                             canGoForward: canAdvance,
                             onBack: goBack,
                             onNext: goForward,
@@ -676,55 +234,17 @@ struct FirstLaunchTutorialHost<Content: View>: View {
                     }
                 }
             }
-            .onChange(of: selectedProjectID) { _ in
-                autoAdvanceIfNeeded()
-            }
-            .onChange(of: selectedPaperID) { _ in
-                autoAdvanceIfNeeded()
-            }
-            .onReceive(store.$projects) { _ in
-                autoAdvanceIfNeeded()
-            }
-    }
-
-    private func autoAdvanceIfNeeded() {
-        guard isPresented, step.scene == scene else { return }
-        switch step {
-        case .projectCreate:
-            if selectedProjectID != nil {
-                step = .projectSelect
-            }
-        case .projectSelect:
-            if selectedProjectID != nil {
-                step = .ingest
-            }
-        case .ingest:
-            guard let selectedProjectID,
-                  let project = store.projects.first(where: { $0.id == selectedProjectID }),
-                  !project.papers.isEmpty,
-                  selectedPaperID != nil else { return }
-            step = .semantic
-        default:
-            break
-        }
+            .onChange(of: selectedProjectID) { _ in selectedPaperID = nil }
     }
 
     private var canAdvance: Bool {
         switch step {
-        case .aiSetup:
-            return true
-        case .projectCreate, .projectSelect:
-            return selectedProjectID != nil
-        case .ingest:
-            guard let selectedProjectID,
-                  let project = store.projects.first(where: { $0.id == selectedProjectID }) else { return false }
-            return !project.papers.isEmpty && selectedPaperID != nil
-        case .semantic:
-            return true
-        case .generate:
-            return selectedProjectID != nil
-        case .sync:
-            return true
+        case .aiSetup: return true
+        case .projectCreate, .projectSelect: return selectedProjectID != nil
+        case .ingest: return selectedPaperID != nil
+        case .semantic: return true
+        case .generate: return selectedProjectID != nil
+        case .sync: return true
         }
     }
 
@@ -797,12 +317,18 @@ struct FirstLaunchTutorialHost<Content: View>: View {
     }
 
     private func goBack() {
-        step = FirstLaunchStep(rawValue: max(step.rawValue - 1, 0)) ?? .projectCreate
+        navigatingBack = true
+        step = FirstLaunchStep(rawValue: max(step.rawValue - 1, FirstLaunchStep.aiSetup.rawValue)) ?? .aiSetup
+        // Clear the flag after the onChange(of: step) fires
+        DispatchQueue.main.async { navigatingBack = false }
     }
 
     private func goForward() {
+        navigatingBack = false
         guard canAdvance else { return }
         if step == .semantic {
+            // Brief delay so the annotation editor can resign focus before the
+            // overlay repositions to the generate button anchor.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.step = .generate
             }
@@ -1070,166 +596,12 @@ private struct InactiveAwareProminentButtonForeground: ViewModifier {
     @Environment(\.controlActiveState) private var controlActiveState
 
     func body(content: Content) -> some View {
-        content.foregroundStyle(controlActiveState == .inactive ? .black : .white)
+        content.foregroundStyle(controlActiveState == .inactive ? Color.primary : Color.white)
     }
 }
 
 extension View {
     func inactiveAwareProminentButtonForeground() -> some View {
         modifier(InactiveAwareProminentButtonForeground())
-    }
-}
-
-private struct InteractivePipeline: View {
-    let stage: IntakeStage
-
-    var body: some View {
-        HStack(spacing: 8) {
-            ForEach(IntakeStage.allCases) { step in
-                VStack(spacing: 4) {
-                    Image(systemName: step.icon)
-                        .font(.callout)
-                    Text(step.title)
-                        .font(.caption2)
-                }
-                .foregroundStyle(step == stage ? .primary : .secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
-                .background(step == stage ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-        }
-    }
-}
-
-private enum TutorialStepID: Int, CaseIterable {
-    case project, ingest, semantic, sync
-
-    var title: String {
-        switch self {
-        case .project: return appLocalized("1 of 4 · Project")
-        case .ingest: return appLocalized("2 of 4 · Add Paper")
-        case .semantic: return appLocalized("3 of 4 · Semantic IDs")
-        case .sync: return appLocalized("4 of 4 · iCloud Sync")
-        }
-    }
-
-    var progressLabel: String {
-        switch self {
-        case .project: return appLocalized("Project workflow")
-        case .ingest: return appLocalized("PDF workflow")
-        case .semantic: return appLocalized("Annotation workflow")
-        case .sync: return appLocalized("Sync workflow")
-        }
-    }
-}
-
-private enum ProjectPreset: String, CaseIterable, Identifiable {
-    case research, survey, techReport, custom
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .research: return appLocalized("Research")
-        case .survey: return appLocalized("Survey")
-        case .techReport: return appLocalized("Tech Report")
-        case .custom: return appLocalized("Custom")
-        }
-    }
-
-    var detail: String {
-        switch self {
-        case .research:
-            return appLocalized("Best for a focused paper and a tight Related Works draft.")
-        case .survey:
-            return appLocalized("Best for broader coverage and comparison-heavy writing.")
-        case .techReport:
-            return appLocalized("Best for system papers and engineering context.")
-        case .custom:
-            return appLocalized("Write your own prompt for full control.")
-        }
-    }
-}
-
-private enum CoachmarkStep: Int, CaseIterable {
-    case project, ingest, semantic, sync
-
-    var title: String {
-        switch self {
-        case .project: return appLocalized("Project")
-        case .ingest: return appLocalized("Add Paper")
-        case .semantic: return appLocalized("Semantic IDs")
-        case .sync: return appLocalized("iCloud Sync")
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .project: return appLocalized("Create one project for one paper.")
-        case .ingest: return appLocalized("Show how a PDF becomes a paper entry.")
-        case .semantic: return appLocalized("Turn paper names into links.")
-        case .sync: return appLocalized("Keep the library in sync.")
-        }
-    }
-
-    var progressLabel: String {
-        switch self {
-        case .project: return appLocalized("1 / 4")
-        case .ingest: return appLocalized("2 / 4")
-        case .semantic: return appLocalized("3 / 4")
-        case .sync: return appLocalized("4 / 4")
-        }
-    }
-
-    var arrowSymbol: String {
-        switch self {
-        case .project: return "arrow.up.left"
-        case .ingest: return "arrow.up.left"
-        case .semantic: return "arrow.left"
-        case .sync: return "arrow.down.right"
-        }
-    }
-
-    var alignment: Alignment {
-        switch self {
-        case .project, .ingest: return .topLeading
-        case .semantic: return .trailing
-        case .sync: return .bottomTrailing
-        }
-    }
-
-    var padding: EdgeInsets {
-        switch self {
-        case .project, .ingest:
-            return EdgeInsets(top: 18, leading: 18, bottom: 0, trailing: 0)
-        case .semantic:
-            return EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 18)
-        case .sync:
-            return EdgeInsets(top: 0, leading: 0, bottom: 18, trailing: 18)
-        }
-    }
-}
-
-private enum IntakeStage: Int, CaseIterable, Identifiable {
-    case drop, extract, lookup, ready
-
-    var id: Int { rawValue }
-
-    var title: String {
-        switch self {
-        case .drop: return appLocalized("Drop PDF")
-        case .extract: return appLocalized("Extract")
-        case .lookup: return appLocalized("DBLP/arXiv")
-        case .ready: return appLocalized("Ready")
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .drop: return "doc.badge.plus"
-        case .extract: return "doc.text.magnifyingglass"
-        case .lookup: return "network"
-        case .ready: return "checkmark.seal"
-        }
     }
 }
