@@ -26,6 +26,7 @@ struct PaperDetailView: View {
     @EnvironmentObject var settings: AppSettings
     @State private var copiedLink = false
     @State private var isDownloadingPDF = false
+    @State private var downloadTask: Task<Void, Never>? = nil
 
     var crossRefs: [Paper] { project.crossReferences(for: paper.id) }
     var otherPaperIDs: [String] { project.papers.filter { $0.id != paper.id }.map(\.id) }
@@ -78,17 +79,21 @@ struct PaperDetailView: View {
                                     NSWorkspace.shared.open(url)
                                 } else {
                                     isDownloadingPDF = true
-                                    Task.detached(priority: .userInitiated) {
+                                    downloadTask = Task(priority: .userInitiated) {
                                         try? FileManager.default.startDownloadingUbiquitousItem(at: url)
                                         for _ in 0..<120 {
+                                            guard !Task.isCancelled else { break }
                                             try? await Task.sleep(nanoseconds: 500_000_000)
+                                            guard !Task.isCancelled else { break }
                                             (url as NSURL).removeCachedResourceValue(forKey: .ubiquitousItemDownloadingStatusKey)
                                             let vals = try? url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
                                             if vals?.ubiquitousItemDownloadingStatus == .current { break }
                                         }
-                                        await MainActor.run {
-                                            isDownloadingPDF = false
-                                            NSWorkspace.shared.open(url)
+                                        if !Task.isCancelled {
+                                            await MainActor.run {
+                                                isDownloadingPDF = false
+                                                NSWorkspace.shared.open(url)
+                                            }
                                         }
                                     }
                                 }
@@ -208,6 +213,10 @@ struct PaperDetailView: View {
             DispatchQueue.main.async {
                 try? store.save(project)
             }
+        }
+        .onDisappear {
+            downloadTask?.cancel()
+            downloadTask = nil
         }
     }
 
