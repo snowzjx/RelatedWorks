@@ -56,6 +56,7 @@ struct GenerateButton: View {
             Label("Related Works", systemImage: "text.badge.star")
         }
         .disabled(project.papers.isEmpty || !AppSettings.shared.isGenerationConfigured)
+        .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.generateButton: $0] }
         .help(project.papers.isEmpty ? "Add papers first" : (!AppSettings.shared.isGenerationConfigured ? "Configure an AI model in Settings" : "View or generate Related Works section"))
     }
 }
@@ -137,6 +138,7 @@ struct GenerateWindowView: View {
                         regenerate(&p)
                     }
                     .buttonStyle(.borderedProminent)
+                    .inactiveAwareProminentButtonForeground()
                     .disabled(isGenerating)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

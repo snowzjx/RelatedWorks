@@ -210,6 +210,17 @@ final class AppLaunchCoordinator: ObservableObject {
     }
 }
 
+struct SelectedPaperKey: FocusedValueKey {
+    typealias Value = String
+}
+
+extension FocusedValues {
+    var selectedPaperID: String? {
+        get { self[SelectedPaperKey.self] }
+        set { self[SelectedPaperKey.self] = newValue }
+    }
+}
+
 struct AppLaunchView: View {
     @ObservedObject var coordinator: AppLaunchCoordinator
 
@@ -253,31 +264,80 @@ struct RelatedWorksApp: App {
     @StateObject private var inboxProcessingCoordinator = InboxProcessingCoordinator()
     @StateObject private var launchCoordinator = AppLaunchCoordinator()
     @State private var showHelp = false
+    @State private var showFirstLaunchTutorial = false
+    @State private var didRequestFirstLaunchTutorial = false
+    @State private var preferencesTab: PreferencesView.Tab = .general
+    @State private var firstLaunchIncludesAISetup = false
+    @State private var firstLaunchStep: FirstLaunchStep = .projectCreate
+
+    private enum DefaultsKey {
+        static let didShowFirstLaunchTutorial = "didShowFirstLaunchTutorial"
+    }
+
+    private var shouldShowFirstLaunchTutorial: Bool {
+        !UserDefaults.standard.bool(forKey: DefaultsKey.didShowFirstLaunchTutorial)
+    }
+
+    private func presentFirstLaunchTutorialIfNeeded() {
+        guard shouldShowFirstLaunchTutorial else { return }
+        guard !didRequestFirstLaunchTutorial else { return }
+        didRequestFirstLaunchTutorial = true
+        configureFirstLaunchStartState()
+        showFirstLaunchTutorial = true
+    }
+
+    private func configureFirstLaunchStartState() {
+        firstLaunchIncludesAISetup = true
+        firstLaunchStep = .aiSetup
+        preferencesTab = .backends
+    }
 
     var body: some Scene {
         Window(appLocalized("Library"), id: AppWindowID.main) {
             Group {
                 if let store = launchCoordinator.store {
-                    ContentView(deepLinkHandler: deepLinkHandler)
-                        .environmentObject(store)
-                        .environmentObject(settings)
-                        .environmentObject(inboxProcessingCoordinator)
-                        .environment(\.locale, settings.locale)
-                        .id(settings.appLanguage.rawValue)
-                        .onOpenURL { url in deepLinkHandler.handle(url) }
-                        .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
-                        .sheet(isPresented: $showHelp) { HelpView().id(settings.appLanguage.rawValue) }
-                        .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
-                        .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
-                            launchCoordinator.reload()
+                    FirstLaunchTutorialHost(
+                        scene: .main,
+                        includesAISetup: firstLaunchIncludesAISetup,
+                        isPresented: $showFirstLaunchTutorial,
+                        step: $firstLaunchStep,
+                        onFinish: {
+                            UserDefaults.standard.set(true, forKey: DefaultsKey.didShowFirstLaunchTutorial)
+                            showFirstLaunchTutorial = false
                         }
-                        .onAppear {
-                            inboxProcessingCoordinator.prepareNotifications()
-                            inboxProcessingCoordinator.scheduleProcessing(for: store)
+                    ) {
+                        ContentView(deepLinkHandler: deepLinkHandler)
+                            .environmentObject(settings)
+                            .environmentObject(inboxProcessingCoordinator)
+                            .environment(\.locale, settings.locale)
+                            .id(settings.appLanguage.rawValue)
+                            .onOpenURL { url in deepLinkHandler.handle(url) }
+                            .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
+                    }
+                    .environmentObject(store)
+                    .sheet(isPresented: $showHelp) { HelpView().id(settings.appLanguage.rawValue) }
+                    .onReceive(NotificationCenter.default.publisher(for: .showHelp)) { _ in showHelp = true }
+                    .onReceive(NotificationCenter.default.publisher(for: .showFirstLaunchTutorial)) { _ in
+                        UserDefaults.standard.set(false, forKey: DefaultsKey.didShowFirstLaunchTutorial)
+                        configureFirstLaunchStartState()
+                        showFirstLaunchTutorial = true
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
+                        launchCoordinator.reload()
+                    }
+                    .onChange(of: firstLaunchStep) { newValue in
+                        if newValue == .sync {
+                            preferencesTab = .general
                         }
-                        .onReceive(store.$inboxItems) { _ in
-                            inboxProcessingCoordinator.scheduleProcessing(for: store)
-                        }
+                    }
+                    .onAppear {
+                        inboxProcessingCoordinator.prepareNotifications()
+                        inboxProcessingCoordinator.scheduleProcessing(for: store)
+                        presentFirstLaunchTutorialIfNeeded()
+                    }
+                    .onReceive(store.$inboxItems) { _ in
+                        inboxProcessingCoordinator.scheduleProcessing(for: store)
+                    }
                 } else {
                     AppLaunchView(coordinator: launchCoordinator)
                         .environment(\.locale, settings.locale)
@@ -311,15 +371,30 @@ struct RelatedWorksApp: App {
                     NotificationCenter.default.post(name: .showHelp, object: nil)
                 }
                 .keyboardShortcut("/", modifiers: [.command, .shift])
+
+                Button(appLocalized("Show Tutorial Again")) {
+                    NotificationCenter.default.post(name: .showFirstLaunchTutorial, object: nil)
+                }
             }
         }
 
         Settings {
             if let store = launchCoordinator.store {
-                PreferencesView()
-                    .environmentObject(store)
-                    .environment(\.locale, settings.locale)
-                    .id(settings.appLanguage.rawValue)
+                FirstLaunchTutorialHost(
+                    scene: .settings,
+                    includesAISetup: firstLaunchIncludesAISetup,
+                    isPresented: $showFirstLaunchTutorial,
+                    step: $firstLaunchStep,
+                    onFinish: {
+                        UserDefaults.standard.set(true, forKey: DefaultsKey.didShowFirstLaunchTutorial)
+                        showFirstLaunchTutorial = false
+                    }
+                ) {
+                    PreferencesView(tab: $preferencesTab)
+                        .environment(\.locale, settings.locale)
+                        .id(settings.appLanguage.rawValue)
+                }
+                .environmentObject(store)
             } else {
                 AppLaunchView(coordinator: launchCoordinator)
                     .environment(\.locale, settings.locale)
@@ -415,6 +490,7 @@ extension Notification.Name {
     static let importProject = Notification.Name("importProject")
     static let exportProject = Notification.Name("exportProject")
     static let showHelp = Notification.Name("showHelp")
+    static let showFirstLaunchTutorial = Notification.Name("showFirstLaunchTutorial")
     static let iCloudSyncChanged = Notification.Name("iCloudSyncChanged")
 }
 

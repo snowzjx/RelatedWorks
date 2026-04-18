@@ -17,7 +17,7 @@ struct ContentView: View {
                 .navigationSplitViewColumnWidth(min: 320, ideal: 360, max: 460)
         } detail: {
             if let idx = selectedIndex {
-                ProjectDetailView(project: $store.projects[idx], externalPaperID: $selectedPaperID)
+                ProjectDetailView(project: $store.projects[idx], selectedPaperID: $selectedPaperID)
                     .id(store.projects[idx].id)
             } else {
                 EmptyStateView(
@@ -30,6 +30,7 @@ struct ContentView: View {
         .navigationSplitViewStyle(.balanced)
         .frame(minWidth: 960, minHeight: 620)
         .focusedValue(\.selectedProjectID, selectedProjectID)
+        .focusedValue(\.selectedPaperID, selectedPaperID)
         .onChange(of: deepLinkHandler.pending) { dest in
             guard let dest else { return }
             switch dest {

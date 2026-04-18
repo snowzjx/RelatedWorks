@@ -3,9 +3,13 @@ import SwiftUI
 struct PreferencesView: View {
     @ObservedObject private var settings = AppSettings.shared
     @EnvironmentObject var store: Store
-    @State private var tab: Tab = .general
+    @Binding private var tab: Tab
 
     enum Tab { case general, models, backends }
+
+    init(tab: Binding<Tab> = .constant(.general)) {
+        self._tab = tab
+    }
 
     var body: some View {
         TabView(selection: $tab) {
@@ -66,6 +70,7 @@ struct GeneralSettingsView: View {
                     get: { settings.iCloudSyncEnabled },
                     set: { newValue in Task { await toggleICloud(newValue) } }
                 ))
+                .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.iCloudToggle: $0] }
                 Text(appLocalized("Stores all projects and PDFs in iCloud Drive, synced across your Mac and iPhone."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -256,7 +261,9 @@ struct BackendsSettingsView: View {
                 HStack(spacing: 8) {
                     Text(settings.ollamaBaseURL).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                     Spacer()
-                    Button(appLocalized("Configure")) { showingURLEditor = true }.controlSize(.small)
+                    Button(appLocalized("Configure")) { showingURLEditor = true }
+                        .controlSize(.small)
+                        .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.aiBackend: $0] }
                     Button(appLocalized("Refresh")) { Task { await settings.checkOllama() } }.controlSize(.small)
                 }
                 HStack(spacing: 6) {
@@ -382,6 +389,7 @@ struct GeminiKeyEditorSheet: View {
                 Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
                 Button(appLocalized("Save")) { settings.geminiAPIKey = draft; onSave(); dismiss() }
                     .buttonStyle(.borderedProminent).keyboardShortcut(.return)
+                    .inactiveAwareProminentButtonForeground()
                     .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
@@ -406,6 +414,7 @@ struct URLEditorSheet: View {
                 Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
                 Button(appLocalized("Save")) { url = draft; onSave(); dismiss() }
                     .buttonStyle(.borderedProminent).keyboardShortcut(.return)
+                    .inactiveAwareProminentButtonForeground()
                     .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }

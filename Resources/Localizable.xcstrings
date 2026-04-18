@@ -15,55 +15,31 @@
         }
       }
     },
-    "@%@" : {
-
-    },
     "%@ · %@" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ · %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
             "value" : "%1$@ · %2$@"
           }
         }
       }
     },
     "%@ · %@ · %@" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ · %2$@ · %3$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
             "value" : "%1$@ · %2$@ · %3$@"
           }
         }
       }
     },
     "%@ · %@ · %@ · %@" : {
-      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ · %2$@ · %3$@ · %4$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
             "value" : "%1$@ · %2$@ · %3$@ · %4$@"
           }
         }
@@ -127,23 +103,6 @@
         }
       }
     },
-    "%lld paper%@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld paper%2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld 篇论文"
-          }
-        }
-      }
-    },
     "%lld pt" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -163,6 +122,94 @@
     },
     "⚙ %@" : {
 
+    },
+    "1 / 4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 / 4"
+          }
+        }
+      }
+    },
+    "1 of 4 · Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 / 4 · 项目"
+          }
+        }
+      }
+    },
+    "2 / 4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 / 4"
+          }
+        }
+      }
+    },
+    "2 of 4 · Add Paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 / 4 · 添加论文"
+          }
+        }
+      }
+    },
+    "3 / 4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 / 4"
+          }
+        }
+      }
+    },
+    "3 of 4 · Semantic IDs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 / 4 · 语义 ID"
+          }
+        }
+      }
+    },
+    "4 / 4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 / 4"
+          }
+        }
+      }
+    },
+    "4 of 4 · iCloud Sync" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 / 4 · iCloud 同步"
+          }
+        }
+      }
     },
     "A project named \"%@\" already exists. Please rename one of them to avoid confusion." : {
       "extractionState" : "manual",
@@ -241,6 +288,17 @@
         }
       }
     },
+    "Add Paper is a sheet inside a project. Drop a PDF there and RelatedWorks extracts the metadata, then looks it up on DBLP or arXiv." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“添加论文”是项目内的一个表单。把 PDF 拖进去，RelatedWorks 会提取元数据，再到 DBLP 或 arXiv 检索。"
+          }
+        }
+      }
+    },
     "Add Papers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -274,6 +332,17 @@
         }
       }
     },
+    "AI Setup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 设置"
+          }
+        }
+      }
+    },
     "AIza..." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -292,6 +361,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "笔记"
+          }
+        }
+      }
+    },
+    "Annotation preview" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批注预览"
+          }
+        }
+      }
+    },
+    "Annotation workflow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批注流程"
           }
         }
       }
@@ -373,6 +464,17 @@
         }
       }
     },
+    "Back" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回"
+          }
+        }
+      }
+    },
     "Backend" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -380,6 +482,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "后端"
+          }
+        }
+      }
+    },
+    "Best for a focused paper and a tight Related Works draft." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适合聚焦型论文和更紧凑的 Related Works 草稿。"
+          }
+        }
+      }
+    },
+    "Best for broader coverage and comparison-heavy writing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适合更广的覆盖范围和偏重比较的写作。"
+          }
+        }
+      }
+    },
+    "Best for system papers and engineering context." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适合系统论文和工程背景。"
           }
         }
       }
@@ -461,13 +596,24 @@
         }
       }
     },
-    "Click Generate Related Works in the project view. RelatedWorks synthesizes your notes and paper metadata into a LaTeX-ready draft." : {
+    "Click Generated Related Works in the project view." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在项目视图中点击“生成相关工作”。RelatedWorks 会将你的笔记和论文元数据整合为可直接用于 LaTeX 的草稿。"
+            "value" : "在项目视图中点击“生成的相关工作”。"
+          }
+        }
+      }
+    },
+    "Click Generated Related Works in the project view. RelatedWorks synthesizes your notes and paper metadata into a LaTeX-ready draft." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在项目视图中点击“生成的相关工作”。RelatedWorks 会把你的批注和论文元数据综合成可直接用于 LaTeX 的草稿。"
           }
         }
       }
@@ -483,6 +629,17 @@
         }
       }
     },
+    "Click the + button in the sidebar to create your project. One project is one paper, and it contains the related papers, annotations, and the generation prompt for that paper." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击侧边栏中的 + 按钮来创建项目。一篇论文对应一个项目，里面包含相关论文、笔记和该论文的生成提示词。"
+          }
+        }
+      }
+    },
     "Close" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -494,6 +651,17 @@
         }
       }
     },
+    "Close Tutorial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭教程"
+          }
+        }
+      }
+    },
     "Configure" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -501,17 +669,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配置"
-          }
-        }
-      }
-    },
-    "Configure AI providers and models in Settings." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请在设置中配置 AI 提供商和模型。"
           }
         }
       }
@@ -545,6 +702,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配置 Ollama URL"
+          }
+        }
+      }
+    },
+    "Configure the AI backend first, then choose models in Settings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先配置 AI 后端，再选择模型。"
+          }
+        }
+      }
+    },
+    "Configure your AI backend and models." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置你的 AI 后端和模型。"
           }
         }
       }
@@ -637,13 +816,24 @@
         }
       }
     },
-    "Create a project to start organizing your literature." : {
+    "Create a project first, then use Add Paper from that project." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "创建一个项目来开始整理你的文献。"
+            "value" : "先创建项目，再在该项目中使用“添加论文”。"
+          }
+        }
+      }
+    },
+    "Create one project for one paper." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一篇论文对应一个项目。"
           }
         }
       }
@@ -710,6 +900,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "DBLP 未返回结果"
+          }
+        }
+      }
+    },
+    "DBLP/arXiv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DBLP/arXiv"
           }
         }
       }
@@ -813,6 +1014,17 @@
         }
       }
     },
+    "Drop PDF" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖入 PDF"
+          }
+        }
+      }
+    },
     "Drop PDF here or click to browse" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -853,6 +1065,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "例如：Transformer、BERT、GPT4"
+          }
+        }
+      }
+    },
+    "Each paper gets a semantic ID, often suggested from the algorithm or system name in the paper. You can change it later and reference it in annotations like @Transformer." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每篇论文都会获得一个语义 ID，通常由论文中的算法或系统名建议生成。你之后可以修改，并在批注中像 @Transformer 这样引用它。"
           }
         }
       }
@@ -934,13 +1157,13 @@
         }
       }
     },
-    "Every paper and project has a relatedworks:// URI for integration with tools like Hookmark." : {
+    "Every paper and project has a relatedworks:// URI for tools like Hookmark." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每篇论文和每个项目都有一个 relatedworks:// URI，可用于与 Hookmark 等工具集成。"
+            "value" : "每篇论文和每个项目都有 relatedworks:// URI，方便 Hookmark 等工具使用。"
           }
         }
       }
@@ -1022,6 +1245,17 @@
         }
       }
     },
+    "Extract" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提取"
+          }
+        }
+      }
+    },
     "Extracting metadata with AI…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1077,13 +1311,13 @@
         }
       }
     },
-    "Gemini — cloud-based. Get an API key from Google AI Studio (aistudio.google.com/apikey). Recommended model: gemini-2.5-flash." : {
+    "Gemini uses a key from Google AI Studio. Recommended: gemini-2.5-flash." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gemini：云端服务。可在 Google AI Studio（aistudio.google.com/apikey）获取 API Key。推荐模型：gemini-2.5-flash。"
+            "value" : "Gemini 使用 Google AI Studio 的密钥。推荐：gemini-2.5-flash。"
           }
         }
       }
@@ -1122,6 +1356,28 @@
       }
     },
     "Generate Related Works" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成相关工作"
+          }
+        }
+      }
+    },
+    "Generate the Related Works section." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成相关工作章节。"
+          }
+        }
+      }
+    },
+    "Generated Related Works" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -1179,6 +1435,17 @@
         }
       }
     },
+    "iCloud Sync" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud 同步"
+          }
+        }
+      }
+    },
     "ID cannot be changed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1201,13 +1468,24 @@
         }
       }
     },
-    "Import a PDF, drag one onto the paper list, search DBLP or arXiv, or enter metadata manually. Use Add Paper or press ⌘⇧A." : {
+    "Import a PDF." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导入 PDF、将其拖到论文列表、搜索 DBLP 或 arXiv，或手动输入元数据。可使用“添加论文”或按 ⌘⇧A。"
+            "value" : "导入 PDF。"
+          }
+        }
+      }
+    },
+    "Import a PDF. RelatedWorks automatically extracts metadata and searches DBLP or arXiv." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入 PDF 后，RelatedWorks 会自动提取元数据，并搜索 DBLP 或 arXiv。"
           }
         }
       }
@@ -1230,6 +1508,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入 PDF"
+          }
+        }
+      }
+    },
+    "Import PDF -> extract metadata -> search DBLP/arXiv." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入 PDF -> 提取元数据 -> 搜索 DBLP/arXiv。"
           }
         }
       }
@@ -1278,6 +1567,17 @@
         }
       }
     },
+    "Inbox Flow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收件箱流程"
+          }
+        }
+      }
+    },
     "Inbox is Empty" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1307,6 +1607,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iOS 分享扩展"
+          }
+        }
+      }
+    },
+    "iPad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPad"
+          }
+        }
+      }
+    },
+    "iPhone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone"
+          }
+        }
+      }
+    },
+    "Keep the library in sync." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持文库同步。"
           }
         }
       }
@@ -1344,6 +1677,17 @@
         }
       }
     },
+    "Live preview" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实时预览"
+          }
+        }
+      }
+    },
     "Loading Library" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1351,6 +1695,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在加载论文库"
+          }
+        }
+      }
+    },
+    "Local storage keeps projects and PDFs under:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地存储会把项目和 PDF 保存在："
+          }
+        }
+      }
+    },
+    "Mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac"
           }
         }
       }
@@ -1450,6 +1816,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新建项目（⌘N）"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一步"
           }
         }
       }
@@ -1586,28 +1963,6 @@
         }
       }
     },
-    "No results from arXiv" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "arXiv 中没有结果"
-          }
-        }
-      }
-    },
-    "No results from DBLP" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "DBLP 中没有结果"
-          }
-        }
-      }
-    },
     "None" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1652,17 +2007,6 @@
         }
       }
     },
-    "Ollama — runs locally, private, no API key needed. Install from ollama.com." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ollama：本地运行，保护隐私，无需 API Key。可从 ollama.com 安装。"
-          }
-        }
-      }
-    },
     "Ollama is running" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1674,6 +2018,39 @@
         }
       }
     },
+    "Ollama runs locally and needs no API key." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ollama 本地运行，无需 API 密钥。"
+          }
+        }
+      }
+    },
+    "On iPhone or iPad, share a PDF from Safari or Files to RelatedWorks. Mac processes it, sends a notification, and you can add it to your project." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 iPhone 或 iPad 上，将 PDF 从 Safari 或 Files 分享至 RelatedWorks。Mac 会自动处理并发送通知，然后你可以将它加入项目。"
+          }
+        }
+      }
+    },
+    "One project belongs to one paper. The project stores the related papers, annotations, the generation prompt, and the BibTeX output for that paper." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一篇论文对应一个项目。项目会保存相关论文、批注、该论文的生成提示词和 BibTeX 输出。"
+          }
+        }
+      }
+    },
     "Only PDF files can be sent to RelatedWorks Inbox." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1681,6 +2058,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "只有 PDF 文件可以发送到 RelatedWorks 收件箱。"
+          }
+        }
+      }
+    },
+    "Open Add Paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开“添加论文”"
+          }
+        }
+      }
+    },
+    "Open Inbox" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开收件箱"
+          }
+        }
+      }
+    },
+    "Open New Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新建项目"
           }
         }
       }
@@ -1718,6 +2128,17 @@
         }
       }
     },
+    "Open Settings and sync the library." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置并同步文库。"
+          }
+        }
+      }
+    },
     "Open System Settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1725,6 +2146,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开系统设置"
+          }
+        }
+      }
+    },
+    "Open User Guide" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开用户指南"
           }
         }
       }
@@ -1773,6 +2205,17 @@
         }
       }
     },
+    "PDF workflow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF 流程"
+          }
+        }
+      }
+    },
     "Pending" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1802,6 +2245,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已处理"
+          }
+        }
+      }
+    },
+    "Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目"
           }
         }
       }
@@ -1861,6 +2315,17 @@
         }
       }
     },
+    "Project workflow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目流程"
+          }
+        }
+      }
+    },
     "Projects" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1879,6 +2344,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 的预设提示词。"
+          }
+        }
+      }
+    },
+    "Ready" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "就绪"
           }
         }
       }
@@ -2006,6 +2482,17 @@
         }
       }
     },
+    "Research" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "研究"
+          }
+        }
+      }
+    },
     "Research Paper" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2116,6 +2603,17 @@
         }
       }
     },
+    "Select a paper and write notes with semantic IDs." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一篇论文并撰写带语义 ID 的批注。"
+          }
+        }
+      }
+    },
     "Select a Project" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2160,6 +2658,28 @@
         }
       }
     },
+    "Select Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择项目"
+          }
+        }
+      }
+    },
+    "Select the project you want to work on." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择你要处理的项目。"
+          }
+        }
+      }
+    },
     "Semantic ID" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2171,6 +2691,28 @@
         }
       }
     },
+    "Semantic IDs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语义 ID"
+          }
+        }
+      }
+    },
+    "Set up the AI backend first, then choose models in Settings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先配置 AI 后端，再选择模型。"
+          }
+        }
+      }
+    },
     "Settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2178,6 +2720,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "Share from Safari or Files -> RelatedWorks Inbox -> Mac processes it -> notification." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从 Safari 或 Files 分享 -> RelatedWorks 收件箱 -> Mac 处理 -> 通知。"
           }
         }
       }
@@ -2204,6 +2757,28 @@
         }
       }
     },
+    "Show how a PDF becomes a paper entry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "演示 PDF 如何变成论文条目。"
+          }
+        }
+      }
+    },
+    "Skip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跳过"
+          }
+        }
+      }
+    },
     "Source" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2215,6 +2790,17 @@
         }
       }
     },
+    "Start Exploring" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始探索"
+          }
+        }
+      }
+    },
     "Starting RelatedWorks" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2222,6 +2808,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在启动 RelatedWorks"
+          }
+        }
+      }
+    },
+    "Step 1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "步骤 1"
+          }
+        }
+      }
+    },
+    "Step 2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "步骤 2"
           }
         }
       }
@@ -2270,6 +2878,17 @@
         }
       }
     },
+    "Sync workflow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同步流程"
+          }
+        }
+      }
+    },
     "Take Notes & Cross-Reference" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2299,6 +2918,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在测试…"
+          }
+        }
+      }
+    },
+    "These links feed the final Related Works section." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这些链接会影响最终的 Related Works 部分。"
           }
         }
       }
@@ -2347,6 +2977,17 @@
         }
       }
     },
+    "This walkthrough is interactive. Try each control as you go." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本引导是交互式的，按步骤尝试每个控件。"
+          }
+        }
+      }
+    },
     "This will permanently delete the project and all its PDFs. This cannot be undone." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2365,6 +3006,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这将从该项目中移除这篇论文及其 PDF。"
+          }
+        }
+      }
+    },
+    "Those relationships are considered when generating the Related Works section." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成 Related Works 部分时会考虑这些关系。"
           }
         }
       }
@@ -2413,6 +3065,28 @@
         }
       }
     },
+    "Try writing relationships like %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试着写出这样的关系：%@"
+          }
+        }
+      }
+    },
+    "Turn paper names into links." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把论文名称变成链接。"
+          }
+        }
+      }
+    },
     "Type @ to cross-reference other papers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2446,6 +3120,17 @@
         }
       }
     },
+    "Use @SemanticID syntax to link to other papers — they render as clickable links." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 @SemanticID 语法链接其他论文，它们会显示为可点击链接。"
+          }
+        }
+      }
+    },
     "User Guide" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2453,6 +3138,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用指南"
+          }
+        }
+      }
+    },
+    "Show Tutorial Again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再次显示教程"
           }
         }
       }
@@ -2512,6 +3208,28 @@
         }
       }
     },
+    "Welcome to RelatedWorks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎使用 RelatedWorks"
+          }
+        }
+      }
+    },
+    "What Happens" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会发生什么"
+          }
+        }
+      }
+    },
     "What paper are you writing?" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2545,13 +3263,13 @@
         }
       }
     },
-    "With local storage, projects and PDFs are stored under:" : {
+    "With iCloud sync on, projects and PDFs live in the app's iCloud Drive container and sync across devices." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用本地存储时，项目和 PDF 会存储在以下路径："
+            "value" : "开启 iCloud 同步后，项目和 PDF 会保存在应用的 iCloud Drive 容器中，并在设备间同步。"
           }
         }
       }
@@ -2567,6 +3285,17 @@
         }
       }
     },
+    "Write your own prompt for full control." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自行编写提示词，完全由你控制。"
+          }
+        }
+      }
+    },
     "Year" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2574,6 +3303,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年份"
+          }
+        }
+      }
+    },
+    "You can also drag a PDF into the sheet or paper list." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你也可以将 PDF 拖入表单或论文列表。"
+          }
+        }
+      }
+    },
+    "You can change presets or write a custom prompt later." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你之后可以切换预设，或编写自定义提示词。"
+          }
+        }
+      }
+    },
+    "You can reopen this tutorial from the Help menu anytime." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你可以随时从“帮助”菜单重新打开本引导。"
+          }
+        }
+      }
+    },
+    "Your library syncs across Mac, iPhone, and iPad with iCloud. On iPhone and iPad, share a PDF from Safari or Files to RelatedWorks. Mac processes it automatically, sends a notification, and you can add it to your project." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的论文库会通过 iCloud 在 Mac、iPhone 和 iPad 间同步。在 iPhone 或 iPad 上，将 PDF 从 Safari 或 Files分享至 RelatedWorks。Mac 会自动处理并发送通知，然后你可以将它加入项目。"
           }
         }
       }

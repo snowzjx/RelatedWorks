@@ -249,6 +249,7 @@ struct AddPaperSheet: View {
                 Button(appLocalized("Cancel")) { isPresented = false }.keyboardShortcut(.escape)
                 Button(appLocalized("Add Paper")) { addPaper() }
                     .buttonStyle(.borderedProminent)
+                    .inactiveAwareProminentButtonForeground()
                     .keyboardShortcut(.return)
                     .disabled(isAddDisabled)
             }

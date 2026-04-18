@@ -13,6 +13,7 @@ struct ProjectSidebar: View {
         List(store.projects, selection: $selectedProjectID) { project in
             ProjectRow(project: project)
                 .tag(project.id)
+                .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { project.id == selectedProjectID ? [.projectSelection: $0] : [:] }
                 .contextMenu {
                     Button(appLocalized("Edit")) {
                         renameTarget = project
@@ -63,6 +64,7 @@ struct ProjectSidebar: View {
                 }
                 .keyboardShortcut("n", modifiers: .command)
                 .help(appLocalized("New Project (⌘N)"))
+                .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.projectCreateToolbar: $0] }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .importProject)) { _ in
@@ -95,7 +97,9 @@ struct ProjectSidebar: View {
                         .font(.subheadline)
                     Button(appLocalized("New Project")) { showingNewProject = true }
                         .buttonStyle(.borderedProminent)
+                        .inactiveAwareProminentButtonForeground()
                         .controlSize(.small)
+                        .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.projectCreateEmpty: $0] }
                     Button(appLocalized("Import Project")) { importProject() }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
@@ -424,6 +428,7 @@ struct RenameProjectSheet: View {
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
+                .inactiveAwareProminentButtonForeground()
                 .keyboardShortcut(.return)
                 .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty ||
                           generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -577,6 +582,7 @@ struct NewProjectSheet: View {
                     .keyboardShortcut(.escape)
                 Button(appLocalized("Create")) { create() }
                     .buttonStyle(.borderedProminent)
+                    .inactiveAwareProminentButtonForeground()
                     .keyboardShortcut(.return)
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty ||
                               generationPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

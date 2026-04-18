@@ -49,8 +49,7 @@ struct LiquidGlassContainer: ViewModifier {
 struct ProjectDetailView: View {
     @EnvironmentObject var store: Store
     @Binding var project: Project
-    @Binding var externalPaperID: String?
-    @State private var selectedPaperID: String?
+    @Binding var selectedPaperID: String?
     @State private var showingAddPaper = false
     @State private var editingPaper: Paper?
     @State private var searchQuery = ""
@@ -110,6 +109,7 @@ struct ProjectDetailView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .help(appLocalized("Add Paper (⌘⇧A)"))
+                    .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.addPaper: $0] }
                 }
                 .frame(width: 260)
 
@@ -151,9 +151,6 @@ struct ProjectDetailView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .addPaper)) { _ in
             showingAddPaper = true
-        }
-        .onChange(of: externalPaperID) { id in
-            if let id { selectedPaperID = id; externalPaperID = nil }
         }
     }
 
@@ -266,6 +263,7 @@ struct EditMetadataSheet: View {
                 Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
                 Button(appLocalized("Save")) { save() }
                     .buttonStyle(.borderedProminent)
+                    .inactiveAwareProminentButtonForeground()
                     .keyboardShortcut(.return)
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
             }

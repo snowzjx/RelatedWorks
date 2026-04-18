@@ -179,6 +179,7 @@ struct PaperDetailView: View {
                             .background(Color(nsColor: .textBackgroundColor))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.2)))
+                            .anchorPreference(key: FirstLaunchAnchorPreferenceKey.self, value: .bounds) { [.annotation: $0] }
                     } else {
                         Text(highlighted(paper.annotation, query: highlight))
                             .font(.system(size: settings.fontSize - 1))
