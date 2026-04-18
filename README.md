@@ -18,6 +18,14 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 - macOS direct download: [Download from GitHub Releases](https://github.com/snowzjx/RelatedWorks/releases/latest)
 - Beta test: [Join TestFlight](https://testflight.apple.com/join/B1VxbrDv)
 
+## What's New in v2.1.0
+
+> This update is available through [TestFlight](https://testflight.apple.com/join/B1VxbrDv) and the [GitHub latest release](https://github.com/snowzjx/RelatedWorks/releases/latest).
+
+- **Chinese (Simplified) localization** (macOS/iOS) — the full app interface is now available in `zh-Hans`, with a new Language picker in **Settings → General**.
+- **In-app language switcher** (macOS) — change the display language between English, Chinese (Simplified), or Follow System without restarting the app.
+- **On-demand iCloud PDF download** (macOS) — opening a paper whose PDF has not been downloaded yet now triggers a background sync and opens the file automatically once it is ready, with a pulsing iCloud icon while waiting.
+
 ## What's New in v2.0.0
 
 - **PDF Inbox via Share Extension** (iOS/macOS) — Share PDFs directly from Safari or Files on iPhone and iPad into RelatedWorks. Shared PDFs land in an Inbox that syncs to macOS, where metadata is extracted automatically and each item waits for you to add it to a project when you're ready.
