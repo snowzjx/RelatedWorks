@@ -119,7 +119,7 @@ private struct IOSWelcomeLandingView: View {
             .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color.white.ignoresSafeArea())
+        .background(Color(uiColor: .systemBackground).ignoresSafeArea())
     }
 
     private func landingItem(systemImage: String, text: String) -> some View {
