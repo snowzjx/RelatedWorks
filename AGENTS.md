@@ -31,6 +31,10 @@ Notes:
 - Treat `gh-pages` as the GitHub Pages branch.
 - Do not put GitHub Pages site changes on `main`.
 - Website updates such as `index.html`, `privacy.html`, page assets, and screenshot galleries belong on `gh-pages`.
+- Keep version history in one canonical source on `main` as `version.md`.
+- Publish the public release notes page on `gh-pages` as `version.html`.
+- When updating a release, trim `README.md` and `index.html` to short summaries plus links instead of duplicating the full version history in both places.
+- If version history changes, update the source note on `main` first, then regenerate or mirror the public HTML page on `gh-pages`.
 
 ## Editing Conventions
 

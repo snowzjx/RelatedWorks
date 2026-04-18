@@ -18,19 +18,13 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 - macOS direct download: [Download from GitHub Releases](https://github.com/snowzjx/RelatedWorks/releases/latest)
 - Beta test: [Join TestFlight](https://testflight.apple.com/join/B1VxbrDv)
 
-## What's New in v2.1.0
+## Latest Release
 
-> This update is available through [TestFlight](https://testflight.apple.com/join/B1VxbrDv) and the [GitHub latest release](https://github.com/snowzjx/RelatedWorks/releases/latest).
+v2.1.1 adds a guided first-launch tutorial and a visible export progress banner for project exports. The full version history lives on the website and in [version.md](version.md).
 
-- **Chinese (Simplified) localization** (macOS/iOS) — the full app interface is now available in `zh-Hans`, with a new Language picker in **Settings → General**.
-- **In-app language switcher** (macOS) — change the display language between English, Chinese (Simplified), or Follow System without restarting the app.
-- **On-demand iCloud PDF download** (macOS) — opening a paper whose PDF has not been downloaded yet now triggers a background sync and opens the file automatically once it is ready, with a pulsing iCloud icon while waiting.
-
-## What's New in v2.0.0
-
-- **PDF Inbox via Share Extension** (iOS/macOS) — Share PDFs directly from Safari or Files on iPhone and iPad into RelatedWorks. Shared PDFs land in an Inbox that syncs to macOS, where metadata is extracted automatically and each item waits for you to add it to a project when you're ready.
-- **Per-project generation prompts** (macOS) — Each project can now keep its own AI generation prompt, with built-in presets for **Survey**, **Research Paper**, **Tech Report**, or a fully **Custom** setup. You stay in control of the prompt for every project.
-- **Liquid Glass search box** (macOS) — The search field now follows the macOS 26 Liquid Glass visual style, with updated translucency and background treatment.
+Full version history:
+- [Website release notes](https://snowzjx.github.io/RelatedWorks/version.html)
+- [Source changelog](version.md)
 
 ## Features
 
