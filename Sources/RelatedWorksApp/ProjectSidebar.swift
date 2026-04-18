@@ -8,6 +8,9 @@ struct ProjectSidebar: View {
     @Binding var selectedProjectID: UUID?
     @State private var showingNewProject = false
     @State private var renameTarget: Project?
+    @State private var isExportingProject = false
+    @State private var exportStatus = ""
+    @State private var exportProgress: Double?
 
     var body: some View {
         List(store.projects, selection: $selectedProjectID) { project in
@@ -106,6 +109,19 @@ struct ProjectSidebar: View {
                 }
             }
         }
+        .overlay {
+            if isExportingProject {
+                GeometryReader { proxy in
+                    VStack {
+                        Spacer()
+                        ExportProgressOverlay(status: exportStatus, progress: exportProgress)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.bottom, 16)
+                    }
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                }
+            }
+        }
     }
 
     private func exportProject(_ project: Project) {
@@ -114,11 +130,37 @@ struct ProjectSidebar: View {
         panel.allowedContentTypes = [.init(filenameExtension: "relatedworks")!]
         guard panel.runModal() == .OK, let url = panel.url else { return }
         let destination = normalizedExportURL(url)
-        do {
-            try ProjectExporter.export(project, pdfsDir: store.pdfsDir(for: project.id), to: destination)
-        } catch {
-            let alert = NSAlert(); alert.messageText = appLocalized("Export Failed")
-            alert.informativeText = error.localizedDescription; alert.runModal()
+        let pdfsDir = store.pdfsDir(for: project.id)
+        isExportingProject = true
+        exportStatus = appLocalized("Preparing export…")
+        exportProgress = nil
+
+        Task.detached(priority: .userInitiated) {
+            do {
+                try ProjectExporter.export(
+                    project,
+                    pdfsDir: pdfsDir,
+                    to: destination
+                ) { message, fraction in
+                    Task { @MainActor in
+                        exportStatus = message
+                        exportProgress = fraction
+                    }
+                }
+                await MainActor.run {
+                    isExportingProject = false
+                    exportProgress = nil
+                }
+            } catch {
+                await MainActor.run {
+                    isExportingProject = false
+                    exportProgress = nil
+                    let alert = NSAlert()
+                    alert.messageText = appLocalized("Export Failed")
+                    alert.informativeText = error.localizedDescription
+                    alert.runModal()
+                }
+            }
         }
     }
 
@@ -149,6 +191,38 @@ struct ProjectSidebar: View {
             let alert = NSAlert(); alert.messageText = appLocalized("Import Failed")
             alert.informativeText = error.localizedDescription; alert.runModal()
         }
+    }
+}
+
+private struct ExportProgressOverlay: View {
+    let status: String
+    let progress: Double?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            if let progress {
+                ProgressView(value: progress)
+                    .progressViewStyle(.linear)
+                    .frame(width: 120)
+            } else {
+                ProgressView()
+                    .frame(width: 120)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(appLocalized("Exporting Project"))
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                Text(status)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .shadow(color: .black.opacity(0.14), radius: 10, x: 0, y: 4)
+        .frame(width: 320)
     }
 }
 

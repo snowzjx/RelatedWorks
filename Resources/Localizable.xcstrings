@@ -1223,6 +1223,61 @@
         }
       }
     },
+    "Exporting Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在导出项目"
+          }
+        }
+      }
+    },
+    "Preparing export…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在准备导出…"
+          }
+        }
+      }
+    },
+    "Copying PDFs…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在复制 PDF…"
+          }
+        }
+      }
+    },
+    "Creating archive…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在创建压缩包…"
+          }
+        }
+      }
+    },
+    "Finishing…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在完成…"
+          }
+        }
+      }
+    },
     "Export Selected Project" : {
       "extractionState" : "manual",
       "localizations" : {

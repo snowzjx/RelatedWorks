@@ -2,24 +2,43 @@ import Foundation
 
 struct ProjectExporter {
 
-    static func export(_ project: Project, pdfsDir: URL, to destination: URL) throws {
+    static func export(
+        _ project: Project,
+        pdfsDir: URL,
+        to destination: URL,
+        progress: (@Sendable (_ message: String, _ fractionCompleted: Double?) -> Void)? = nil
+    ) throws {
         let fm = FileManager.default
         let tmpDir = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let bundleDir = tmpDir.appendingPathComponent("\(project.name).relatedworks")
         let bundlePDFs = bundleDir.appendingPathComponent("pdfs")
         try fm.createDirectory(at: bundlePDFs, withIntermediateDirectories: true)
 
+        let report = progress ?? { _, _ in }
+        report(appLocalized("Preparing export…"), 0.1)
+
         let data = try JSONEncoder().encode(project)
         try data.write(to: bundleDir.appendingPathComponent("project.json"))
+        report(appLocalized("Preparing export…"), 0.25)
 
-        for paper in project.papers where paper.hasPDF {
+        let pdfPapers = project.papers.filter(\.hasPDF)
+        if pdfPapers.isEmpty {
+            report(appLocalized("Creating archive…"), 0.8)
+        }
+        for (index, paper) in pdfPapers.enumerated() {
             let src = pdfsDir.appendingPathComponent("\(paper.id).pdf")
             let dst = bundlePDFs.appendingPathComponent("\(paper.id).pdf")
             if fm.fileExists(atPath: src.path) { try? fm.copyItem(at: src, to: dst) }
+            let base = 0.25
+            let span = 0.55
+            let fraction = base + span * Double(index + 1) / Double(max(pdfPapers.count, 1))
+            report(appLocalized("Copying PDFs…"), min(fraction, 0.8))
         }
 
         if fm.fileExists(atPath: destination.path) { try fm.removeItem(at: destination) }
+        report(appLocalized("Creating archive…"), 0.9)
         try fm.zipItem(at: bundleDir, to: destination)
+        report(appLocalized("Finishing…"), 1.0)
         try? fm.removeItem(at: tmpDir)
     }
 
