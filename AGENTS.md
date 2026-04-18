@@ -1,4 +1,4 @@
-# AGENT.md
+# AGENTS.md
 
 This file gives repository-specific guidance to coding agents working in this project.
 
@@ -7,6 +7,7 @@ This file gives repository-specific guidance to coding agents working in this pr
 - `Sources/RelatedWorksCore`: shared models, storage, services, and logic used by the app and TUI.
 - `Sources/RelatedWorksTUI`: Swift package executable target for the terminal UI.
 - `RelatedWorksApp.xcodeproj`: Xcode project for the macOS and iOS apps.
+- `Sources/RelatedWorksShareExtension`: share extension target used by the iOS/macOS PDF inbox flow.
 - `Tests/RelatedWorksTests`: Swift Testing suite for `RelatedWorksCore`.
 
 ## Build And Test
