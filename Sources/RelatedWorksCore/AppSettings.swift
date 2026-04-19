@@ -72,6 +72,16 @@ public class AppSettings: ObservableObject {
     @Published public var generationModel: String {
         didSet { UserDefaults.standard.set(generationModel, forKey: "generationModel") }
     }
+    @Published public var ollamaTimeoutSeconds: Int {
+        didSet {
+            let clamped = Self.clampOllamaTimeout(ollamaTimeoutSeconds)
+            if clamped != ollamaTimeoutSeconds {
+                ollamaTimeoutSeconds = clamped
+                return
+            }
+            UserDefaults.standard.set(clamped, forKey: "ollamaTimeoutSeconds")
+        }
+    }
 
     // Backend selection
     @Published public var extractionBackend: AIBackendType {
@@ -125,6 +135,9 @@ public class AppSettings: ObservableObject {
         ollamaBaseURL = UserDefaults.standard.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
         extractionModel = UserDefaults.standard.string(forKey: "extractionModel") ?? ""
         generationModel = UserDefaults.standard.string(forKey: "generationModel") ?? ""
+        ollamaTimeoutSeconds = Self.clampOllamaTimeout(
+            UserDefaults.standard.object(forKey: "ollamaTimeoutSeconds") as? Int ?? 300
+        )
         extractionBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "extractionBackend") ?? "") ?? .none
         generationBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "generationBackend") ?? "") ?? .none
         geminiExtractionModel = UserDefaults.standard.string(forKey: "geminiExtractionModel") ?? ""
@@ -175,7 +188,12 @@ public class AppSettings: ObservableObject {
     public func extractionBackendInstance() -> any AIBackend {
         switch extractionBackend {
         case .none: return NoBackend()
-        case .ollama: return OllamaBackend(baseURL: ollamaBaseURL, model: extractionModel)
+        case .ollama:
+            return OllamaBackend(
+                baseURL: ollamaBaseURL,
+                model: extractionModel,
+                timeoutInterval: TimeInterval(ollamaTimeoutSeconds)
+            )
         case .gemini: return GeminiBackend(apiKey: geminiAPIKey, model: geminiExtractionModel)
         }
     }
@@ -183,7 +201,12 @@ public class AppSettings: ObservableObject {
     public func generationBackendInstance() -> any AIBackend {
         switch generationBackend {
         case .none: return NoBackend()
-        case .ollama: return OllamaBackend(baseURL: ollamaBaseURL, model: generationModel)
+        case .ollama:
+            return OllamaBackend(
+                baseURL: ollamaBaseURL,
+                model: generationModel,
+                timeoutInterval: TimeInterval(ollamaTimeoutSeconds)
+            )
         case .gemini: return GeminiBackend(apiKey: geminiAPIKey, model: geminiGenerationModel)
         }
     }
@@ -269,6 +292,10 @@ public class AppSettings: ObservableObject {
         case .english, .chineseSimplified:
             UserDefaults.standard.set([appLanguage.rawValue], forKey: "AppleLanguages")
         }
+    }
+
+    private static func clampOllamaTimeout(_ value: Int) -> Int {
+        min(1800, max(30, value))
     }
 }
 

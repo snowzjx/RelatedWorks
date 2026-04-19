@@ -275,6 +275,17 @@ struct BackendsSettingsView: View {
                         Text(appLocalized("Cannot connect to Ollama")).font(.caption).foregroundStyle(.secondary)
                     }
                 }
+                Stepper(value: $settings.ollamaTimeoutSeconds, in: 30...1800, step: 30) {
+                    HStack {
+                        Text(appLocalized("Request timeout"))
+                        Spacer()
+                        Text(appLocalizedFormat("%lld seconds", settings.ollamaTimeoutSeconds))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Text(appLocalized("For large models, increase timeout if generation often times out."))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             } header: { Text(appLocalized("Ollama")) }
 
             // ── Gemini ───────────────────────────────────────────────
@@ -344,7 +355,8 @@ struct BackendsSettingsView: View {
             }
             if let http = response as? HTTPURLResponse, http.statusCode != 200 {
                 let msg = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])
-                    .flatMap { ($0["error"] as? [String: Any])?["message"] as? String } ?? "HTTP \(http.statusCode)"
+                    .flatMap { ($0["error"] as? [String: Any])?["message"] as? String }
+                    ?? appLocalizedFormat("HTTP %lld", Int64(http.statusCode))
                 await MainActor.run { isFetchingGemini = false; geminiTestStatus = .failed(msg) }
                 return
             }

@@ -130,14 +130,44 @@
         }
       }
     },
-    "© 2026 Junxue ZHANG" : {
-
+    "%lld seconds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 秒"
+          }
+        }
+      }
     },
     "~/Library/Application Support/RelatedWorks/projects/" : {
 
     },
     "⚙ %@" : {
 
+    },
+    "⚠️ Generation took too long and timed out with %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 生成耗时过长并已超时（模型：%@）。"
+          }
+        }
+      }
+    },
+    "⚠️ I couldn't generate text this time [%@ %lld]." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 此次无法生成内容 [%1$@ %2$lld]。"
+          }
+        }
+      }
     },
     "1 / 4" : {
       "extractionState" : "manual",
@@ -1371,6 +1401,17 @@
         }
       }
     },
+    "For large models, increase timeout if generation often times out." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对于大模型，如果生成经常超时，请增大超时时间。"
+          }
+        }
+      }
+    },
     "Gemini" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1481,6 +1522,17 @@
         }
       }
     },
+    "HTTP %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HTTP %lld"
+          }
+        }
+      }
+    },
     "http://localhost:11434" : {
 
     },
@@ -1513,6 +1565,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iCloud 同步"
+          }
+        }
+      }
+    },
+    "iCloud sync is available, so your library stays consistent across Mac, iPhone, and iPad." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持 iCloud 同步，让你的论文库在 Mac、iPhone 和 iPad 之间保持一致。"
           }
         }
       }
@@ -1788,6 +1851,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mac"
+          }
+        }
+      }
+    },
+    "macOS provides full functionality. On iPhone and iPad, RelatedWorks is designed for reading papers and writing annotations." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS 版本提供完整功能。iPhone 和 iPad 版本主要用于阅读论文和编写批注。"
           }
         }
       }
@@ -2597,6 +2671,17 @@
         }
       }
     },
+    "Request timeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求超时"
+          }
+        }
+      }
+    },
     "Reveal" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3015,6 +3100,17 @@
         }
       }
     },
+    "the selected model" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所选模型"
+          }
+        }
+      }
+    },
     "These links feed the final Related Works section." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3132,6 +3228,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "标题"
+          }
+        }
+      }
+    },
+    "To reduce timeouts, try increasing Ollama timeout in Settings, using a smaller model, or simplifying the prompt." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为减少超时，请尝试在设置中增大 Ollama 超时时间，使用更小的模型，或简化提示词。"
           }
         }
       }
@@ -3301,17 +3408,6 @@
         }
       }
     },
-    "When you find a PDF in Safari or Files on iPhone/iPad, share it to RelatedWorks to send it to the Inbox on your Mac." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当你在 iPhone 或 iPad 的 Safari 或 Files 中看到 PDF 时，可将其共享到 RelatedWorks，把论文发送到 Mac 上的收件箱。"
-          }
-        }
-      }
-    },
     "What Happens" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3334,28 +3430,6 @@
         }
       }
     },
-    "iCloud sync is available, so your library stays consistent across Mac, iPhone, and iPad." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "支持 iCloud 同步，让你的论文库在 Mac、iPhone 和 iPad 之间保持一致。"
-          }
-        }
-      }
-    },
-    "macOS provides full functionality. On iPhone and iPad, RelatedWorks is designed for reading papers and writing annotations." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "macOS 版本提供完整功能。iPhone 和 iPad 版本主要用于阅读论文和编写批注。"
-          }
-        }
-      }
-    },
     "When enabled, projects are read from iCloud Drive and synced across your devices. Existing local data is not moved." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3363,6 +3437,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启用后，项目将从 iCloud Drive 读取并在你的设备之间同步。现有本地数据不会被迁移。"
+          }
+        }
+      }
+    },
+    "When you find a PDF in Safari or Files on iPhone/iPad, share it to RelatedWorks to send it to the Inbox on your Mac." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当你在 iPhone 或 iPad 的 Safari 或 Files 中看到 PDF 时，可将其共享到 RelatedWorks，把论文发送到 Mac 上的收件箱。"
           }
         }
       }
@@ -3451,6 +3536,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你可以随时从“帮助”菜单重新打开本引导。"
+          }
+        }
+      }
+    },
+    "You did nothing wrong." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是你的问题。"
           }
         }
       }

@@ -21,10 +21,12 @@ public struct NoBackend: AIBackend {
 public struct OllamaBackend: AIBackend {
     public let baseURL: String
     public let model: String
+    public let timeoutInterval: TimeInterval
 
-    public init(baseURL: String, model: String) {
+    public init(baseURL: String, model: String, timeoutInterval: TimeInterval = 300) {
         self.baseURL = baseURL
         self.model = model
+        self.timeoutInterval = max(30, timeoutInterval)
     }
 
     public func generate(prompt: String) async throws -> String {
@@ -32,16 +34,61 @@ public struct OllamaBackend: AIBackend {
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.timeoutInterval = 120
-        let body: [String: Any] = ["model": model, "prompt": prompt, "stream": false,
-                                   "options": ["temperature": 0.7]]
+        req.timeoutInterval = timeoutInterval
+        let body: [String: Any] = [
+            "model": model,
+            "prompt": prompt,
+            "stream": false,
+            "options": ["temperature": 0.7]
+        ]
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
-        let (data, _) = try await URLSession.shared.data(for: req)
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let response = json["response"] as? String else {
-            throw URLError(.cannotParseResponse)
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+                let message = parseOllamaErrorMessage(from: data) ?? "HTTP \(http.statusCode)"
+                throw NSError(
+                    domain: "Ollama",
+                    code: http.statusCode,
+                    userInfo: [NSLocalizedDescriptionKey: message]
+                )
+            }
+
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let response = json["response"] as? String else {
+                throw URLError(.cannotParseResponse)
+            }
+            return response
+        } catch {
+            let nsError = error as NSError
+            let isTimeout = (error as? URLError)?.code == .timedOut
+                || nsError.code == NSURLErrorTimedOut
+            if isTimeout {
+                print("[RelatedWorks] Ollama request timed out for model '\(model)' with timeout \(Int(timeoutInterval))s.")
+                throw NSError(
+                    domain: "Ollama",
+                    code: NSURLErrorTimedOut,
+                    userInfo: [
+                        NSUnderlyingErrorKey: nsError,
+                        NSLocalizedDescriptionKey: appLocalizedFormat(
+                            "Ollama timed out after %lld second(s) using model \"%@\". Try increasing timeout in Settings, reducing prompt complexity, or using a smaller model.",
+                            Int64(timeoutInterval),
+                            model
+                        )
+                    ]
+                )
+            }
+            throw error
         }
-        return response
+    }
+
+    private func parseOllamaErrorMessage(from data: Data) -> String? {
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let error = json["error"] as? String,
+              !error.isEmpty else {
+            return nil
+        }
+        return error
     }
 }
 

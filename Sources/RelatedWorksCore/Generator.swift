@@ -6,8 +6,7 @@ public struct RelatedWorksGenerator {
         do {
             return try await callOllama(prompt: prompt)
         } catch {
-            let nsErr = error as NSError
-            return "⚠️ Generation failed [\(nsErr.domain) \(nsErr.code)]: \(error.localizedDescription)\n\n" + templateDraft(project)
+            return friendlyFailureMessage(for: error)
         }
     }
 
@@ -63,14 +62,24 @@ public struct RelatedWorksGenerator {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    public static func templateDraft(_ project: Project) -> String {
-        project.papers.map { paper in
-            let authors = paper.authors.prefix(2).joined(separator: " and ")
-            let suffix = paper.authors.count > 2 ? " et al." : ""
-            let year = paper.year.map { " (\($0))" } ?? ""
-            var s = "\(authors)\(suffix)\(year) proposed \\cite{\(paper.id)}, \(paper.title.lowercased())."
-            if !paper.annotation.isEmpty { s += " \(paper.annotation)" }
-            return s
-        }.joined(separator: "\n\n")
+    private static func friendlyFailureMessage(for error: Error) -> String {
+        let nsErr = error as NSError
+        let isTimeout = (error as? URLError)?.code == .timedOut || nsErr.code == NSURLErrorTimedOut
+        let model = AppSettings.shared.activeGenerationModelName
+        let modelText = model.isEmpty ? appLocalized("the selected model") : model
+
+        if isTimeout {
+            return [
+                appLocalizedFormat("⚠️ Generation took too long and timed out with %@.", modelText),
+                "",
+                appLocalized("You did nothing wrong."),
+                appLocalized("To reduce timeouts, try increasing Ollama timeout in Settings, using a smaller model, or simplifying the prompt.")
+            ].joined(separator: "\n")
+        }
+
+        return [
+            appLocalizedFormat("⚠️ I couldn't generate text this time [%@ %lld].", nsErr.domain, Int64(nsErr.code)),
+            error.localizedDescription
+        ].joined(separator: "\n")
     }
 }
