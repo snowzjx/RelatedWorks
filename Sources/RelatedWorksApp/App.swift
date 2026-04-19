@@ -327,7 +327,7 @@ struct RelatedWorksApp: App {
                     .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
                         launchCoordinator.reload()
                     }
-                    .onChange(of: firstLaunchStep) { newValue in
+                    .onChange(of: firstLaunchStep) { _, newValue in
                         if newValue == .sync {
                             preferencesTab = .general
                         }

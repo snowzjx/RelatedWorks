@@ -51,7 +51,7 @@ Full version history:
 - At least one AI backend:
   - [Ollama](https://ollama.com) running locally, **or**
   - [Google Gemini API key](https://aistudio.google.com/apikey)
-- Source builds require macOS 13+
+- Source builds require macOS 14+
 
 ### iOS/iPadOS App
 - Released binaries require iOS 26+ (built with Xcode 26 / iOS 26 SDK)

@@ -270,7 +270,7 @@ struct InboxManagementView: View {
             }
             inboxProcessingCoordinator.scheduleProcessing(for: store)
         }
-        .onChange(of: store.inboxItems) { items in
+        .onChange(of: store.inboxItems) { _, items in
             if let selectedItemID, items.contains(where: { $0.id == selectedItemID }) {
                 return
             }
@@ -516,7 +516,7 @@ struct RenameProjectSheet: View {
             generationPrompt = project.generationPrompt
             focused = true
         }
-        .onChange(of: generationPrompt) { newValue in
+        .onChange(of: generationPrompt) { _, newValue in
             syncProjectTypeForPrompt(newValue)
         }
     }
@@ -535,7 +535,7 @@ struct RenameProjectSheet: View {
             .labelsHidden()
             .pickerStyle(.segmented)
             .controlSize(.small)
-            .onChange(of: projectType) { newValue in
+            .onChange(of: projectType) { _, newValue in
                 if let preset = newValue.presetPrompt {
                     generationPrompt = preset
                 }
@@ -618,7 +618,7 @@ struct NewProjectSheet: View {
                 .labelsHidden()
                 .pickerStyle(.segmented)
                 .controlSize(.small)
-                .onChange(of: projectType) { newValue in
+                .onChange(of: projectType) { _, newValue in
                     if let preset = newValue.presetPrompt {
                         generationPrompt = preset
                     }
@@ -665,7 +665,7 @@ struct NewProjectSheet: View {
         .padding(24)
         .frame(width: 460)
         .onAppear { focused = true }
-        .onChange(of: generationPrompt) { newValue in
+        .onChange(of: generationPrompt) { _, newValue in
             guard projectType != .custom, let preset = projectType.presetPrompt else { return }
             if newValue != preset {
                 projectType = .custom

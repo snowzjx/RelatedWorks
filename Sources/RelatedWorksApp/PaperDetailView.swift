@@ -101,12 +101,8 @@ struct PaperDetailView: View {
                                 if isDownloadingPDF {
                                     Label("Open PDF", systemImage: "icloud.and.arrow.down")
                                 } else if let _ = pdfURL, !isPDFDownloaded {
-                                    if #available(macOS 14.0, *) {
-                                        Label("Open PDF", systemImage: "icloud.and.arrow.down")
-                                            .symbolEffect(.pulse)
-                                    } else {
-                                        Label("Open PDF", systemImage: "icloud.and.arrow.down")
-                                    }
+                                    Label("Open PDF", systemImage: "icloud.and.arrow.down")
+                                        .symbolEffect(.pulse)
                                 } else {
                                     Label("Open PDF", systemImage: "doc.fill")
                                 }
@@ -210,7 +206,7 @@ struct PaperDetailView: View {
                 .padding(20)
             }
         }
-        .onChange(of: paper.annotation) { _ in
+        .onChange(of: paper.annotation) {
             DispatchQueue.main.async {
                 try? store.save(project)
             }

@@ -234,7 +234,7 @@ struct FirstLaunchTutorialHost<Content: View>: View {
                     }
                 }
             }
-            .onChange(of: selectedProjectID) { _ in selectedPaperID = nil }
+            .onChange(of: selectedProjectID) { selectedPaperID = nil }
     }
 
     private var canAdvance: Bool {
@@ -449,22 +449,11 @@ private struct FirstLaunchCoachmarkBubble: View {
 
     @ViewBuilder
     private func settingsLaunchControl(_ title: String) -> some View {
-        if #available(macOS 14.0, *) {
-            SettingsLink {
-                Label(title, systemImage: "gearshape")
-            }
-            .buttonStyle(.borderedProminent)
-            .inactiveAwareProminentButtonForeground()
-        } else {
-            Button {
-                NSApp.activate(ignoringOtherApps: true)
-                NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
-            } label: {
-                Label(title, systemImage: "gearshape")
-            }
-            .buttonStyle(.borderedProminent)
-            .inactiveAwareProminentButtonForeground()
+        SettingsLink {
+            Label(title, systemImage: "gearshape")
         }
+        .buttonStyle(.borderedProminent)
+        .inactiveAwareProminentButtonForeground()
     }
 
     private var projectSelectBody: some View {

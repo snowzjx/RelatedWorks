@@ -188,7 +188,7 @@ struct ModelsSettingsView: View {
                     Text(selection.wrappedValue).tag(selection.wrappedValue)
                 }
             }
-            .onChange(of: selection.wrappedValue) { newVal in
+            .onChange(of: selection.wrappedValue) { _, newVal in
                 if isGemini && AppSettings.incompatibleGeminiModels.contains(newVal) {
                     // Revert to first compatible model
                     if let first = models.first(where: { !AppSettings.incompatibleGeminiModels.contains($0) }) {

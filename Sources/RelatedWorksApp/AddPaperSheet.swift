@@ -134,7 +134,7 @@ struct AddPaperSheet: View {
                             TextField(appLocalized("e.g. Transformer, BERT, GPT4"), text: $semanticID)
                                 .textFieldStyle(.roundedBorder)
                                 .focused($idFocused)
-                                .onChange(of: semanticID) { _ in
+                                .onChange(of: semanticID) {
                                     idConflict = project.paper(withID: semanticID.trimmingCharacters(in: .whitespaces)) != nil
                                 }
                             if idConflict {
@@ -158,7 +158,7 @@ struct AddPaperSheet: View {
                                 }
                                 HStack {
                                     LiquidGlassSearchField(prompt: LocalizedStringKey(appLocalized("Paper title or keywords")), text: $query)
-                                        .onChange(of: query) { _ in triggerSearch() }
+                                        .onChange(of: query) { triggerSearch() }
                                     if isSearching { ProgressView().scaleEffect(0.7).frame(width: 20) }
                                 }
 
@@ -276,7 +276,7 @@ struct AddPaperSheet: View {
             }
             idFocused = true
         }
-        .onChange(of: sourceMode) { mode in
+        .onChange(of: sourceMode) { _, mode in
             if mode == .importPDF {
                 selectedInboxItemID = nil
                 removeInboxItemAfterAdding = true
@@ -291,7 +291,7 @@ struct AddPaperSheet: View {
                 resetEditorState(keepingPDF: false)
             }
         }
-        .onChange(of: selectedInboxItemID) { itemID in
+        .onChange(of: selectedInboxItemID) { _, itemID in
             guard sourceMode == .inbox else { return }
             guard let itemID,
                   let item = store.inboxItems.first(where: { $0.id == itemID }) else {

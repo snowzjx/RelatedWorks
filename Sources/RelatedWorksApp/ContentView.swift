@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var settings: AppSettings
+    @Environment(\.openSettings) private var openSettings
     @ObservedObject var deepLinkHandler: DeepLinkHandler
     @Binding var selectedProjectID: UUID?
     @Binding var selectedPaperID: String?
@@ -31,7 +32,7 @@ struct ContentView: View {
         .frame(minWidth: 960, minHeight: 620)
         .focusedValue(\.selectedProjectID, selectedProjectID)
         .focusedValue(\.selectedPaperID, selectedPaperID)
-        .onChange(of: deepLinkHandler.pending) { dest in
+        .onChange(of: deepLinkHandler.pending) { _, dest in
             guard let dest else { return }
             switch dest {
             case .project(let pid):
@@ -42,7 +43,7 @@ struct ContentView: View {
                     selectedPaperID = paperID
                 }
             case .settings:
-                break
+                openSettings()
             }
             deepLinkHandler.pending = nil
         }
@@ -57,9 +58,7 @@ struct NoModelBanner: View {
             Text("No AI model configured")
                 .font(.caption).foregroundStyle(.primary)
             Spacer()
-            if #available(macOS 14, *) {
-                NoModelBannerSettingsButton()
-            }
+            NoModelBannerSettingsButton()
         }
         .padding(.horizontal, 12).padding(.vertical, 8)
         .background(.bar)
@@ -67,7 +66,6 @@ struct NoModelBanner: View {
     }
 }
 
-@available(macOS 14, *)
 private struct NoModelBannerSettingsButton: View {
     @Environment(\.openSettings) private var openSettings
     var body: some View {
