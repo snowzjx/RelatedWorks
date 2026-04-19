@@ -47,6 +47,7 @@ struct AddPaperSheet: View {
     @EnvironmentObject var store: Store
     @Binding var project: Project
     @Binding var isPresented: Bool
+    let initialPDFURL: URL?
     var onAdded: (String) -> Void = { _ in }
 
     enum Phase { case idle, extracting, filling }
@@ -101,6 +102,18 @@ struct AddPaperSheet: View {
     @State private var manualVenue = ""
 
     @FocusState private var idFocused: Bool
+
+    init(
+        project: Binding<Project>,
+        isPresented: Binding<Bool>,
+        initialPDFURL: URL? = nil,
+        onAdded: @escaping (String) -> Void = { _ in }
+    ) {
+        self._project = project
+        self._isPresented = isPresented
+        self.initialPDFURL = initialPDFURL
+        self.onAdded = onAdded
+    }
 
     var showManualInput: Bool { searchSource == .manual }
 
@@ -258,7 +271,12 @@ struct AddPaperSheet: View {
         }
         .frame(width: 540, height: min(NSScreen.main.map { $0.visibleFrame.height * 0.85 } ?? 700, 700))
         .onAppear {
-            if store.inboxItems.isEmpty {
+            if let initialPDFURL {
+                sourceMode = .importPDF
+                selectedInboxItemID = nil
+                removeInboxItemAfterAdding = true
+                selectImportedPDF(initialPDFURL)
+            } else if store.inboxItems.isEmpty {
                 sourceMode = .importPDF
             } else if pdfURL == nil && selectedInboxItemID == nil {
                 sourceMode = .inbox

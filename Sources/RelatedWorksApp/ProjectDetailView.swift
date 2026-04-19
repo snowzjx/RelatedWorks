@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct LiquidGlassSearchField: View {
     let prompt: LocalizedStringKey
@@ -51,6 +52,8 @@ struct ProjectDetailView: View {
     @Binding var project: Project
     @Binding var selectedPaperID: String?
     @State private var showingAddPaper = false
+    @State private var importedPDFURL: URL?
+    @State private var isPDFDropTargeted = false
     @State private var editingPaper: Paper?
     @State private var searchQuery = ""
 
@@ -90,6 +93,16 @@ struct ProjectDetailView: View {
                             }
                     }
                     .listStyle(.plain)
+                    .overlay {
+                        if isPDFDropTargeted {
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(Color.blue.opacity(0.75), style: StrokeStyle(lineWidth: 2, dash: [6]))
+                                .padding(8)
+                        }
+                    }
+                    .onDrop(of: [UTType.pdf], isTargeted: $isPDFDropTargeted) { providers in
+                        handlePDFDrop(providers)
+                    }
 
                     Divider()
 
@@ -142,8 +155,11 @@ struct ProjectDetailView: View {
             }
         }
         .sheet(isPresented: $showingAddPaper) {
-            AddPaperSheet(project: $project, isPresented: $showingAddPaper) { newID in
+            AddPaperSheet(project: $project, isPresented: $showingAddPaper, initialPDFURL: importedPDFURL) { newID in
                 selectedPaperID = newID
+            }
+            .onDisappear {
+                importedPDFURL = nil
             }
         }
         .sheet(item: $editingPaper) { paper in
@@ -167,6 +183,24 @@ struct ProjectDetailView: View {
         project.bibEntries.removeValue(forKey: paper.id)
         try? store.save(project)
         store.cleanupPDF(paperID: paper.id, projectID: project.id)
+    }
+
+    private func handlePDFDrop(_ providers: [NSItemProvider]) -> Bool {
+        guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.pdf.identifier) }) else {
+            return false
+        }
+
+        provider.loadFileRepresentation(forTypeIdentifier: UTType.pdf.identifier) { url, _ in
+            guard let url else { return }
+            let copy = FileManager.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
+            try? FileManager.default.removeItem(at: copy)
+            try? FileManager.default.copyItem(at: url, to: copy)
+            DispatchQueue.main.async {
+                importedPDFURL = copy
+                showingAddPaper = true
+            }
+        }
+        return true
     }
 
     private var projectSubtitle: String {
