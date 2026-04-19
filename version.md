@@ -1,5 +1,12 @@
 # Version History
 
+## v2.1.3
+
+Released to make PDF import more convenient during project work.
+
+- Dragging a PDF onto the paper list now opens Add Paper with that PDF already loaded in the drop zone.
+- Keeps the existing metadata extraction and semantic ID flow intact while removing an extra browsing step.
+
 ## v2.1.2
 
 Released to improve generation failure handling and timeout clarity for Ollama workflows.
