@@ -15,16 +15,16 @@ public enum InboxItemStatus: String, Codable, CaseIterable, Hashable, Sendable {
 }
 
 public enum InboxItemSource: String, Codable, CaseIterable, Hashable, Sendable {
-    case appImport
     case shareExtension
+    case macShareExtension
     case unknown
 
     public var displayName: String {
         switch self {
-        case .appImport:
-            return String(localized: "App Import")
         case .shareExtension:
             return String(localized: "iOS Share Extension")
+        case .macShareExtension:
+            return String(localized: "mac Share Extension")
         case .unknown:
             return String(localized: "Unknown")
         }
@@ -73,48 +73,57 @@ public struct InboxItem: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
-public enum ICloudHandleStore {
+public enum InboxHandleStore {
     public static let appGroupIdentifier = "group.me.snowzjx.relatedworks"
-    private static let inboxBookmarkKey = "iCloudInboxBookmark"
-    private static let ubiquityContainerIdentifier = "iCloud.me.snowzjx.relatedworks"
+    private static let inboxBookmarkKey = "sharedInboxBookmark"
 
     public enum HandleError: LocalizedError {
-        case unavailable
         case notPublished
 
         public var errorDescription: String? {
             switch self {
-            case .unavailable:
-                return String(localized: "iCloud Drive is unavailable. Enable iCloud Drive and RelatedWorks iCloud access, then open the app again.")
             case .notPublished:
-                return String(localized: "Open RelatedWorks, enable iCloud sync in Settings if needed, wait a moment for setup to finish, and then try sharing again.")
+                return String(localized: "Open RelatedWorks once so it can publish the inbox location, then try sharing again.")
             }
         }
     }
 
-    public static func publishInboxHandle() throws {
-        guard let inboxURL = FileManager.default
-            .url(forUbiquityContainerIdentifier: ubiquityContainerIdentifier)?
-            .appendingPathComponent("Documents/inbox", isDirectory: true) else {
-            clearInboxHandle()
-            throw HandleError.unavailable
-        }
-
+    public static func publishInboxHandle(_ inboxURL: URL) throws {
         try FileManager.default.createDirectory(at: inboxURL, withIntermediateDirectories: true)
         let bookmark = try inboxURL.bookmarkData(
             options: URL.BookmarkCreationOptions.minimalBookmark,
             includingResourceValuesForKeys: nil,
             relativeTo: nil
         )
-        sharedDefaults?.set(bookmark, forKey: inboxBookmarkKey)
+        guard let sharedDefaults else {
+            log("Failed to publish inbox handle because shared defaults for \(appGroupIdentifier) are unavailable.")
+            throw HandleError.notPublished
+        }
+
+        sharedDefaults.set(bookmark, forKey: inboxBookmarkKey)
+        sharedDefaults.synchronize()
+        log("Published inbox handle for path: \(inboxURL.path)")
     }
 
     public static func clearInboxHandle() {
-        sharedDefaults?.removeObject(forKey: inboxBookmarkKey)
+        guard let sharedDefaults else {
+            log("Failed to clear inbox handle because shared defaults for \(appGroupIdentifier) are unavailable.")
+            return
+        }
+
+        sharedDefaults.removeObject(forKey: inboxBookmarkKey)
+        sharedDefaults.synchronize()
+        log("Cleared published inbox handle.")
     }
 
     public static func resolveInboxHandle() throws -> URL {
-        guard let bookmark = sharedDefaults?.data(forKey: inboxBookmarkKey) else {
+        guard let sharedDefaults else {
+            log("Failed to resolve inbox handle because shared defaults for \(appGroupIdentifier) are unavailable.")
+            throw HandleError.notPublished
+        }
+
+        guard let bookmark = sharedDefaults.data(forKey: inboxBookmarkKey) else {
+            log("No published inbox handle was found in shared defaults.")
             throw HandleError.notPublished
         }
 
@@ -132,14 +141,54 @@ public enum ICloudHandleStore {
                 includingResourceValuesForKeys: nil,
                 relativeTo: nil
             )
-            sharedDefaults?.set(refreshed, forKey: inboxBookmarkKey)
+            sharedDefaults.set(refreshed, forKey: inboxBookmarkKey)
+            sharedDefaults.synchronize()
+            log("Refreshed stale inbox bookmark for path: \(url.path)")
         }
 
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        log("Resolved inbox handle to path: \(url.path)")
         return url
     }
 
     private static var sharedDefaults: UserDefaults? {
         UserDefaults(suiteName: appGroupIdentifier)
+    }
+
+    private static func log(_ message: String) {
+        NSLog("[InboxHandleStore] %@", message)
+    }
+}
+
+public enum ICloudHandleStore {
+    private static let ubiquityContainerIdentifier = "iCloud.me.snowzjx.relatedworks"
+
+    public enum HandleError: LocalizedError {
+        case unavailable
+
+        public var errorDescription: String? {
+            switch self {
+            case .unavailable:
+                return String(localized: "iCloud Drive is unavailable. Enable iCloud Drive and RelatedWorks iCloud access, then open the app again.")
+            }
+        }
+    }
+
+    public static func publishInboxHandle() throws {
+        guard let inboxURL = FileManager.default
+            .url(forUbiquityContainerIdentifier: ubiquityContainerIdentifier)?
+            .appendingPathComponent("Documents/inbox", isDirectory: true) else {
+            InboxHandleStore.clearInboxHandle()
+            throw HandleError.unavailable
+        }
+        try InboxHandleStore.publishInboxHandle(inboxURL)
+    }
+
+    public static func clearInboxHandle() {
+        InboxHandleStore.clearInboxHandle()
+    }
+
+    public static func resolveInboxHandle() throws -> URL {
+        try InboxHandleStore.resolveInboxHandle()
     }
 }

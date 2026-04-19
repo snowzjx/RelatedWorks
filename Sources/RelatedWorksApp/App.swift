@@ -337,6 +337,9 @@ struct RelatedWorksApp: App {
                         inboxProcessingCoordinator.scheduleProcessing(for: store)
                         presentFirstLaunchTutorialIfNeeded()
                     }
+                    .task(id: store.inboxDir.path) {
+                        try? InboxHandleStore.publishInboxHandle(store.inboxDir)
+                    }
                     .onReceive(store.$inboxItems) { _ in
                         inboxProcessingCoordinator.scheduleProcessing(for: store)
                     }

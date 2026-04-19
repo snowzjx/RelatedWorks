@@ -58,6 +58,7 @@
 		LOC002 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		LOC004 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FIOSSHAREAPP /* RelatedWorksShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		APP_EXT_EMBED /* RelatedWorksAppShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FAPPSHAREAPP /* RelatedWorksAppShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
 		MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
 		MAC_ZF_BackingConfig /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */; };
@@ -82,6 +83,9 @@
 		MAC_ZF_ZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePZIP64 /* Sources/ZIPFoundation/Archive+ZIP64.swift */; };
 		SHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FSHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift */; };
 		SHARE002 /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
+		A024 /* Sources/RelatedWorksAppShareExtension/ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAPPSHARE001 /* Sources/RelatedWorksAppShareExtension/ShareViewController.swift */; };
+		A025 /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
+		LOC005 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		T001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */; };
 		TC010 /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
 		TC011 /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
@@ -138,6 +142,13 @@
 			remoteGlobalIDString = TIOSSHARE;
 			remoteInfo = RelatedWorksShareExtension;
 		};
+		MAC_SHARE_PROXY /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = PROJ /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = TAPPSHARE;
+			remoteInfo = RelatedWorksAppShareExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -148,6 +159,17 @@
 			dstSubfolderSpec = 13;
 			files = (
 				IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPMAC_EMBED /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				APP_EXT_EMBED /* RelatedWorksAppShareExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,12 +210,16 @@
 		FIOSAPP /* RelatedWorksIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorksIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksIOS/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		FIOSSHAREAPP /* RelatedWorksShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelatedWorksShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAPPSHAREAPP /* RelatedWorksAppShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelatedWorksAppShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
 		FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sources/RelatedWorksIOS/SampleProject.relatedworks; sourceTree = SOURCE_ROOT; };
 		LOC003 /* Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = SOURCE_ROOT; };
 		FSHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksShareExtension/ShareViewController.swift; sourceTree = SOURCE_ROOT; };
 		FSHARE_ENT /* RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements; sourceTree = SOURCE_ROOT; };
 		FSHARE_INFO /* Sources/RelatedWorksShareExtension/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksShareExtension/Info.plist; sourceTree = SOURCE_ROOT; };
+		FAPPSHARE001 /* Sources/RelatedWorksAppShareExtension/ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksAppShareExtension/ShareViewController.swift; sourceTree = SOURCE_ROOT; };
+		FAPPSHARE_ENT /* RelatedWorksAppShareExtension/RelatedWorksAppShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksAppShareExtension/RelatedWorksAppShareExtension.entitlements; sourceTree = SOURCE_ROOT; };
+		FAPPSHARE_INFO /* RelatedWorksAppShareExtension/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = RelatedWorksAppShareExtension/Info.plist; sourceTree = SOURCE_ROOT; };
 		FTUI /* Sources/RelatedWorksTUI/TUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/TUI.swift; sourceTree = SOURCE_ROOT; };
 		FTUIPROD /* relatedworks-tui */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "relatedworks-tui"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksTUI/main.swift; sourceTree = SOURCE_ROOT; };
@@ -316,6 +342,7 @@
 				FAPP /* RelatedWorks.app */,
 				FIOSAPP /* RelatedWorksIOS.app */,
 				FIOSSHAREAPP /* RelatedWorksShareExtension.appex */,
+				FAPPSHAREAPP /* RelatedWorksAppShareExtension.appex */,
 				FTUIPROD /* relatedworks-tui */,
 				TPROD /* RelatedWorksTests.xctest */,
 			);
@@ -328,6 +355,7 @@
 				GAPP /* RelatedWorksApp */,
 				GIOS /* RelatedWorksIOS */,
 				GSHARE /* RelatedWorksShareExtension */,
+				GAPPSHARE /* RelatedWorksAppShareExtension */,
 				GCORE /* RelatedWorksCore */,
 				GTUI /* RelatedWorksTUI */,
 				GTEST /* RelatedWorksTests */,
@@ -353,6 +381,25 @@
 			children = (
 				FSHARE_ENT /* RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements */,
 				FSHARE_INFO /* Sources/RelatedWorksShareExtension/Info.plist */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		GAPPSHARE /* RelatedWorksAppShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				FAPPSHARE001 /* Sources/RelatedWorksAppShareExtension/ShareViewController.swift */,
+				GAPPSHARE_CONFIG /* Config */,
+			);
+			name = RelatedWorksAppShareExtension;
+			path = Sources/RelatedWorksAppShareExtension;
+			sourceTree = SOURCE_ROOT;
+		};
+		GAPPSHARE_CONFIG /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				FAPPSHARE_ENT /* RelatedWorksAppShareExtension/RelatedWorksAppShareExtension.entitlements */,
+				FAPPSHARE_INFO /* RelatedWorksAppShareExtension/Info.plist */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -413,10 +460,12 @@
 			buildPhases = (
 				BPSRC /* Sources */,
 				BPRES /* Resources */,
+				BPMAC_EMBED /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				TD_APP_SHARE /* PBXTargetDependency */,
 			);
 			name = RelatedWorksApp;
 			productName = RelatedWorksApp;
@@ -455,6 +504,22 @@
 			name = RelatedWorksShareExtension;
 			productName = RelatedWorksShareExtension;
 			productReference = FIOSSHAREAPP /* RelatedWorksShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		TAPPSHARE /* RelatedWorksAppShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCLAPPSHARE /* Build configuration list for PBXNativeTarget "RelatedWorksAppShareExtension" */;
+			buildPhases = (
+				BPSHAREMAC /* Sources */,
+				BPSHAREMACRES /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RelatedWorksAppShareExtension;
+			productName = RelatedWorksAppShareExtension;
+			productReference = FAPPSHAREAPP /* RelatedWorksAppShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		TTEST /* RelatedWorksTests */ = {
@@ -515,6 +580,7 @@
 				TAPP /* RelatedWorksApp */,
 				TIOS /* RelatedWorksIOS */,
 				TIOSSHARE /* RelatedWorksShareExtension */,
+				TAPPSHARE /* RelatedWorksAppShareExtension */,
 				TTUI /* RelatedWorksTUI */,
 				TTEST /* RelatedWorksTests */,
 			);
@@ -604,11 +670,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BPSHAREMAC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A024 /* Sources/RelatedWorksAppShareExtension/ShareViewController.swift in Sources */,
+				A025 /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BPSHARERES /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				LOC004 /* Resources/Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPSHAREMACRES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LOC005 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -708,6 +791,11 @@
 			isa = PBXTargetDependency;
 			target = TIOSSHARE /* RelatedWorksShareExtension */;
 			targetProxy = IOS_SHARE_PROXY /* PBXContainerItemProxy */;
+		};
+		TD_APP_SHARE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = TAPPSHARE /* RelatedWorksAppShareExtension */;
+			targetProxy = MAC_SHARE_PROXY /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -992,6 +1080,60 @@
 			};
 			name = Release;
 		};
+		BCAPPSHARE001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksAppShareExtension/RelatedWorksAppShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RelatedWorksAppShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.8.3;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.mac.ShareExtension;
+				PRODUCT_NAME = RelatedWorksAppShareExtension;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BCAPPSHARE002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = RelatedWorksAppShareExtension/RelatedWorksAppShareExtension.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RelatedWorksAppShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.8.3;
+				PRODUCT_BUNDLE_IDENTIFIER = me.snowzjx.relatedworks.mac.ShareExtension;
+				PRODUCT_NAME = RelatedWorksAppShareExtension;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		BCT001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1064,6 +1206,15 @@
 			buildConfigurations = (
 				BCSHARE001 /* Debug */,
 				BCSHARE002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCLAPPSHARE /* Build configuration list for PBXNativeTarget "RelatedWorksAppShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCAPPSHARE001 /* Debug */,
+				BCAPPSHARE002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
