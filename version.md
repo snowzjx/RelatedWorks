@@ -1,5 +1,14 @@
 # Version History
 
+## v2.1.2
+
+Released to improve generation failure handling and timeout clarity for Ollama workflows.
+
+- Configurable Ollama request timeout in Settings.
+- Friendlier timeout and failure messages during Related Works generation.
+- Removed fallback template draft from error responses to keep failures explicit.
+- Added missing localization entries for new timeout and backend status strings.
+
 ## v2.1.1
 
 Released to refine the first-run experience and make long-running exports easier to follow.
