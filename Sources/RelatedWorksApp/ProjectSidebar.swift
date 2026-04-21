@@ -178,7 +178,6 @@ struct ProjectSidebar: View {
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
-            // Peek at the project name before importing
             let project = try ProjectExporter.import(from: url, into: store)
             if store.projects.contains(where: { $0.name == project.name && $0.id != project.id }) {
                 let alert = NSAlert()

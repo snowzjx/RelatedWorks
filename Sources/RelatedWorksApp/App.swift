@@ -259,6 +259,7 @@ struct AppLaunchView: View {
 
 @main
 struct RelatedWorksApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var settings = AppSettings.shared
     @StateObject private var deepLinkHandler = DeepLinkHandler()
     @StateObject private var inboxProcessingCoordinator = InboxProcessingCoordinator()
@@ -270,6 +271,7 @@ struct RelatedWorksApp: App {
     @State private var firstLaunchStep: FirstLaunchStep = .aiSetup
     @State private var selectedProjectID: UUID?
     @State private var selectedPaperID: String?
+    @State private var pendingProjectToImport: URL?
 
     private enum DefaultsKey {
         static let didShowFirstLaunchTutorial = "didShowFirstLaunchTutorial"
@@ -290,6 +292,53 @@ struct RelatedWorksApp: App {
     private func configureFirstLaunchStartState() {
         firstLaunchStep = .aiSetup
         preferencesTab = .backends
+    }
+
+    private func queueImportedProject(_ url: URL) {
+        pendingProjectToImport = url
+        importQueuedProjectIfPossible()
+    }
+
+    private func consumePendingProjectFiles() {
+        for url in appDelegate.takePendingProjectURLs() {
+            queueImportedProject(url)
+        }
+    }
+
+    private func importQueuedProjectIfPossible() {
+        guard let url = pendingProjectToImport,
+              let store = launchCoordinator.store else { return }
+
+        let confirmAlert = NSAlert()
+        confirmAlert.messageText = appLocalized("Import Project")
+        confirmAlert.informativeText = appLocalizedFormat("Do you want to import \"%@\" into RelatedWorks?", url.deletingPathExtension().lastPathComponent)
+        confirmAlert.addButton(withTitle: appLocalized("Yes"))
+        confirmAlert.addButton(withTitle: appLocalized("No"))
+
+        guard confirmAlert.runModal() == .alertFirstButtonReturn else {
+            pendingProjectToImport = nil
+            return
+        }
+
+        do {
+            let project = try ProjectExporter.import(from: url, into: store)
+            pendingProjectToImport = nil
+            selectedProjectID = project.id
+
+            if store.projects.contains(where: { $0.name == project.name && $0.id != project.id }) {
+                let alert = NSAlert()
+                alert.messageText = appLocalized("Duplicate Project")
+                alert.informativeText = appLocalizedFormat("Imported \"%@\". Another project with the same name already exists, so you may want to rename one of them.", project.name)
+                alert.addButton(withTitle: appLocalized("OK"))
+                alert.runModal()
+            }
+        } catch {
+            pendingProjectToImport = nil
+            let alert = NSAlert()
+            alert.messageText = appLocalized("Import Failed")
+            alert.informativeText = error.localizedDescription
+            alert.runModal()
+        }
     }
 
     var body: some Scene {
@@ -313,7 +362,20 @@ struct RelatedWorksApp: App {
                             .environmentObject(inboxProcessingCoordinator)
                             .environment(\.locale, settings.locale)
                             .id(settings.appLanguage.rawValue)
-                            .onOpenURL { url in deepLinkHandler.handle(url) }
+                            .onOpenURL { url in
+                                if url.isFileURL && url.pathExtension.lowercased() == "relatedworks" {
+                                    queueImportedProject(url)
+                                } else {
+                                    deepLinkHandler.handle(url)
+                                }
+                            }
+                            .onReceive(NotificationCenter.default.publisher(for: .openProjectFile)) { notification in
+                                consumePendingProjectFiles()
+                            }
+                            .onReceive(launchCoordinator.$store.compactMap { $0 }) { _ in
+                                consumePendingProjectFiles()
+                                importQueuedProjectIfPossible()
+                            }
                             .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
                     }
                     .environmentObject(store)
@@ -333,6 +395,7 @@ struct RelatedWorksApp: App {
                         }
                     }
                     .onAppear {
+                        consumePendingProjectFiles()
                         inboxProcessingCoordinator.prepareNotifications()
                         inboxProcessingCoordinator.scheduleProcessing(for: store)
                         presentFirstLaunchTutorialIfNeeded()
@@ -479,6 +542,7 @@ extension Notification.Name {
     static let newProject = Notification.Name("newProject")
     static let addPaper = Notification.Name("addPaper")
     static let importProject = Notification.Name("importProject")
+    static let openProjectFile = Notification.Name("openProjectFile")
     static let exportProject = Notification.Name("exportProject")
     static let showHelp = Notification.Name("showHelp")
     static let showFirstLaunchTutorial = Notification.Name("showFirstLaunchTutorial")
@@ -490,5 +554,39 @@ class DeepLinkHandler: ObservableObject {
 
     func handle(_ url: URL) {
         pending = DeepLink.parse(url)
+    }
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var pendingProjectURLs: [URL] = []
+
+    func takePendingProjectURLs() -> [URL] {
+        let urls = pendingProjectURLs
+        pendingProjectURLs.removeAll()
+        return urls
+    }
+
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        enqueueProjectFile(URL(fileURLWithPath: filename))
+        return true
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            enqueueProjectFile(url)
+        }
+    }
+
+    func application(_ sender: NSApplication, openFiles filenames: [String]) {
+        for filename in filenames {
+            enqueueProjectFile(URL(fileURLWithPath: filename))
+        }
+        sender.reply(toOpenOrPrint: .success)
+    }
+
+    private func enqueueProjectFile(_ url: URL) {
+        guard url.pathExtension.lowercased() == "relatedworks" else { return }
+        pendingProjectURLs.append(url)
+        NotificationCenter.default.post(name: .openProjectFile, object: nil)
     }
 }

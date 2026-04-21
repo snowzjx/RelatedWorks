@@ -1126,6 +1126,17 @@
         }
       }
     },
+    "Do you want to import \"%@\" into RelatedWorks?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要将“%@”导入到 RelatedWorks 吗？"
+          }
+        }
+      }
+    },
     "e.g. Attention Mechanisms Survey" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1983,6 +1994,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "尚未配置 AI 后端。请前往设置进行配置。"
+          }
+        }
+      }
+    },
+    "No" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "否"
           }
         }
       }
@@ -3503,6 +3525,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年份"
+          }
+        }
+      }
+    },
+    "Yes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
