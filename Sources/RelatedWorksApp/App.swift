@@ -272,6 +272,7 @@ struct RelatedWorksApp: App {
     @State private var selectedProjectID: UUID?
     @State private var selectedPaperID: String?
     @State private var pendingProjectToImport: URL?
+    @State private var recentProjectOpenRequests: [URL: Date] = [:]
 
     private enum DefaultsKey {
         static let didShowFirstLaunchTutorial = "didShowFirstLaunchTutorial"
@@ -295,7 +296,17 @@ struct RelatedWorksApp: App {
     }
 
     private func queueImportedProject(_ url: URL) {
-        pendingProjectToImport = url
+        let normalizedURL = url.resolvingSymlinksInPath().standardizedFileURL
+        let now = Date()
+
+        recentProjectOpenRequests = recentProjectOpenRequests.filter {
+            now.timeIntervalSince($0.value) < 2
+        }
+
+        guard recentProjectOpenRequests[normalizedURL] == nil else { return }
+
+        recentProjectOpenRequests[normalizedURL] = now
+        pendingProjectToImport = normalizedURL
         importQueuedProjectIfPossible()
     }
 
