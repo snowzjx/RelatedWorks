@@ -3594,6 +3594,94 @@
           }
         }
       }
+    },
+    "Add and Next" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加并继续"
+          }
+        }
+      }
+    },
+    "Added %lld PDF(s) to Inbox." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已将 %lld 个 PDF 添加到收件箱。"
+          }
+        }
+      }
+    },
+    "Added %lld PDF(s) to Inbox. %lld file(s) were already there." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已将 %1$lld 个 PDF 添加到收件箱。另有 %2$lld 个文件已在收件箱中。"
+          }
+        }
+      }
+    },
+    "Added %lld PDF(s). %lld duplicate(s) were skipped.\n\n%@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已添加 %1$lld 个 PDF。已跳过 %2$lld 个重复文件。\n\n%3$@"
+          }
+        }
+      }
+    },
+    "Choose one or more PDF files to add to Inbox." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一个或多个 PDF 文件以添加到收件箱。"
+          }
+        }
+      }
+    },
+    "Import PDFs to Inbox" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入 PDF 到收件箱"
+          }
+        }
+      }
+    },
+    "Inbox Updated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收件箱已更新"
+          }
+        }
+      }
+    },
+    "Some PDFs Couldn't Be Imported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分 PDF 无法导入"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

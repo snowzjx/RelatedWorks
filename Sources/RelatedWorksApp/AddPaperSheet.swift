@@ -51,6 +51,10 @@ struct AddPaperSheet: View {
     var onAdded: (String) -> Void = { _ in }
 
     enum Phase { case idle, extracting, filling }
+    enum AddAction {
+        case close
+        case next
+    }
     enum SearchSource {
         case dblp, arxiv, manual
 
@@ -260,7 +264,12 @@ struct AddPaperSheet: View {
             HStack {
                 Spacer()
                 Button(appLocalized("Cancel")) { isPresented = false }.keyboardShortcut(.escape)
-                Button(appLocalized("Add Paper")) { addPaper() }
+                if canAddAndNext {
+                    Button(appLocalized("Add and Next")) { addPaper(.next) }
+                        .buttonStyle(.bordered)
+                        .disabled(isAddDisabled)
+                }
+                Button(appLocalized("Add Paper")) { addPaper(.close) }
                     .buttonStyle(.borderedProminent)
                     .inactiveAwareProminentButtonForeground()
                     .keyboardShortcut(.return)
@@ -326,6 +335,10 @@ struct AddPaperSheet: View {
         if sourceMode == .inbox && selectedInboxItemID == nil { return true }
         if showManualInput && manualTitle.trimmingCharacters(in: .whitespaces).isEmpty { return true }
         return false
+    }
+
+    private var canAddAndNext: Bool {
+        sourceMode == .inbox && selectedInboxItemID != nil
     }
 
     private var inboxSection: some View {
@@ -507,8 +520,61 @@ struct AddPaperSheet: View {
         }
     }
 
-    private func addPaper() {
+    private func nextInboxItemID(after currentID: UUID, removingCurrent: Bool) -> UUID? {
+        let ids = store.inboxItems.map(\.id)
+        guard let currentIndex = ids.firstIndex(of: currentID) else {
+            return store.inboxItems.first?.id
+        }
+
+        if removingCurrent {
+            let nextIndex = currentIndex + 1
+            if nextIndex < ids.count {
+                return ids[nextIndex]
+            }
+            if currentIndex > 0 {
+                return ids[currentIndex - 1]
+            }
+            return nil
+        }
+
+        if let pendingAfterCurrent = store.inboxItems[(currentIndex + 1)...].first(where: { $0.status != .processed }) {
+            return pendingAfterCurrent.id
+        }
+        if let anyAfterCurrent = store.inboxItems[(currentIndex + 1)...].first {
+            return anyAfterCurrent.id
+        }
+        if let pendingBeforeCurrent = store.inboxItems[..<currentIndex].first(where: { $0.status != .processed }) {
+            return pendingBeforeCurrent.id
+        }
+        if currentIndex > 0 {
+            return ids[currentIndex - 1]
+        }
+        return nil
+    }
+
+    private func advanceAfterAdding(from currentInboxItemID: UUID?) {
+        guard let currentInboxItemID else {
+            isPresented = false
+            return
+        }
+
+        let nextID = nextInboxItemID(after: currentInboxItemID, removingCurrent: removeInboxItemAfterAdding)
+
+        if let nextID,
+           store.inboxItems.contains(where: { $0.id == nextID }) {
+            selectedInboxItemID = nextID
+        } else {
+            sourceMode = .importPDF
+            selectedInboxItemID = nil
+            removeInboxItemAfterAdding = true
+            resetEditorState(keepingPDF: false)
+            idFocused = true
+        }
+    }
+
+    private func addPaper(_ action: AddAction) {
         let id = semanticID.trimmingCharacters(in: .whitespaces)
+        let currentInboxItemID = selectedInboxItemID
         var paper: Paper
 
         if let r = selectedResult {
@@ -553,7 +619,11 @@ struct AddPaperSheet: View {
         }
 
         onAdded(id)
-        isPresented = false
+        if action == .close {
+            isPresented = false
+        } else {
+            advanceAfterAdding(from: currentInboxItemID)
+        }
 
         let dblpKey = selectedResult?.dblpKey
         let projectID = project.id

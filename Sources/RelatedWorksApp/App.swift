@@ -444,6 +444,11 @@ struct RelatedWorksApp: App {
                 AddPaperMenuButton()
                 OpenInboxWindowButton()
 
+                Button(appLocalized("Import PDFs to Inbox")) {
+                    NotificationCenter.default.post(name: .importPDFsToInbox, object: nil)
+                }
+                .keyboardShortcut("o", modifiers: [.command, .shift])
+
                 Button(appLocalized("Import Project")) {
                     NotificationCenter.default.post(name: .importProject, object: nil)
                 }
@@ -561,6 +566,7 @@ struct OpenInboxWindowButton: View {
 extension Notification.Name {
     static let newProject = Notification.Name("newProject")
     static let addPaper = Notification.Name("addPaper")
+    static let importPDFsToInbox = Notification.Name("importPDFsToInbox")
     static let importProject = Notification.Name("importProject")
     static let openProjectFile = Notification.Name("openProjectFile")
     static let exportProject = Notification.Name("exportProject")

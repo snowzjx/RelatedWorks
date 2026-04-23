@@ -73,6 +73,9 @@ struct ProjectSidebar: View {
         .onReceive(NotificationCenter.default.publisher(for: .importProject)) { _ in
             importProject()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .importPDFsToInbox)) { _ in
+            importPDFsToInbox()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .newProject)) { _ in
             showingNewProject = true
         }
@@ -190,6 +193,78 @@ struct ProjectSidebar: View {
             let alert = NSAlert(); alert.messageText = appLocalized("Import Failed")
             alert.informativeText = error.localizedDescription; alert.runModal()
         }
+    }
+
+    private func importPDFsToInbox() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.pdf]
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.message = appLocalized("Choose one or more PDF files to add to Inbox.")
+
+        guard panel.runModal() == .OK else { return }
+
+        let urls = panel.urls
+        guard !urls.isEmpty else { return }
+
+        var knownItemIDs = Set(store.inboxItems.map(\.id))
+        var addedCount = 0
+        var duplicateCount = 0
+        var failures: [(name: String, reason: String)] = []
+
+        for url in urls {
+            do {
+                let item = try store.addToInbox(
+                    from: url,
+                    originalFilename: url.lastPathComponent,
+                    source: .appImport
+                )
+                if knownItemIDs.contains(item.id) {
+                    duplicateCount += 1
+                } else {
+                    knownItemIDs.insert(item.id)
+                    addedCount += 1
+                }
+            } catch {
+                failures.append((url.lastPathComponent, error.localizedDescription))
+            }
+        }
+
+        let alert = NSAlert()
+        if failures.isEmpty {
+            alert.messageText = appLocalized("Inbox Updated")
+            if duplicateCount > 0 {
+                alert.informativeText = appLocalizedFormat(
+                    "Added %lld PDF(s) to Inbox. %lld file(s) were already there.",
+                    addedCount,
+                    duplicateCount
+                )
+            } else {
+                alert.informativeText = appLocalizedFormat(
+                    "Added %lld PDF(s) to Inbox.",
+                    addedCount
+                )
+            }
+        } else {
+            alert.messageText = appLocalized("Some PDFs Couldn't Be Imported")
+            let failureSummary = failures
+                .prefix(3)
+                .map { appLocalizedFormat("%@: %@", $0.name, $0.reason) }
+                .joined(separator: "\n")
+
+            if addedCount > 0 || duplicateCount > 0 {
+                alert.informativeText = appLocalizedFormat(
+                    "Added %lld PDF(s). %lld duplicate(s) were skipped.\n\n%@",
+                    addedCount,
+                    duplicateCount,
+                    failureSummary
+                )
+            } else {
+                alert.informativeText = failureSummary
+            }
+        }
+        alert.runModal()
     }
 }
 
