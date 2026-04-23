@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+
+<dictionary title="RelatedWorks Scripting Definition">
+    <suite name="RelatedWorks Suite" code="RWKS" description="Read-only AppleScript commands for inspecting projects and papers in RelatedWorks.">
+        <command name="project summaries" code="RWKSPrSm" description="Return a JSON array describing all projects in the library.">
+            <cocoa class="RWProjectSummariesScriptCommand"/>
+            <result type="text" description="A JSON array of project summaries."/>
+        </command>
+
+        <command name="project details" code="RWKSPrDt" description="Return a JSON object describing a single project.">
+            <cocoa class="RWProjectDetailsScriptCommand"/>
+            <direct-parameter type="text" description="The UUID of the project to inspect."/>
+            <result type="text" description="A JSON object describing the project."/>
+        </command>
+
+        <command name="paper summaries" code="RWKSPaSm" description="Return a JSON array of paper summaries for a project.">
+            <cocoa class="RWPaperSummariesScriptCommand"/>
+            <direct-parameter type="text" description="The UUID of the project to inspect."/>
+            <result type="text" description="A JSON array of paper summaries."/>
+        </command>
+
+        <command name="paper details" code="RWKSPaDt" description="Return a JSON object describing a single paper in a project.">
+            <cocoa class="RWPaperDetailsScriptCommand"/>
+            <direct-parameter type="text" description="The semantic paper ID to inspect."/>
+            <parameter name="project id" code="RwPI" type="text" description="The UUID of the project containing the paper.">
+                <cocoa key="projectID"/>
+            </parameter>
+            <result type="text" description="A JSON object describing the paper."/>
+        </command>
+    </suite>
+</dictionary>

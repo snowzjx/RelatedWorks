@@ -33,6 +33,8 @@
 		A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022 /* Sources/RelatedWorksApp/HelpView.swift */; };
 		A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */; };
+		A024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */; };
+		A025 /* Sources/RelatedWorksApp/RelatedWorks.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */; };
 		LOC001 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
 		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
@@ -180,6 +182,8 @@
 		F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
 		F022 /* Sources/RelatedWorksApp/HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/HelpView.swift; sourceTree = SOURCE_ROOT; };
 		F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
+		F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AppleScriptSupport.swift; sourceTree = SOURCE_ROOT; };
+		F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Sources/RelatedWorksApp/RelatedWorks.sdef; sourceTree = SOURCE_ROOT; };
 		FA001 /* Sources/RelatedWorksApp/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		FAPP /* RelatedWorks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.entitlements; sourceTree = SOURCE_ROOT; };
@@ -245,6 +249,8 @@
 				F018 /* Sources/RelatedWorksApp/PreferencesView.swift */,
 				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
 				F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */,
+				F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */,
+				F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */,
 				FA001 /* Sources/RelatedWorksApp/Assets.xcassets */,
 				GAPP_CONFIG /* Config */,
 			);
@@ -540,6 +546,7 @@
 			files = (
 				A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */,
 				A020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */,
+				A025 /* Sources/RelatedWorksApp/RelatedWorks.sdef in Resources */,
 				80939E9F2F8A75040094ACE5 /* AppIcon.icon in Resources */,
 				LOC001 /* Resources/Localizable.xcstrings in Resources */,
 			);
@@ -636,6 +643,7 @@
 				A017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
 				A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 				A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */,
+				A024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift in Sources */,
 				A018 /* Sources/RelatedWorksApp/PreferencesView.swift in Sources */,
 				A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */,
 				MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */,

@@ -414,11 +414,20 @@ struct RelatedWorksApp: App {
                     .onReceive(store.$inboxItems) { _ in
                         inboxProcessingCoordinator.scheduleProcessing(for: store)
                     }
+                    .task {
+                        RelatedWorksScriptBridge.shared.setStore(store)
+                    }
                 } else {
                     AppLaunchView(coordinator: launchCoordinator)
                         .environment(\.locale, settings.locale)
                         .id(settings.appLanguage.rawValue)
+                        .task {
+                            RelatedWorksScriptBridge.shared.setStore(nil)
+                        }
                 }
+            }
+            .onReceive(launchCoordinator.$store) { store in
+                RelatedWorksScriptBridge.shared.setStore(store)
             }
         }
         .windowStyle(.titleBar)

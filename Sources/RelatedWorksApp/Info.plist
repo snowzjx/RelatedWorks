@@ -18,8 +18,12 @@
     <string>$(MARKETING_VERSION)</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+    <key>NSAppleScriptEnabled</key>
+    <true/>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>OSAScriptingDefinition</key>
+    <string>RelatedWorks.sdef</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSApplicationCategoryType</key>
