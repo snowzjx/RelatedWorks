@@ -28,5 +28,20 @@
             </parameter>
             <result type="text" description="A JSON object describing the paper."/>
         </command>
+
+        <command name="current item link" code="RWKSCrLn" description="Return a Markdown link for the currently selected project or paper.">
+            <cocoa class="RWCurrentItemLinkScriptCommand"/>
+            <result type="text" description="A Markdown link for the current selection."/>
+        </command>
+
+        <command name="current item url" code="RWKSCrUr" description="Return the deep link URL for the currently selected project or paper.">
+            <cocoa class="RWCurrentItemURLScriptCommand"/>
+            <result type="text" description="A deep link URL for the current selection."/>
+        </command>
+
+        <command name="current item name" code="RWKSCrNm" description="Return the display name for the currently selected project or paper.">
+            <cocoa class="RWCurrentItemNameScriptCommand"/>
+            <result type="text" description="The display name for the current selection."/>
+        </command>
     </suite>
 </dictionary>

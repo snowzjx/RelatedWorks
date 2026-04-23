@@ -8,6 +8,7 @@ The initial scope is intentionally small:
 - No Inbox support yet
 - Focus on `project` and `paper` data
 - Command-based API that returns JSON text
+- A small selection-aware helper for link integrations like Hookmark
 
 The goal is to make RelatedWorks scriptable enough for tools like Codex to inspect a user's library, read annotations, and understand project context before we consider any write operations.
 
@@ -106,6 +107,52 @@ Example fields:
 - `addedAt`
 - `crossReferenceIDs`
 
+### `current item link`
+
+Returns a Markdown link for the currently selected project or paper in the frontmost RelatedWorks window.
+
+Example results:
+
+```markdown
+[My Survey Project](relatedworks://open?project=PROJECT-UUID)
+```
+
+```markdown
+[Attention Is All You Need](relatedworks://open?project=PROJECT-UUID&paper=Transformer)
+```
+
+This command is intended for integration tools that need a durable link to the user's current context without first resolving IDs manually.
+
+### `current item url`
+
+Returns the raw deep link URL for the currently selected project or paper in the frontmost RelatedWorks window.
+
+Example results:
+
+```text
+relatedworks://open?project=PROJECT-UUID
+```
+
+```text
+relatedworks://open?project=PROJECT-UUID&paper=Transformer
+```
+
+This command is intended for integrations that prefer a plain URL over a Markdown link.
+
+### `current item name`
+
+Returns the plain display name for the currently selected project or paper in the frontmost RelatedWorks window.
+
+Example results:
+
+```text
+My Survey Project
+```
+
+```text
+Attention Is All You Need
+```
+
 ## Read Path
 
 This is enough for the first Codex-oriented read path:
@@ -161,6 +208,30 @@ tell application "RelatedWorks"
 end tell
 ```
 
+### Read the current selection as a Markdown link
+
+```applescript
+tell application "RelatedWorks"
+  current item link
+end tell
+```
+
+### Read the current selection as a raw URL
+
+```applescript
+tell application "RelatedWorks"
+  current item url
+end tell
+```
+
+### Read the current selection name
+
+```applescript
+tell application "RelatedWorks"
+  current item name
+end tell
+```
+
 ## Codex Usage Notes
 
 This scripting surface is intended to support a future Codex skill.
@@ -210,6 +281,36 @@ The AppleScript layer should map directly onto existing `RelatedWorksCore` model
 The scripting dictionary currently lives in [RelatedWorks.sdef](/Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/RelatedWorks.sdef), and the command implementations live in [AppleScriptSupport.swift](/Users/snow/Desktop/git/RelatedWorks/Sources/RelatedWorksApp/AppleScriptSupport.swift).
 
 The AppleScript interface should be treated as a compatibility surface. Once exposed, property names and identifier semantics should remain stable whenever possible.
+
+## Hookmark Integration
+
+Hookmark can use either `current item link` or the pair `current item url` plus `current item name`. If Hookmark is picky about Markdown parsing, prefer the raw URL and name commands below.
+
+Suggested Hookmark `Get Address` script:
+
+```applescript
+tell application "RelatedWorks"
+  return current item url
+end tell
+```
+
+Suggested Hookmark `Get Name` script:
+
+```applescript
+tell application "RelatedWorks"
+  return current item name
+end tell
+```
+
+Suggested Hookmark `Open Item` script:
+
+- Leave it blank first. The `relatedworks://` URL scheme is already registered by the app, so Hookmark should be able to open the URL via macOS directly.
+
+Behavior notes:
+
+- If a paper is selected, the script returns a paper deep link.
+- If only a project is selected, the script returns a project deep link.
+- If nothing is selected, RelatedWorks returns an AppleScript error so Hookmark can report that no current item is available.
 
 ## Future Extensions
 

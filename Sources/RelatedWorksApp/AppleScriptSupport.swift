@@ -13,12 +13,19 @@ final class RelatedWorksScriptBridge {
 
     private let lock = NSLock()
     private var store: Store?
+    private var currentSelection = ScriptSelection.none
 
     private init() {}
 
     func setStore(_ store: Store?) {
         lock.lock()
         self.store = store
+        lock.unlock()
+    }
+
+    func setSelection(projectID: UUID?, paperID: String?) {
+        lock.lock()
+        currentSelection = ScriptSelection(projectID: projectID, paperID: paperID)
         lock.unlock()
     }
 
@@ -73,6 +80,25 @@ final class RelatedWorksScriptBridge {
         }
     }
 
+    func currentItemLink() throws -> String {
+        try withStore { store in
+            let item = try self.resolveCurrentItem(in: store)
+            return "[\(escapeMarkdownLinkText(item.name))](\(item.url.absoluteString))"
+        }
+    }
+
+    func currentItemURL() throws -> String {
+        try withStore { store in
+            try self.resolveCurrentItem(in: store).url.absoluteString
+        }
+    }
+
+    func currentItemName() throws -> String {
+        try withStore { store in
+            try self.resolveCurrentItem(in: store).name
+        }
+    }
+
     private func parseProjectID(_ rawProjectID: String) throws -> UUID {
         let trimmed = rawProjectID.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let projectID = UUID(uuidString: trimmed) else {
@@ -117,6 +143,33 @@ final class RelatedWorksScriptBridge {
         return store
     }
 
+    private func currentSelectionValue() -> ScriptSelection {
+        lock.lock()
+        let selection = currentSelection
+        lock.unlock()
+        return selection
+    }
+
+    private func resolveCurrentItem(in store: Store) throws -> CurrentItem {
+        switch currentSelectionValue() {
+        case .paper(let projectID, let paperID):
+            guard let project = store.projects.first(where: { $0.id == projectID }) else {
+                throw RelatedWorksScriptError.projectNotFound(projectID.uuidString)
+            }
+            guard let paper = project.paper(withID: paperID) else {
+                throw RelatedWorksScriptError.paperNotFound(paperID, projectID.uuidString)
+            }
+            return CurrentItem(name: paper.title, url: DeepLink.url(for: paper, in: project))
+        case .project(let projectID):
+            guard let project = store.projects.first(where: { $0.id == projectID }) else {
+                throw RelatedWorksScriptError.projectNotFound(projectID.uuidString)
+            }
+            return CurrentItem(name: project.name, url: DeepLink.url(for: project))
+        case .none:
+            throw RelatedWorksScriptError.noCurrentSelection
+        }
+    }
+
     private func encode<T: Encodable>(_ value: T) throws -> String {
         do {
             let data = try encoder.encode(value)
@@ -132,8 +185,40 @@ final class RelatedWorksScriptBridge {
     }
 }
 
+private enum ScriptSelection {
+    case none
+    case project(UUID)
+    case paper(projectID: UUID, paperID: String)
+
+    init(projectID: UUID?, paperID: String?) {
+        guard let projectID else {
+            self = .none
+            return
+        }
+
+        if let paperID, !paperID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self = .paper(projectID: projectID, paperID: paperID)
+        } else {
+            self = .project(projectID)
+        }
+    }
+}
+
+private struct CurrentItem {
+    let name: String
+    let url: URL
+}
+
+private func escapeMarkdownLinkText(_ text: String) -> String {
+    text
+        .replacingOccurrences(of: "\\", with: "\\\\")
+        .replacingOccurrences(of: "[", with: "\\[")
+        .replacingOccurrences(of: "]", with: "\\]")
+}
+
 private enum RelatedWorksScriptError: LocalizedError {
     case libraryUnavailable
+    case noCurrentSelection
     case invalidProjectID(String)
     case invalidPaperID(String)
     case projectNotFound(String)
@@ -145,6 +230,8 @@ private enum RelatedWorksScriptError: LocalizedError {
         switch self {
         case .libraryUnavailable:
             return "RelatedWorks is still loading the library. Try again after the app finishes launching."
+        case .noCurrentSelection:
+            return "No project or paper is currently selected in RelatedWorks."
         case .invalidProjectID(let rawProjectID):
             return "Invalid project UUID: \(rawProjectID)"
         case .invalidPaperID(let rawPaperID):
@@ -164,6 +251,8 @@ private enum RelatedWorksScriptError: LocalizedError {
         switch self {
         case .libraryUnavailable:
             return 1
+        case .noCurrentSelection:
+            return 8
         case .invalidProjectID:
             return 2
         case .invalidPaperID:
@@ -357,6 +446,33 @@ final class RWPaperDetailsScriptCommand: RWBaseScriptCommand {
             }
             let projectID = try stringParameter(named: "projectID")
             return try RelatedWorksScriptBridge.shared.paperDetailsJSON(projectID: projectID, paperID: paperID)
+        }
+    }
+}
+
+@objc(RWCurrentItemLinkScriptCommand)
+final class RWCurrentItemLinkScriptCommand: RWBaseScriptCommand {
+    override func performDefaultImplementation() -> Any? {
+        resolve {
+            try RelatedWorksScriptBridge.shared.currentItemLink()
+        }
+    }
+}
+
+@objc(RWCurrentItemURLScriptCommand)
+final class RWCurrentItemURLScriptCommand: RWBaseScriptCommand {
+    override func performDefaultImplementation() -> Any? {
+        resolve {
+            try RelatedWorksScriptBridge.shared.currentItemURL()
+        }
+    }
+}
+
+@objc(RWCurrentItemNameScriptCommand)
+final class RWCurrentItemNameScriptCommand: RWBaseScriptCommand {
+    override func performDefaultImplementation() -> Any? {
+        resolve {
+            try RelatedWorksScriptBridge.shared.currentItemName()
         }
     }
 }

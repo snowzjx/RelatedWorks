@@ -405,17 +405,25 @@ struct RelatedWorksApp: App {
                             preferencesTab = .general
                         }
                     }
+                    .onChange(of: selectedProjectID) { _, newValue in
+                        RelatedWorksScriptBridge.shared.setSelection(projectID: newValue, paperID: selectedPaperID)
+                    }
+                    .onChange(of: selectedPaperID) { _, newValue in
+                        RelatedWorksScriptBridge.shared.setSelection(projectID: selectedProjectID, paperID: newValue)
+                    }
                     .onAppear {
                         consumePendingProjectFiles()
                         inboxProcessingCoordinator.prepareNotifications()
                         inboxProcessingCoordinator.scheduleProcessing(for: store)
                         presentFirstLaunchTutorialIfNeeded()
+                        RelatedWorksScriptBridge.shared.setSelection(projectID: selectedProjectID, paperID: selectedPaperID)
                     }
                     .onReceive(store.$inboxItems) { _ in
                         inboxProcessingCoordinator.scheduleProcessing(for: store)
                     }
                     .task {
                         RelatedWorksScriptBridge.shared.setStore(store)
+                        RelatedWorksScriptBridge.shared.setSelection(projectID: selectedProjectID, paperID: selectedPaperID)
                     }
                 } else {
                     AppLaunchView(coordinator: launchCoordinator)
@@ -423,11 +431,15 @@ struct RelatedWorksApp: App {
                         .id(settings.appLanguage.rawValue)
                         .task {
                             RelatedWorksScriptBridge.shared.setStore(nil)
+                            RelatedWorksScriptBridge.shared.setSelection(projectID: nil, paperID: nil)
                         }
                 }
             }
             .onReceive(launchCoordinator.$store) { store in
                 RelatedWorksScriptBridge.shared.setStore(store)
+                if store == nil {
+                    RelatedWorksScriptBridge.shared.setSelection(projectID: nil, paperID: nil)
+                }
             }
         }
         .windowStyle(.titleBar)
