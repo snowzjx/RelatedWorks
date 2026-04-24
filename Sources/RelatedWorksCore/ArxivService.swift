@@ -61,4 +61,38 @@ public struct ArxivService {
             Range($0.range(at: 1), in: xml).map { String(xml[$0]) }
         }
     }
+
+    public static func findMatchingPaper(title: String) async -> ArxivResult? {
+        (try? await search(query: title))?.first(where: { $0.title.matchesCitationTitle(title) })
+    }
+}
+
+private extension String {
+    func matchesCitationTitle(_ candidate: String) -> Bool {
+        normalizedCitationTitle == candidate.normalizedCitationTitle
+    }
+
+    var normalizedCitationTitle: String {
+        lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+    }
+
+    var normalizedDOI: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "https://doi.org/", with: "", options: [.caseInsensitive])
+            .replacingOccurrences(of: "http://doi.org/", with: "", options: [.caseInsensitive])
+            .lowercased()
+    }
+
+    var trimmedOpenAlexID: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "https://openalex.org/", with: "", options: [.caseInsensitive])
+            .replacingOccurrences(of: "http://openalex.org/", with: "", options: [.caseInsensitive])
+    }
+
+    var lastPathComponentString: String {
+        URL(string: self)?.lastPathComponent ?? self.components(separatedBy: "/").last ?? self
+    }
 }

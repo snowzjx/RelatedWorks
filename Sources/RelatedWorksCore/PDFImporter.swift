@@ -79,7 +79,7 @@ public struct PDFImporter {
         let title = obj["title"] as? String ?? ""
         let authors = obj["authors"] as? [String] ?? []
         let abstract = obj["abstract"] as? String
-        let suggestedID = obj["suggestedID"] as? String ?? suggestID(from: title)
+        let suggestedID = normalizeSuggestedID(obj["suggestedID"] as? String) ?? suggestID(from: title)
 
         return ExtractedMetadata(title: title, authors: authors, abstract: abstract, suggestedID: suggestedID)
     }
@@ -126,9 +126,17 @@ public struct PDFImporter {
             .map { $0.trimmingCharacters(in: .punctuationCharacters) }
             .filter { !$0.isEmpty && !stop.contains($0.lowercased()) }
         if let acronym = words.first(where: { $0 == $0.uppercased() && $0.count >= 2 && $0.count <= 8 }) {
-            return acronym
+            return acronym.lowercased()
         }
-        return words.first ?? "Paper"
+        return (words.first ?? "Paper").lowercased()
+    }
+
+    private static func normalizeSuggestedID(_ suggestedID: String?) -> String? {
+        guard let suggestedID = suggestedID?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !suggestedID.isEmpty else {
+            return nil
+        }
+        return suggestedID.lowercased()
     }
 }
 
@@ -138,6 +146,6 @@ public struct ExtractedMetadata {
     public let abstract: String?
     public let suggestedID: String
 
-    static let empty = ExtractedMetadata(title: "", authors: [], abstract: nil, suggestedID: "Paper")
+    static let empty = ExtractedMetadata(title: "", authors: [], abstract: nil, suggestedID: "paper")
 }
 #endif // os(macOS)

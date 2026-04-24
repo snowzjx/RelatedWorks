@@ -163,6 +163,10 @@ public class Store: ObservableObject {
         pdfsDir(for: projectID).appendingPathComponent("\(paperID).pdf")
     }
 
+    public func citationGraphDataURL(for projectID: UUID) -> URL {
+        projectsDir.appendingPathComponent("\(projectID.uuidString)/citation-graph.json")
+    }
+
     @discardableResult
     public func registerPDF(at sourceURL: URL, forID id: String, projectID: UUID) throws -> URL {
         let dir = pdfsDir(for: projectID)
@@ -289,6 +293,36 @@ public class Store: ObservableObject {
         } else {
             projects.insert(project, at: 0)
         }
+    }
+
+    public func loadCitationGraphData(for projectID: UUID) throws -> CitationGraphProjectData {
+        let fileURL = citationGraphDataURL(for: projectID)
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return CitationGraphProjectData(projectID: projectID)
+        }
+
+        var result: CitationGraphProjectData?
+        var coordinatorError: NSError?
+        let coordinator = NSFileCoordinator()
+        coordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &coordinatorError) { url in
+            result = try? JSONDecoder().decode(CitationGraphProjectData.self, from: Data(contentsOf: url))
+        }
+        if let error = coordinatorError { throw error }
+        return result ?? CitationGraphProjectData(projectID: projectID)
+    }
+
+    public func saveCitationGraphData(_ data: CitationGraphProjectData) throws {
+        let folder = projectsDir.appendingPathComponent(data.projectID.uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let fileURL = citationGraphDataURL(for: data.projectID)
+        let payload = try JSONEncoder().encode(data)
+        var coordinatorError: NSError?
+        var writeError: Error?
+        let coordinator = NSFileCoordinator()
+        coordinator.coordinate(writingItemAt: fileURL, options: .forReplacing, error: &coordinatorError) { url in
+            do { try payload.write(to: url) } catch { writeError = error }
+        }
+        if let error = coordinatorError ?? writeError { throw error }
     }
 
     public func loadAll() throws -> [Project] {

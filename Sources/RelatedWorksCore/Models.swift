@@ -124,6 +124,39 @@ public struct Paper: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
+public struct PaperReference: Codable, Identifiable, Hashable, Sendable {
+    public var id: String { openAlexID ?? doi ?? arxivID ?? normalizedTitle }
+    public var title: String
+    public var authors: [String]
+    public var year: Int?
+    public var venue: String?
+    public var doi: String?
+    public var arxivID: String?
+    public var openAlexID: String?
+
+    public init(
+        title: String,
+        authors: [String] = [],
+        year: Int? = nil,
+        venue: String? = nil,
+        doi: String? = nil,
+        arxivID: String? = nil,
+        openAlexID: String? = nil
+    ) {
+        self.title = title
+        self.authors = authors
+        self.year = year
+        self.venue = venue
+        self.doi = doi
+        self.arxivID = arxivID
+        self.openAlexID = openAlexID
+    }
+
+    private var normalizedTitle: String {
+        title.normalizedPaperTitle
+    }
+}
+
 public struct Project: Codable, Identifiable, Hashable, Sendable {
     public var id: UUID
     public var name: String
@@ -253,5 +286,236 @@ private extension String {
     var trimmedNilIfEmpty: String? {
         let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? nil : trimmed
+    }
+
+    var normalizedPaperTitle: String {
+        lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+    }
+}
+
+public struct CitationGraph: Hashable, Sendable {
+    public enum NodeKind: String, Hashable, Sendable {
+        case projectPaper
+        case externalPaper
+        case sharedExternalPaper
+    }
+
+    public enum EdgeKind: String, Hashable, Sendable {
+        case mention
+        case projectReference
+        case externalReference
+        case sharedExternalReference
+    }
+
+    public struct Node: Identifiable, Hashable, Sendable {
+        public var id: String
+        public var title: String
+        public var paperID: String?
+        public var kind: NodeKind
+        public var referenceCount: Int
+        public var referencingPaperIDs: [String]
+    }
+
+    public struct Edge: Identifiable, Hashable, Sendable {
+        public var id: String
+        public var sourceID: String
+        public var targetID: String
+        public var kind: EdgeKind
+    }
+
+    public var nodes: [Node]
+    public var edges: [Edge]
+    public var externalPapers: [ExternalPaper]
+
+    public struct ExternalPaper: Identifiable, Hashable, Sendable {
+        public var id: String
+        public var title: String
+        public var referenceCount: Int
+        public var referencingPaperIDs: [String]
+        public var reference: PaperReference
+        public var isShared: Bool
+    }
+
+    public init(project: Project, data: CitationGraphProjectData, sharedExternalDisplayThreshold: Int = 2) {
+        let sharedThreshold = max(2, sharedExternalDisplayThreshold)
+        var nodesByID: [String: Node] = [:]
+        var edgesByID: [String: Edge] = [:]
+        let projectNodeIDs = Dictionary(uniqueKeysWithValues: project.papers.map { ($0.id.lowercased(), "project:\($0.id.lowercased())") })
+        let canonicalPaperIDs = Dictionary(uniqueKeysWithValues: project.papers.map { ($0.id.lowercased(), $0.id) })
+        func resolveReferencingPaperIDs(_ sourceIDs: Set<String>) -> [String] {
+            sourceIDs.reduce(into: [String]()) { result, sourceID in
+                guard let lowercasedID = sourceID.split(separator: ":").last.map(String.init),
+                      let canonicalPaperID = canonicalPaperIDs[lowercasedID] else { return }
+                result.append(canonicalPaperID)
+            }
+            .sorted()
+        }
+
+        for paper in project.papers {
+            let nodeID = "project:\(paper.id.lowercased())"
+            nodesByID[nodeID] = Node(id: nodeID, title: paper.title, paperID: paper.id, kind: .projectPaper, referenceCount: 0, referencingPaperIDs: [])
+        }
+
+        for paper in project.papers {
+            let sourceID = "project:\(paper.id.lowercased())"
+            for mention in project.extractRefs(from: paper.annotation) {
+                guard let targetID = projectNodeIDs[mention.lowercased()], targetID != sourceID else { continue }
+                let edgeID = "mention:\(sourceID):\(targetID)"
+                edgesByID[edgeID] = Edge(id: edgeID, sourceID: sourceID, targetID: targetID, kind: .mention)
+            }
+        }
+
+        var externalReferenceSources: [String: Set<String>] = [:]
+        var externalReferences: [String: PaperReference] = [:]
+        var pendingReferenceEdges: [(sourceID: String, referenceKey: String, internalTargetID: String?)] = []
+        let projectLookup = ProjectPaperLookup(papers: project.papers, citationData: data)
+
+        for paper in project.papers {
+            let sourceID = "project:\(paper.id.lowercased())"
+            for reference in data.paperData[paper.id]?.references ?? [] {
+                if let targetPaper = projectLookup.paper(matching: reference), targetPaper.id.lowercased() != paper.id.lowercased() {
+                    pendingReferenceEdges.append((sourceID, "", "project:\(targetPaper.id.lowercased())"))
+                } else {
+                    let referenceKey = CitationGraph.externalNodeID(for: reference)
+                    externalReferences[referenceKey] = reference
+                    externalReferenceSources[referenceKey, default: []].insert(sourceID)
+                    pendingReferenceEdges.append((sourceID, referenceKey, nil))
+                }
+            }
+        }
+
+        for (referenceKey, reference) in externalReferences {
+            let referencingPaperIDs = resolveReferencingPaperIDs(externalReferenceSources[referenceKey] ?? [])
+            let count = referencingPaperIDs.count
+            if count >= sharedThreshold {
+                nodesByID[referenceKey] = Node(
+                    id: referenceKey,
+                    title: reference.title,
+                    paperID: nil,
+                    kind: .sharedExternalPaper,
+                    referenceCount: count,
+                    referencingPaperIDs: referencingPaperIDs
+                )
+            }
+        }
+
+        for pending in pendingReferenceEdges {
+            if let targetID = pending.internalTargetID {
+                let edgeID = "projectReference:\(pending.sourceID):\(targetID)"
+                edgesByID[edgeID] = Edge(id: edgeID, sourceID: pending.sourceID, targetID: targetID, kind: .projectReference)
+            } else {
+                let kind: EdgeKind = nodesByID[pending.referenceKey] != nil ? .sharedExternalReference : .externalReference
+                guard kind == .sharedExternalReference || externalReferences[pending.referenceKey] != nil else { continue }
+                let edgeID = "\(kind.rawValue):\(pending.sourceID):\(pending.referenceKey)"
+                edgesByID[edgeID] = Edge(id: edgeID, sourceID: pending.sourceID, targetID: pending.referenceKey, kind: kind)
+            }
+        }
+
+        nodes = nodesByID.values.sorted { lhs, rhs in
+            if lhs.kind != rhs.kind { return lhs.kind.rawValue < rhs.kind.rawValue }
+            return lhs.title.localizedCaseInsensitiveCompare(rhs.title) == .orderedAscending
+        }
+        edges = edgesByID.values.sorted { $0.id < $1.id }
+        var resolvedExternalPapers: [ExternalPaper] = []
+        for (referenceKey, reference) in externalReferences {
+            let referencingPaperIDs = resolveReferencingPaperIDs(externalReferenceSources[referenceKey] ?? [])
+            resolvedExternalPapers.append(ExternalPaper(
+                id: referenceKey,
+                title: reference.title,
+                referenceCount: referencingPaperIDs.count,
+                referencingPaperIDs: referencingPaperIDs,
+                reference: reference,
+                isShared: referencingPaperIDs.count > 1
+            ))
+        }
+        externalPapers = resolvedExternalPapers.sorted {
+            if $0.isShared != $1.isShared { return $0.isShared && !$1.isShared }
+            if $0.referenceCount != $1.referenceCount { return $0.referenceCount > $1.referenceCount }
+            return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+        }
+    }
+
+    private static func externalNodeID(for reference: PaperReference) -> String {
+        if let openAlexID = reference.openAlexID?.trimmingCharacters(in: .whitespacesAndNewlines), !openAlexID.isEmpty {
+            return "external:openalex:\(openAlexID.lowercased())"
+        }
+        if let doi = reference.doi?.trimmingCharacters(in: .whitespacesAndNewlines), !doi.isEmpty {
+            return "external:doi:\(doi.lowercased())"
+        }
+        if let arxivID = reference.arxivID?.trimmingCharacters(in: .whitespacesAndNewlines), !arxivID.isEmpty {
+            return "external:arxiv:\(arxivID.lowercased())"
+        }
+        return "external:title:\(reference.title.normalizedPaperTitle)"
+    }
+
+}
+
+private struct ProjectPaperLookup {
+    private let byDOI: [String: Paper]
+    private let byArxivID: [String: Paper]
+    private let byOpenAlexID: [String: Paper]
+    private let byTitle: [String: Paper]
+
+    init(papers: [Paper], citationData: CitationGraphProjectData) {
+        byDOI = Dictionary(papers.compactMap {
+            guard let doi = citationData.paperData[$0.id]?.doi?.lowercased(), !doi.isEmpty else { return nil }
+            return (doi, $0)
+        }, uniquingKeysWith: { first, _ in first })
+        byArxivID = Dictionary(papers.compactMap {
+            guard let arxivID = citationData.paperData[$0.id]?.arxivID?.lowercased(), !arxivID.isEmpty else { return nil }
+            return (arxivID, $0)
+        }, uniquingKeysWith: { first, _ in first })
+        byOpenAlexID = Dictionary(papers.compactMap {
+            guard let openAlexID = citationData.paperData[$0.id]?.openAlexID?.lowercased(), !openAlexID.isEmpty else { return nil }
+            return (openAlexID, $0)
+        }, uniquingKeysWith: { first, _ in first })
+        byTitle = Dictionary(papers.map { ($0.title.normalizedPaperTitle, $0) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    func paper(matching reference: PaperReference) -> Paper? {
+        if let doi = reference.doi?.lowercased(), let paper = byDOI[doi] { return paper }
+        if let arxivID = reference.arxivID?.lowercased(), let paper = byArxivID[arxivID] { return paper }
+        if let openAlexID = reference.openAlexID?.lowercased(), let paper = byOpenAlexID[openAlexID] { return paper }
+        return byTitle[reference.title.normalizedPaperTitle]
+    }
+}
+
+public struct CitationGraphProjectData: Codable, Hashable, Sendable {
+    public var projectID: UUID
+    public var paperData: [String: CitationGraphPaperData]
+    public var updatedAt: Date?
+
+    public init(projectID: UUID, paperData: [String: CitationGraphPaperData] = [:], updatedAt: Date? = nil) {
+        self.projectID = projectID
+        self.paperData = paperData
+        self.updatedAt = updatedAt
+    }
+}
+
+public struct CitationGraphPaperData: Codable, Hashable, Sendable {
+    public var dblpKey: String?
+    public var doi: String?
+    public var arxivID: String?
+    public var openAlexID: String?
+    public var references: [PaperReference]
+    public var referencesUpdatedAt: Date?
+
+    public init(
+        dblpKey: String? = nil,
+        doi: String? = nil,
+        arxivID: String? = nil,
+        openAlexID: String? = nil,
+        references: [PaperReference] = [],
+        referencesUpdatedAt: Date? = nil
+    ) {
+        self.dblpKey = dblpKey
+        self.doi = doi
+        self.arxivID = arxivID
+        self.openAlexID = openAlexID
+        self.references = references
+        self.referencesUpdatedAt = referencesUpdatedAt
     }
 }

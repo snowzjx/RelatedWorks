@@ -49,6 +49,7 @@ struct LiquidGlassContainer: ViewModifier {
 
 struct ProjectDetailView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.openWindow) private var openWindow
     @Binding var project: Project
     @Binding var selectedPaperID: String?
     @State private var showingAddPaper = false
@@ -150,6 +151,14 @@ struct ProjectDetailView: View {
         .navigationSubtitle(projectSubtitle)
         .searchable(text: $searchQuery, prompt: appLocalized("Search papers…"))
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    openWindow(id: AppWindowID.citationGraph, value: project.id)
+                } label: {
+                    Label(appLocalized("Citation Graph"), systemImage: "point.3.connected.trianglepath.dotted")
+                }
+                .help(appLocalized("Show citation graph"))
+            }
             ToolbarItem(placement: .primaryAction) {
                 GenerateButton(project: $project)
             }

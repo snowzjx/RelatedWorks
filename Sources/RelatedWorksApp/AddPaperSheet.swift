@@ -32,6 +32,10 @@ enum SearchResult: Identifiable, Hashable {
         if case .dblp(let r) = self { return r.dblpKey }
         return nil
     }
+    var arxivID: String? {
+        if case .arxiv(let r) = self { return r.arxivID }
+        return nil
+    }
     var abstract: String? {
         if case .arxiv(let r) = self { return r.abstract }
         return nil

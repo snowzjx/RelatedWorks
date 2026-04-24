@@ -21,6 +21,12 @@ struct ProjectExporter {
         try data.write(to: bundleDir.appendingPathComponent("project.json"))
         report(appLocalized("Preparing export…"), 0.25)
 
+        let citationGraphSidecarURL = pdfsDir.deletingLastPathComponent().appendingPathComponent("citation-graph.json")
+        if fm.fileExists(atPath: citationGraphSidecarURL.path) {
+            let citationData = try Data(contentsOf: citationGraphSidecarURL)
+            try citationData.write(to: bundleDir.appendingPathComponent("citation-graph.json"))
+        }
+
         let pdfPapers = project.papers.filter(\.hasPDF)
         if pdfPapers.isEmpty {
             report(appLocalized("Creating archive…"), 0.8)
@@ -75,6 +81,13 @@ struct ProjectExporter {
         }
 
         try store.save(project)
+        let citationGraphURL = bundleDir.appendingPathComponent("citation-graph.json")
+        if fm.fileExists(atPath: citationGraphURL.path) {
+            let citationData = try Data(contentsOf: citationGraphURL)
+            var graphData = try JSONDecoder().decode(CitationGraphProjectData.self, from: citationData)
+            graphData.projectID = project.id
+            try? store.saveCitationGraphData(graphData)
+        }
         return project
     }
 

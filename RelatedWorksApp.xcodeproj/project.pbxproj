@@ -27,6 +27,7 @@
 		A017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
 		A017b /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */; };
 		A017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
+		A017d /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */; };
 		A018 /* Sources/RelatedWorksApp/PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F018 /* Sources/RelatedWorksApp/PreferencesView.swift */; };
 		A019 /* Sources/RelatedWorksApp/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA001 /* Sources/RelatedWorksApp/Assets.xcassets */; };
 		A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
@@ -35,6 +36,7 @@
 		A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */; };
 		A024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */; };
 		A025 /* Sources/RelatedWorksApp/RelatedWorks.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */; };
+		A026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift */; };
 		LOC001 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
 		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
@@ -53,6 +55,7 @@
 		IOS017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
 		IOS017b /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */; };
 		IOS017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
+		IOS017d /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */; };
 		IOS019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
 		IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
@@ -95,6 +98,7 @@
 		TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
 		TC017b /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */; };
 		TC017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
+		TC017d /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */; };
 		TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
 		TUI_BLD_AIBackend /* Sources/RelatedWorksCore/AIBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F019b /* Sources/RelatedWorksCore/AIBackend.swift */; };
 		TUI_BLD_AppSettings /* Sources/RelatedWorksCore/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017 /* Sources/RelatedWorksCore/AppSettings.swift */; };
@@ -103,6 +107,7 @@
 		TUI_BLD_DeepLink /* Sources/RelatedWorksCore/DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* Sources/RelatedWorksCore/DeepLink.swift */; };
 		TUI_BLD_Generator /* Sources/RelatedWorksCore/Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Sources/RelatedWorksCore/Generator.swift */; };
 		TUI_BLD_Inbox /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
+		TUI_BLD_OpenAlexService /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */; };
 		TUI_BLD_Main /* Sources/RelatedWorksTUI/main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */; };
 		TUI_BLD_Models /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
 		TUI_BLD_OllamaReachability /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */; };
@@ -176,6 +181,7 @@
 		F017 /* Sources/RelatedWorksCore/AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AppSettings.swift; sourceTree = SOURCE_ROOT; };
 		F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/OllamaReachability.swift; sourceTree = SOURCE_ROOT; };
 		F017c /* Sources/RelatedWorksCore/Inbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/Inbox.swift; sourceTree = SOURCE_ROOT; };
+		F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/OpenAlexService.swift; sourceTree = SOURCE_ROOT; };
 		F018 /* Sources/RelatedWorksApp/PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/PreferencesView.swift; sourceTree = SOURCE_ROOT; };
 		F019b /* Sources/RelatedWorksCore/AIBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksCore/AIBackend.swift; sourceTree = SOURCE_ROOT; };
 		F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksCore/BlacklistedModels.plist; sourceTree = SOURCE_ROOT; };
@@ -184,6 +190,7 @@
 		F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/ProjectExporter.swift; sourceTree = SOURCE_ROOT; };
 		F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/AppleScriptSupport.swift; sourceTree = SOURCE_ROOT; };
 		F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Sources/RelatedWorksApp/RelatedWorks.sdef; sourceTree = SOURCE_ROOT; };
+		F026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksApp/CitationGraphWindowView.swift; sourceTree = SOURCE_ROOT; };
 		FA001 /* Sources/RelatedWorksApp/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/RelatedWorksApp/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		FAPP /* RelatedWorks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelatedWorks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAPP_ENT /* RelatedWorksApp/RelatedWorksApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksApp/RelatedWorksApp.entitlements; sourceTree = SOURCE_ROOT; };
@@ -250,6 +257,7 @@
 				F022 /* Sources/RelatedWorksApp/HelpView.swift */,
 				F023 /* Sources/RelatedWorksApp/ProjectExporter.swift */,
 				F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */,
+				F026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift */,
 				F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */,
 				FA001 /* Sources/RelatedWorksApp/Assets.xcassets */,
 				GAPP_CONFIG /* Config */,
@@ -281,6 +289,7 @@
 				F017 /* Sources/RelatedWorksCore/AppSettings.swift */,
 				F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */,
 				F017c /* Sources/RelatedWorksCore/Inbox.swift */,
+				F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */,
 				F019b /* Sources/RelatedWorksCore/AIBackend.swift */,
 				F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */,
 				F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */,
@@ -574,6 +583,7 @@
 				IOS017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				IOS017b /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */,
 				IOS017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+				IOS017d /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */,
 				IOS019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 				IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,
 				IOS006_BLD /* Sources/RelatedWorksIOS/IOSProjectImporter.swift in Sources */,
@@ -641,9 +651,11 @@
 				A017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				A017b /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */,
 				A017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+				A017d /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */,
 				A019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 				A023 /* Sources/RelatedWorksApp/ProjectExporter.swift in Sources */,
 				A024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift in Sources */,
+				A026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift in Sources */,
 				A018 /* Sources/RelatedWorksApp/PreferencesView.swift in Sources */,
 				A022 /* Sources/RelatedWorksApp/HelpView.swift in Sources */,
 				MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */,
@@ -685,6 +697,7 @@
 				TC017 /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				TC017b /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */,
 				TC017c /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+				TC017d /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */,
 				TC019b /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -703,6 +716,7 @@
 				TUI_BLD_ArxivService /* Sources/RelatedWorksCore/ArxivService.swift in Sources */,
 				TUI_BLD_AppSettings /* Sources/RelatedWorksCore/AppSettings.swift in Sources */,
 				TUI_BLD_Inbox /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
+				TUI_BLD_OpenAlexService /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */,
 				TUI_BLD_OllamaReachability /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */,
 				TUI_BLD_AIBackend /* Sources/RelatedWorksCore/AIBackend.swift in Sources */,
 				TUI_BLD_ProjectExporter /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */,

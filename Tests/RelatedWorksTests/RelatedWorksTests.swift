@@ -50,6 +50,43 @@ struct ProjectModelTests {
         #expect(refs.isEmpty)
     }
 
+    @Test func citationGraphBuildsMentionReferenceAndExternalEdges() {
+        var project = Project(name: "Graph")
+        let transformer = Paper(id: "Transformer", title: "Attention Is All You Need", annotation: "@BERT")
+        let bert = Paper(id: "BERT", title: "BERT")
+        project.addPaper(transformer)
+        project.addPaper(bert)
+
+        let data = CitationGraphProjectData(
+            projectID: project.id,
+            paperData: [
+                "Transformer": CitationGraphPaperData(
+                    openAlexID: "W1",
+                    references: [
+                        PaperReference(title: "BERT", openAlexID: "W2"),
+                        PaperReference(title: "Shared Outside Paper", openAlexID: "W3"),
+                        PaperReference(title: "Only Transformer Cites", openAlexID: "W4"),
+                    ]
+                ),
+                "BERT": CitationGraphPaperData(
+                    openAlexID: "W2",
+                    references: [
+                        PaperReference(title: "Shared Outside Paper", openAlexID: "W3"),
+                    ]
+                ),
+            ]
+        )
+
+        let graph = CitationGraph(project: project, data: data)
+
+        #expect(graph.edges.contains { $0.kind == .mention })
+        #expect(graph.edges.contains { $0.kind == .projectReference })
+        #expect(graph.edges.contains { $0.kind == .externalReference })
+        #expect(graph.edges.contains { $0.kind == .sharedExternalReference })
+        #expect(graph.nodes.contains { $0.kind == .sharedExternalPaper && $0.referenceCount == 2 })
+        #expect(graph.externalPapers.count == 2)
+    }
+
     @Test func projectInitializesPromptFromPreset() {
         let project = Project(name: "Survey", projectType: .survey)
         #expect(project.generationPrompt == ProjectType.survey.presetPrompt)
@@ -121,6 +158,25 @@ struct StoreTests {
 
         #expect(store.projects.first(where: { $0.id == p1.id })?.papers.first?.id == "BERT")
         #expect(store.projects.first(where: { $0.id == p2.id })?.papers.first?.id == "BERT")
+    }
+
+    @Test func saveAndLoadCitationGraphData() throws {
+        let store = makeTestStore()
+        let project = Project(name: "Graph Data")
+        try store.save(project)
+
+        let data = CitationGraphProjectData(
+            projectID: project.id,
+            paperData: ["Paper": CitationGraphPaperData(doi: "10.1000/test", references: [PaperReference(title: "Outside")])],
+            updatedAt: Date()
+        )
+
+        try store.saveCitationGraphData(data)
+        let loaded = try store.loadCitationGraphData(for: project.id)
+
+        #expect(loaded.projectID == project.id)
+        #expect(loaded.paperData["Paper"]?.doi == "10.1000/test")
+        #expect(loaded.paperData["Paper"]?.references.first?.title == "Outside")
     }
 
     @Test func perProjectPDFDirectory() throws {

@@ -312,6 +312,17 @@
         }
       }
     },
+    "Add and Next" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加并继续"
+          }
+        }
+      }
+    },
     "Add Paper" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -363,6 +374,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请先添加论文"
+          }
+        }
+      }
+    },
+    "Added %lld PDF(s) to Inbox." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已将 %lld 个 PDF 添加到收件箱。"
+          }
+        }
+      }
+    },
+    "Added %lld PDF(s) to Inbox. %lld file(s) were already there." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已将 %1$lld 个 PDF 添加到收件箱。另有 %2$lld 个文件已在收件箱中。"
+          }
+        }
+      }
+    },
+    "Added %lld PDF(s). %lld duplicate(s) were skipped.\n\n%@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已添加 %1$lld 个 PDF。已跳过 %2$lld 个重复文件。\n\n%3$@"
           }
         }
       }
@@ -638,6 +682,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "简体中文"
+          }
+        }
+      }
+    },
+    "Choose one or more PDF files to add to Inbox." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一个或多个 PDF 文件以添加到收件箱。"
           }
         }
       }
@@ -1071,6 +1126,17 @@
         }
       }
     },
+    "Do you want to import \"%@\" into RelatedWorks?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要将“%@”导入到 RelatedWorks 吗？"
+          }
+        }
+      }
+    },
     "Done" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1122,17 +1188,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重复项目"
-          }
-        }
-      }
-    },
-    "Do you want to import \"%@\" into RelatedWorks?" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "要将“%@”导入到 RelatedWorks 吗？"
           }
         }
       }
@@ -1668,6 +1723,17 @@
         }
       }
     },
+    "Import PDFs to Inbox" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入 PDF 到收件箱"
+          }
+        }
+      }
+    },
     "Import Project" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1741,6 +1807,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "收件箱处理完成"
+          }
+        }
+      }
+    },
+    "Inbox Updated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收件箱已更新"
           }
         }
       }
@@ -1987,17 +2064,6 @@
         }
       }
     },
-    "No AI backend configured. Please configure one in Settings." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "尚未配置 AI 后端。请前往设置进行配置。"
-          }
-        }
-      }
-    },
     "No" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2005,6 +2071,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "否"
+          }
+        }
+      }
+    },
+    "No AI backend configured. Please configure one in Settings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未配置 AI 后端。请前往设置进行配置。"
           }
         }
       }
@@ -2324,6 +2401,369 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开用户指南"
+          }
+        }
+      }
+    },
+    "Project paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目论文"
+          }
+        }
+      }
+    },
+    "Reference within project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目内引用"
+          }
+        }
+      }
+    },
+    "Reference metadata is matched with DBLP first, then arXiv. External reference lists come from OpenAlex." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引用元数据会先匹配 DBLP，再回退到 arXiv。外部引用列表来自 OpenAlex。"
+          }
+        }
+      }
+    },
+    "Refresh References" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刷新引用"
+          }
+        }
+      }
+    },
+    "Search external papers…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索外部论文…"
+          }
+        }
+      }
+    },
+    "Sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据来源"
+          }
+        }
+      }
+    },
+    "Select a node in the graph or a paper in the external list." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择图中的节点或外部列表中的论文。"
+          }
+        }
+      }
+    },
+    "Shared external reference" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享的外部引用"
+          }
+        }
+      }
+    },
+    "Shared outside paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享的外部论文"
+          }
+        }
+      }
+    },
+    "Shared outside reference" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享外部引用"
+          }
+        }
+      }
+    },
+    "Shared Outside" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享外部"
+          }
+        }
+      }
+    },
+    "Shared >= %d" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享 >= %d"
+          }
+        }
+      }
+    },
+    "Show if shared by %d+ papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅显示被 %d+ 篇论文共同引用的外部论文"
+          }
+        }
+      }
+    },
+    "Updated %d of %d papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %d / %d 篇论文"
+          }
+        }
+      }
+    },
+    "Updated %d papers. %d lookups failed." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %d 篇论文，%d 次查询失败。"
+          }
+        }
+      }
+    },
+    "Updated references for %d papers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %d 篇论文的引用。"
+          }
+        }
+      }
+    },
+    "arXiv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "arXiv"
+          }
+        }
+      }
+    },
+    "Looking up citation metadata..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检索引用元数据..."
+          }
+        }
+      }
+    },
+    "Legend" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图例"
+          }
+        }
+      }
+    },
+    "Linked project papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联的项目论文"
+          }
+        }
+      }
+    },
+    "Mention connection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提及连接"
+          }
+        }
+      }
+    },
+    "Mentions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提及"
+          }
+        }
+      }
+    },
+    "No papers to refresh." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可刷新的论文。"
+          }
+        }
+      }
+    },
+    "No project papers linked here yet." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里还没有关联到项目中的论文。"
+          }
+        }
+      }
+    },
+    "External Papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部论文"
+          }
+        }
+      }
+    },
+    "External reference" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部引用"
+          }
+        }
+      }
+    },
+    "DBLP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DBLP"
+          }
+        }
+      }
+    },
+    "Details" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详情"
+          }
+        }
+      }
+    },
+    "Citation Graph" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引用图谱"
+          }
+        }
+      }
+    },
+    "Open Window → Citation Graph from a project to compare @mentions, in-project references, and shared outside references." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可从项目中打开“窗口 → 引用图谱”，对比 @提及、项目内引用以及共享的外部引用。"
+          }
+        }
+      }
+    },
+    "In Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目内"
+          }
+        }
+      }
+    },
+    "Open the citation graph from a project to inspect its paper relationships." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请从某个项目打开引用图谱，以查看其中论文之间的关系。"
+          }
+        }
+      }
+    },
+    "Open in %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %1$@ 中打开"
           }
         }
       }
@@ -2660,6 +3100,17 @@
         }
       }
     },
+    "Request timeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求超时"
+          }
+        }
+      }
+    },
     "Research" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2689,17 +3140,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置为预设"
-          }
-        }
-      }
-    },
-    "Request timeout" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请求超时"
           }
         }
       }
@@ -2975,6 +3415,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跳过"
+          }
+        }
+      }
+    },
+    "Some PDFs Couldn't Be Imported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分 PDF 无法导入"
           }
         }
       }
@@ -3591,94 +4042,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的论文库会通过 iCloud 在 Mac、iPhone 和 iPad 间同步。在 iPhone 或 iPad 上，将 PDF 从 Safari 或 Files分享至 RelatedWorks。Mac 会自动处理并发送通知，然后你可以将它加入项目。"
-          }
-        }
-      }
-    },
-    "Add and Next" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加并继续"
-          }
-        }
-      }
-    },
-    "Added %lld PDF(s) to Inbox." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已将 %lld 个 PDF 添加到收件箱。"
-          }
-        }
-      }
-    },
-    "Added %lld PDF(s) to Inbox. %lld file(s) were already there." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已将 %1$lld 个 PDF 添加到收件箱。另有 %2$lld 个文件已在收件箱中。"
-          }
-        }
-      }
-    },
-    "Added %lld PDF(s). %lld duplicate(s) were skipped.\n\n%@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已添加 %1$lld 个 PDF。已跳过 %2$lld 个重复文件。\n\n%3$@"
-          }
-        }
-      }
-    },
-    "Choose one or more PDF files to add to Inbox." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择一个或多个 PDF 文件以添加到收件箱。"
-          }
-        }
-      }
-    },
-    "Import PDFs to Inbox" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导入 PDF 到收件箱"
-          }
-        }
-      }
-    },
-    "Inbox Updated" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "收件箱已更新"
-          }
-        }
-      }
-    },
-    "Some PDFs Couldn't Be Imported" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "部分 PDF 无法导入"
           }
         }
       }

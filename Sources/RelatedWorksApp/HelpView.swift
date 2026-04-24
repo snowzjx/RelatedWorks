@@ -60,6 +60,17 @@ struct HelpView: View {
                 Divider()
 
                 Group {
+                    Text(appLocalized("Citation Graph")).font(.title2).bold()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(appLocalized("Open Window → Citation Graph from a project to compare @mentions, in-project references, and shared outside references."))
+                        Text(appLocalized("Reference metadata is matched with DBLP first, then arXiv. External reference lists come from OpenAlex."))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Divider()
+
+                Group {
                     Text(appLocalized("Deep Links")).font(.title2).bold()
                     Text(appLocalized("Every paper and project has a relatedworks:// URI for tools like Hookmark."))
                         .foregroundStyle(.secondary)

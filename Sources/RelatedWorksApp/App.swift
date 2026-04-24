@@ -5,6 +5,7 @@ enum AppWindowID {
     static let main = "main"
     static let generate = "generate"
     static let inbox = "inbox"
+    static let citationGraph = "citationGraph"
 }
 
 @MainActor
@@ -400,6 +401,12 @@ struct RelatedWorksApp: App {
                     .onReceive(NotificationCenter.default.publisher(for: .iCloudSyncChanged)) { _ in
                         launchCoordinator.reload()
                     }
+                    .onReceive(NotificationCenter.default.publisher(for: .openCitationGraphPaper)) { notification in
+                        guard let projectID = notification.userInfo?["projectID"] as? UUID,
+                              let paperID = notification.userInfo?["paperID"] as? String else { return }
+                        selectedProjectID = projectID
+                        selectedPaperID = paperID
+                    }
                     .onChange(of: firstLaunchStep) { _, newValue in
                         if newValue == .sync {
                             preferencesTab = .general
@@ -478,6 +485,9 @@ struct RelatedWorksApp: App {
                     NotificationCenter.default.post(name: .showFirstLaunchTutorial, object: nil)
                 }
             }
+            CommandGroup(after: .windowArrangement) {
+                OpenCitationGraphWindowButton()
+            }
         }
 
         Settings {
@@ -526,6 +536,22 @@ struct RelatedWorksApp: App {
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
         .defaultSize(width: 920, height: 620)
+
+        WindowGroup(id: AppWindowID.citationGraph, for: UUID.self) { $projectID in
+            if let store = launchCoordinator.store {
+                CitationGraphWindowView(projectID: projectID)
+                    .environmentObject(store)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
+            } else {
+                AppLaunchView(coordinator: launchCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
+            }
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowToolbarStyle(.unifiedCompact)
+        .defaultSize(width: 1280, height: 780)
     }
 }
 
@@ -575,6 +601,19 @@ struct OpenInboxWindowButton: View {
     }
 }
 
+struct OpenCitationGraphWindowButton: View {
+    @FocusedValue(\.selectedProjectID) var selectedProjectID
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button(appLocalized("Citation Graph")) {
+            guard let selectedProjectID else { return }
+            openWindow(id: AppWindowID.citationGraph, value: selectedProjectID)
+        }
+        .disabled(selectedProjectID == nil)
+    }
+}
+
 extension Notification.Name {
     static let newProject = Notification.Name("newProject")
     static let addPaper = Notification.Name("addPaper")
@@ -585,6 +624,7 @@ extension Notification.Name {
     static let showHelp = Notification.Name("showHelp")
     static let showFirstLaunchTutorial = Notification.Name("showFirstLaunchTutorial")
     static let iCloudSyncChanged = Notification.Name("iCloudSyncChanged")
+    static let openCitationGraphPaper = Notification.Name("openCitationGraphPaper")
 }
 
 class DeepLinkHandler: ObservableObject {

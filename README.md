@@ -34,6 +34,7 @@ Full version history:
 - **Search DBLP and arXiv** to fetch bibliographic data automatically (macOS only)
 - **Semantic IDs** — give each paper a short memorable tag like `@Transformer` or `@BERT`
 - **Cross-reference annotations** — link papers using `@mentions` in your notes
+- **Citation Graph** — compare `@mentions`, in-project references, and shared outside references for each project (macOS only)
 - **Generate a LaTeX-ready Related Works draft** with one click (macOS only)
 - **Per-project generation prompts** with presets for **Survey**, **Research Paper**, **Tech Report**, or **Custom** (macOS only)
 - **Export BibTeX entries** fetched from DBLP or auto-generated (macOS only)
@@ -65,6 +66,17 @@ Full version history:
 3. **Annotate** — write notes using `@mentions` to cross-reference related papers
 4. **Generate** — click **Generate Related Works** on macOS for a LaTeX-ready draft
 5. **Take it with you** — browse, review, and refine annotations on iPhone or iPad via iCloud sync
+
+## Citation Graph
+
+On macOS, each project can open a dedicated **Citation Graph** window from the project toolbar or the **Window** menu. It helps you inspect:
+
+- `@mentions` between papers in the project
+- references that stay within the project
+- outside references shared by multiple project papers
+- a searchable list of external papers linked from the project
+
+Reference metadata is matched with **DBLP** first and then **arXiv**. External reference lists are fetched from **OpenAlex**, so coverage depends on the source metadata available for each paper.
 
 ## iCloud Sync
 
