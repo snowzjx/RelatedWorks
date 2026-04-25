@@ -1,25 +1,71 @@
 import SwiftUI
 
+@MainActor
+final class IOSAppLaunchCoordinator: ObservableObject {
+    @Published private(set) var store: Store?
+    @Published private(set) var progress = Store.StartupProgress(
+        completedUnitCount: 0,
+        totalUnitCount: 4,
+        message: appLocalized("Starting RelatedWorks")
+    )
+    private var launchTask: Task<Void, Never>?
+
+    private enum DefaultsKey {
+        static let sampleProjectImported = "sampleProjectImported"
+    }
+
+    func launch() {
+        guard store == nil else { return }
+        guard launchTask == nil else { return }
+
+        launchTask = Task {
+            defer { launchTask = nil }
+            let snapshot = await Store.prepareStartupSnapshot { progress in
+                Task { @MainActor in
+                    self.progress = progress
+                }
+            }
+            guard !Task.isCancelled else { return }
+            let loadedStore = Store(startupSnapshot: snapshot)
+            importSampleProjectIfNeeded(into: loadedStore)
+            self.store = loadedStore
+        }
+    }
+
+    func reload() {
+        launchTask?.cancel()
+        launchTask = nil
+        store = nil
+        progress = Store.StartupProgress(
+            completedUnitCount: 0,
+            totalUnitCount: 4,
+            message: appLocalized("Reloading library")
+        )
+        launch()
+    }
+
+    private func importSampleProjectIfNeeded(into store: Store) {
+        guard !UserDefaults.standard.bool(forKey: DefaultsKey.sampleProjectImported) else { return }
+
+        UserDefaults.standard.set(true, forKey: DefaultsKey.sampleProjectImported)
+        guard store.projects.isEmpty,
+              let url = Bundle.main.url(forResource: "SampleProject", withExtension: "relatedworks") else {
+            return
+        }
+
+        _ = try? IOSProjectImporter.import(from: url, into: store)
+    }
+}
+
 @main
 struct RelatedWorksIOSApp: App {
     @StateObject private var settings = AppSettings.shared
-    @State private var store: Store
+    @StateObject private var launchCoordinator = IOSAppLaunchCoordinator()
     @State private var pendingDeepLink: DeepLink.Destination?
     @State private var showWelcomeLanding: Bool
     private let welcomeLandingKey = "didShowIOSWelcomeLanding"
 
     init() {
-        let s = Store()
-        // Import sample project on first launch
-        let key = "sampleProjectImported"
-        if !UserDefaults.standard.bool(forKey: key) {
-            UserDefaults.standard.set(true, forKey: key)
-            if s.projects.isEmpty,
-               let url = Bundle.main.url(forResource: "SampleProject", withExtension: "relatedworks") {
-                _ = try? IOSProjectImporter.import(from: url, into: s)
-            }
-        }
-        _store = State(initialValue: s)
         _showWelcomeLanding = State(initialValue: !UserDefaults.standard.bool(forKey: welcomeLandingKey))
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
             _ = Store.iCloudProjectsDir()
@@ -33,13 +79,19 @@ struct RelatedWorksIOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(pendingDeepLink: $pendingDeepLink)
-                .environmentObject(store)
+            Group {
+                if let store = launchCoordinator.store {
+                    RootView(pendingDeepLink: $pendingDeepLink)
+                        .environmentObject(store)
+                } else {
+                    IOSAppLaunchView(coordinator: launchCoordinator)
+                }
+            }
                 .environmentObject(settings)
                 .environment(\.locale, settings.locale)
                 .id(settings.appLanguage.rawValue)
                 .onChange(of: settings.iCloudSyncEnabled) {
-                    store = Store()
+                    launchCoordinator.reload()
                     Task {
                         await Self.refreshSharedICloudHandle(using: settings.iCloudSyncEnabled)
                     }
@@ -52,6 +104,9 @@ struct RelatedWorksIOSApp: App {
                     .environment(\.locale, settings.locale)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
+                }
+                .task {
+                    launchCoordinator.launch()
                 }
         }
     }
@@ -67,6 +122,41 @@ struct RelatedWorksIOSApp: App {
     private func markWelcomeLandingShown() {
         UserDefaults.standard.set(true, forKey: welcomeLandingKey)
         showWelcomeLanding = false
+    }
+}
+
+private struct IOSAppLaunchView: View {
+    @ObservedObject var coordinator: IOSAppLaunchCoordinator
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Image(systemName: "books.vertical.fill")
+                .font(.system(size: 42))
+                .foregroundStyle(Color.accentColor)
+
+            VStack(spacing: 6) {
+                Text(appLocalized("Loading Library"))
+                    .font(.headline)
+                Text(coordinator.progress.message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            ProgressView(value: coordinator.progress.fractionCompleted)
+                .progressViewStyle(.linear)
+                .frame(width: 260)
+
+            Text(String(
+                format: appLocalized("%lld of %lld"),
+                coordinator.progress.completedUnitCount,
+                coordinator.progress.totalUnitCount
+            ))
+            .font(.caption)
+            .foregroundStyle(.tertiary)
+        }
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(uiColor: .systemBackground).ignoresSafeArea())
     }
 }
 

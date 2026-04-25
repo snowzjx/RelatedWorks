@@ -356,7 +356,7 @@ struct StoreTests {
         #expect(store.inboxItems.contains(where: { $0.id == item.id }))
     }
 
-    @Test func updateInboxItemStatusAndMetadata() throws {
+    @Test func updateInboxItemStatusAndMetadata() async throws {
         let store = makeTestStore()
         let tmpPDF = FileManager.default.temporaryDirectory.appendingPathComponent("inbox-test-\(UUID().uuidString).pdf")
         try "dummy".data(using: .utf8)!.write(to: tmpPDF)
@@ -372,7 +372,7 @@ struct StoreTests {
 
         try store.updateInboxItemStatus(item.id, status: .processed)
         try store.updateInboxItemMetadata(item.id, metadata: metadata)
-        store.reloadInbox()
+        await store.reloadInboxFromDisk()
 
         let updated = try #require(store.inboxItems.first(where: { $0.id == item.id }))
         #expect(updated.status == .processed)
@@ -436,7 +436,7 @@ struct StoreTests {
         let tmp = FileManager.default.temporaryDirectory
             .appendingPathComponent("RelatedWorksTests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
-        return Store(projectsDir: tmp)
+        return Store(synchronouslyLoadingFrom: tmp)
     }
 }
 

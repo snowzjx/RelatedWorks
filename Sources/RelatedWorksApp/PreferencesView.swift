@@ -105,7 +105,6 @@ struct GeneralSettingsView: View {
             await MainActor.run {
                 settings.iCloudSyncEnabled = enable
                 migrationProgress = nil
-                store.reload()
                 NotificationCenter.default.post(name: .iCloudSyncChanged, object: nil)
             }
         } catch {

@@ -8,6 +8,7 @@ public class Store: ObservableObject {
     @Published public var inboxItems: [InboxItem] = []
 
     private var metadataQuery: NSMetadataQuery?
+    @MainActor private var reloadTask: Task<Void, Never>?
 
     public struct StartupProgress: Sendable {
         public let completedUnitCount: Int
@@ -30,30 +31,26 @@ public class Store: ObservableObject {
 
     // MARK: - Init
 
-    public init() {
+    @available(*, deprecated, message: "Performs synchronous file I/O. App startup should await Store.prepareStartupSnapshot and then use Store(startupSnapshot:).")
+    public convenience init() {
+        self.init(synchronouslyLoadingFromDefaultLocation: ())
+    }
+
+    @available(*, deprecated, message: "Performs synchronous file I/O. Prefer Store(synchronouslyLoadingFrom:) only in CLI/test contexts, or prepareStartupSnapshot for app startup.")
+    public convenience init(projectsDir: URL) {
+        self.init(synchronouslyLoadingFrom: projectsDir)
+    }
+
+    private convenience init(synchronouslyLoadingFromDefaultLocation _: Void) {
         let useICloud = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
         let resolvedProjectsDir = useICloud ? (Store.iCloudProjectsDir() ?? Store.localProjectsDir()) : Store.localProjectsDir()
-        let resolvedInboxDir = Store.inboxDir(forProjectsDir: resolvedProjectsDir)
-        try? FileManager.default.createDirectory(at: resolvedProjectsDir, withIntermediateDirectories: true)
-        try? FileManager.default.createDirectory(at: resolvedInboxDir, withIntermediateDirectories: true)
-
-        let snapshot = StartupSnapshot(
-            projectsDir: resolvedProjectsDir,
-            inboxDir: resolvedInboxDir,
-            projects: (try? Self.loadAll(from: resolvedProjectsDir)) ?? [],
-            inboxItems: (try? Self.loadAllInboxItems(from: resolvedInboxDir)) ?? [],
-            shouldStartMetadataQuery: useICloud
-        )
-        self.projectsDir = snapshot.projectsDir
-        self.inboxDir = snapshot.inboxDir
-        self.projects = snapshot.projects
-        self.inboxItems = snapshot.inboxItems
-        if snapshot.shouldStartMetadataQuery {
+        self.init(synchronouslyLoadingFrom: resolvedProjectsDir)
+        if useICloud {
             startMetadataQuery()
         }
     }
 
-    public init(projectsDir: URL) {
+    public init(synchronouslyLoadingFrom projectsDir: URL) {
         self.projectsDir = projectsDir
         self.inboxDir = Store.inboxDir(forProjectsDir: projectsDir)
         try? FileManager.default.createDirectory(at: projectsDir, withIntermediateDirectories: true)
@@ -243,8 +240,19 @@ public class Store: ObservableObject {
         try Self.loadAllInboxItems(from: inboxDir)
     }
 
+    @available(*, deprecated, message: "Performs synchronous file I/O. App code should await reloadInboxFromDisk().")
     public func reloadInbox() {
         inboxItems = (try? loadAllInboxItems()) ?? []
+    }
+
+    @MainActor
+    public func reloadInboxFromDisk() async {
+        let inboxDir = inboxDir
+        let inboxItems = await Task.detached(priority: .userInitiated) {
+            (try? Store.loadAllInboxItems(from: inboxDir)) ?? []
+        }.value
+        guard !Task.isCancelled else { return }
+        self.inboxItems = inboxItems
     }
 
     public func deleteInboxItem(_ item: InboxItem) throws {
@@ -344,9 +352,34 @@ public class Store: ObservableObject {
 
     // MARK: - Reload (called by metadata query on remote changes)
 
+    @available(*, deprecated, message: "Performs synchronous file I/O. App code should await reloadFromDisk().")
     public func reload() {
         projects = (try? loadAll()) ?? []
         inboxItems = (try? loadAllInboxItems()) ?? []
+    }
+
+    @MainActor
+    public func reloadFromDisk() async {
+        let projectsDir = projectsDir
+        let inboxDir = inboxDir
+        let snapshot = await Task.detached(priority: .userInitiated) {
+            (
+                projects: (try? Store.loadAll(from: projectsDir)) ?? [],
+                inboxItems: (try? Store.loadAllInboxItems(from: inboxDir)) ?? []
+            )
+        }.value
+        guard !Task.isCancelled else { return }
+        projects = snapshot.projects
+        inboxItems = snapshot.inboxItems
+    }
+
+    @MainActor
+    private func scheduleReloadFromDisk() {
+        reloadTask?.cancel()
+        reloadTask = Task {
+            await reloadFromDisk()
+            reloadTask = nil
+        }
     }
 
     // MARK: - NSMetadataQuery (iCloud remote change detection)
@@ -363,7 +396,9 @@ public class Store: ObservableObject {
     }
 
     @objc private func metadataQueryDidUpdate() {
-        DispatchQueue.main.async { self.reload() }
+        Task { @MainActor in
+            self.scheduleReloadFromDisk()
+        }
     }
 
     // MARK: - Migration
