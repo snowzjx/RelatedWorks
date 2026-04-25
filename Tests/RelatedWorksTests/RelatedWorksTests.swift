@@ -119,6 +119,68 @@ struct ProjectModelTests {
     }
 }
 
+// MARK: - App Settings Tests
+
+@Suite("App Settings")
+struct AppSettingsTests {
+
+    @Test func unreachableOllamaPreservesSelectedBackendsAndShowsBanner() async {
+        await withPreservedAppSettingsDefaults {
+            let settings = AppSettings(pollsOllama: false)
+            settings.ollamaBaseURL = "http://127.0.0.1:1"
+            settings.extractionBackend = .ollama
+            settings.generationBackend = .ollama
+            settings.extractionModel = "llama3"
+            settings.generationModel = "llama3"
+            settings.ollamaReachable = true
+
+            await settings.checkOllama()
+
+            #expect(settings.ollamaReachable == false)
+            #expect(settings.extractionBackend == .ollama)
+            #expect(settings.generationBackend == .ollama)
+            #expect(settings.shouldShowOllamaBanner)
+        }
+    }
+
+    private func withPreservedAppSettingsDefaults<T>(
+        _ body: () async -> T
+    ) async -> T {
+        let defaults = UserDefaults.standard
+        let keys = [
+            "fontSize",
+            "appLanguage",
+            "ollamaBaseURL",
+            "extractionModel",
+            "generationModel",
+            "ollamaTimeoutSeconds",
+            "extractionBackend",
+            "generationBackend",
+            "geminiExtractionModel",
+            "geminiGenerationModel",
+            "generationPrompt",
+            "iCloudSyncEnabled",
+            "AppleLanguages",
+        ]
+        let previousDefaults = Dictionary(
+            uniqueKeysWithValues: keys.map { ($0, defaults.object(forKey: $0)) }
+        )
+        let previousReachability = OllamaReachability.shared.reachable
+        defer {
+            for (key, value) in previousDefaults {
+                if let value {
+                    defaults.set(value, forKey: key)
+                } else {
+                    defaults.removeObject(forKey: key)
+                }
+            }
+            OllamaReachability.shared.reachable = previousReachability
+        }
+
+        return await body()
+    }
+}
+
 // MARK: - Store Tests
 
 @Suite("Store")

@@ -42,10 +42,13 @@ struct ProjectSidebar: View {
         }
         .navigationTitle("RelatedWorks")
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            let ollamaDown = !reachability.reachable
-                && (settings.extractionBackend == .ollama || settings.generationBackend == .ollama)
+            let ollamaDown = !reachability.reachable && settings.shouldShowOllamaBanner
             if !settings.isGenerationConfigured && !settings.isExtractionConfigured || ollamaDown {
-                NoModelBanner()
+                NoModelBanner(
+                    message: ollamaDown
+                        ? appLocalized("Cannot connect to Ollama")
+                        : appLocalized("No AI model configured")
+                )
             }
         }
         .toolbar {

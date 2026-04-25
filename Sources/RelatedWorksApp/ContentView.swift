@@ -51,11 +51,13 @@ struct ContentView: View {
 }
 
 struct NoModelBanner: View {
+    var message: String = appLocalized("No AI model configured")
+
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "cpu.fill")
                 .foregroundStyle(.red).font(.caption)
-            Text("No AI model configured")
+            Text(message)
                 .font(.caption).foregroundStyle(.primary)
             Spacer()
             NoModelBannerSettingsButton()

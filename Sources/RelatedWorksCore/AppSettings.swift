@@ -129,7 +129,7 @@ public class AppSettings: ObservableObject {
     }
     private var pollingTask: Task<Void, Never>?
 
-    public init() {
+    public init(pollsOllama: Bool = true) {
         fontSize = UserDefaults.standard.double(forKey: "fontSize").nonZero ?? 14
         appLanguage = AppLanguage(rawValue: UserDefaults.standard.string(forKey: "appLanguage") ?? "") ?? .system
         ollamaBaseURL = UserDefaults.standard.string(forKey: "ollamaBaseURL") ?? "http://localhost:11434"
@@ -145,7 +145,9 @@ public class AppSettings: ObservableObject {
         generationPrompt = UserDefaults.standard.string(forKey: "generationPrompt") ?? AppSettings.defaultGenerationPrompt
         iCloudSyncEnabled = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
         applyLanguagePreference()
-        startPolling()
+        if pollsOllama {
+            startPolling()
+        }
     }
 
     public var locale: Locale {
@@ -228,12 +230,7 @@ public class AppSettings: ObservableObject {
         guard let url = URL(string: "\(urlStr)/api/tags") else { return }
         let reachable = (try? await URLSession.shared.data(from: url)) != nil
         await MainActor.run {
-            let wasReachable = ollamaReachable
             ollamaReachable = reachable
-            if !reachable && wasReachable {
-                if extractionBackend == .ollama { extractionBackend = .none }
-                if generationBackend == .ollama { generationBackend = .none }
-            }
         }
     }
 
@@ -272,8 +269,7 @@ public class AppSettings: ObservableObject {
     }
 
     public var shouldShowOllamaBanner: Bool {
-        let geminiOk = !geminiAPIKey.isEmpty
-        return !geminiOk && !OllamaReachability.shared.reachable
+        return !OllamaReachability.shared.reachable
             && (extractionBackend == .ollama || generationBackend == .ollama)
     }
 
