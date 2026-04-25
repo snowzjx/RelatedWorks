@@ -1,6 +1,8 @@
 import Testing
 import Foundation
+#if canImport(RelatedWorksCore)
 import RelatedWorksCore
+#endif
 
 // MARK: - Model Tests
 
@@ -115,7 +117,7 @@ struct ProjectModelTests {
         decoder.dateDecodingStrategy = .iso8601
         let project = try decoder.decode(Project.self, from: json)
         #expect(project.projectType == .custom)
-        #expect(project.generationPrompt == AppSettings.shared.generationPrompt)
+        #expect(project.generationPrompt == AppSettings.defaultGenerationPrompt)
     }
 }
 

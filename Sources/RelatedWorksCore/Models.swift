@@ -194,7 +194,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
         } else if let legacyOverride = (try legacy.decodeIfPresent(String.self, forKey: .generationPromptOverride))?.trimmedNilIfEmpty {
             generationPrompt = legacyOverride
         } else {
-            generationPrompt = AppSettings.shared.generationPrompt
+            generationPrompt = AppSettings.defaultGenerationPrompt
         }
         papers = try c.decodeIfPresent([Paper].self, forKey: .papers) ?? []
         createdAt = try c.decode(Date.self, forKey: .createdAt)
@@ -278,7 +278,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
         if let preset = projectType.presetPrompt {
             return preset
         }
-        return AppSettings.shared.generationPrompt
+        return AppSettings.defaultGenerationPrompt
     }
 }
 
