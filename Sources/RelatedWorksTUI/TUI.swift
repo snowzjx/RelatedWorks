@@ -52,7 +52,7 @@ func pad(_ s: String, to width: Int) -> String {
 
 // MARK: - Input
 
-enum Key { case up, down, enter, esc, q, ctrlD, r, slash, backspace, char(Character), other }
+enum Key: Equatable { case up, down, enter, esc, q, ctrlD, r, g, slash, backspace, char(Character), other }
 func readKey() -> Key {
     var buf = [UInt8](repeating: 0, count: 4)
     let n = read(STDIN_FILENO, &buf, 4)
@@ -62,6 +62,7 @@ func readKey() -> Key {
         case 27:     return .esc
         case 113:    return .q
         case 114:    return .r
+        case 103:    return .g
         case 4:      return .ctrlD
         case 47:     return .slash
         case 127:    return .backspace
@@ -194,7 +195,7 @@ func pagerWithKey(title: String, lines: [String], showRegenerate: Bool = false, 
 
 // MARK: - Screens
 
-func projectListScreen(projects: [Project]) {
+func projectListScreen(projects: [Project], store: Store) {
     while true {
         if projects.isEmpty {
             pager(title: "RelatedWorks", lines: [
@@ -210,7 +211,7 @@ func projectListScreen(projects: [Project]) {
             return ("\(tag)  \(name)\(count)", false)
         }
         guard let idx = menu(title: "RelatedWorks — Projects", items: items, footer: "↑↓ navigate  Enter select  q quit") else { return }
-        projectScreen(project: projects[idx])
+        projectScreen(project: projects[idx], store: store)
     }
 }
 
@@ -228,7 +229,8 @@ func filterPapers(_ papers: [Paper], query: String) -> [Paper] {
     }
 }
 
-func projectScreen(project: Project) {
+func projectScreen(project: Project, store: Store) {
+    var project = project
     var filterQuery = ""
     var searching = false
     var sel = 0
@@ -259,7 +261,7 @@ func projectScreen(project: Project) {
         let titleStr = "\(bold(project.name))\(project.description.isEmpty ? "" : "  " + dim(project.description))\(filterSuffix)"
         let footer = searching
             ? "type to filter  Esc clear  Enter/↑↓ navigate"
-            : "↑↓ navigate  Enter select  / search  q back"
+            : "↑↓ navigate  Enter select  / search  g generate  q back"
         var rows: [String] = []
         for (i, item) in items.enumerated() {
             if item.1 {
@@ -308,6 +310,10 @@ func projectScreen(project: Project) {
 
         // Normal navigation
         switch key {
+        case .g:
+            project = generateScreen(project: project, store: store)
+            filterQuery = ""
+            searching = false
         case .slash:
             searching = true
         case .up:
@@ -377,8 +383,55 @@ func paperScreen(paper: Paper, project: Project) {
     }
 }
 
-func generateScreen(project: Project) {
+@discardableResult
+func generateScreen(project: Project, store: Store) -> Project {
+    func renderGenerating() {
+        let lines = [
+            yellow("Generating Related Works..."),
+            "",
+            "Backend: \(AppSettings.shared.generationBackend.displayName)",
+            "Model: \(AppSettings.shared.activeGenerationModelName.isEmpty ? "not configured" : AppSettings.shared.activeGenerationModelName)"
+        ]
+        cls()
+        drawBox(title: "Related Works", rows: lines, footer: "please wait", w: termSize().w)
+        fflush(stdout)
+    }
+
+    func shouldRegenerate(_ project: Project) -> Bool {
+        let output = project.generatedLatex?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lines = output?.isEmpty == false
+            ? output!.components(separatedBy: "\n")
+            : [yellow("No generated draft yet."), "", "Press r to generate a Related Works section."]
+        let key = pagerWithKey(title: "Related Works — \(project.name)", lines: lines, showRegenerate: true)
+        return key == .r
+    }
+
+    var current = project
+    while true {
+        guard shouldRegenerate(current) else { return current }
+        renderGenerating()
+
+        let semaphore = DispatchSemaphore(value: 0)
+        var output = ""
+        Task {
+            output = await RelatedWorksGenerator.generate(for: current)
+            semaphore.signal()
+        }
+        semaphore.wait()
+
+        current.generatedLatex = output
+        current.generationModel = AppSettings.shared.activeGenerationModelName
+        try? store.save(current)
+
+        let key = pagerWithKey(
+            title: "Related Works — \(current.name)",
+            lines: output.components(separatedBy: "\n"),
+            showRegenerate: true
+        )
+        if key != .r {
+            return current
+        }
+    }
 }
 
 // MARK: - Main
-

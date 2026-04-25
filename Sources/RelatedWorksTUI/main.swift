@@ -15,4 +15,4 @@ enableRaw()
 defer { disableRaw(); cls() }
 
 let projects = (try? store.loadAll()) ?? []
-projectListScreen(projects: projects)
+projectListScreen(projects: projects, store: store)

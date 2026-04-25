@@ -119,6 +119,72 @@ struct ProjectModelTests {
     }
 }
 
+// MARK: - Generator Tests
+
+@Suite("Related Works Generator")
+struct RelatedWorksGeneratorTests {
+
+    @Test func buildPromptIncludesProjectPaperMetadataAndResolvedReferences() {
+        var project = Project(
+            name: "Neural Retrieval",
+            description: "A paper about dense retrieval.",
+            generationPrompt: "Write two paragraphs."
+        )
+        var transformer = Paper(
+            id: "Transformer",
+            title: "Attention Is All You Need",
+            authors: ["Vaswani", "Shazeer", "Parmar", "Uszkoreit"],
+            year: 2017,
+            venue: "NeurIPS",
+            annotation: "Foundation model."
+        )
+        transformer.abstract = "Introduces self-attention."
+        project.addPaper(transformer)
+        project.addPaper(Paper(
+            id: "BERT",
+            title: "BERT: Pre-training of Deep Bidirectional Transformers",
+            authors: ["Devlin"],
+            year: 2019,
+            annotation: "Builds on @Transformer for language understanding."
+        ))
+
+        let prompt = RelatedWorksGenerator.buildPrompt(project)
+
+        #expect(prompt.contains("Write a Related Works section for a paper titled: \"Neural Retrieval\"."))
+        #expect(prompt.contains("Paper description: A paper about dense retrieval."))
+        #expect(prompt.contains("Citation: Vaswani, Shazeer, Parmar et al. (2017), NeurIPS"))
+        #expect(prompt.contains("Abstract: Introduces self-attention."))
+        #expect(prompt.contains("Builds on Attention Is All You Need [Transformer] for language understanding."))
+        #expect(prompt.contains("Write two paragraphs."))
+    }
+
+    @Test func generateUsesCanonicalPromptAndCleansThinkingBlocks() async {
+        let project = Project(name: "Prompt Target", generationPrompt: "Only output LaTeX.")
+        let backend = RecordingBackend(response: "  <think>hidden scratchpad</think>\nVisible draft\n")
+
+        let output = await RelatedWorksGenerator.generate(for: project, using: backend)
+
+        #expect(output == "Visible draft")
+        #expect(backend.prompts.count == 1)
+        #expect(backend.prompts.first?.contains("Prompt Target") == true)
+        #expect(backend.prompts.first?.contains("Only output LaTeX.") == true)
+    }
+}
+
+private final class RecordingBackend: AIBackend {
+    let response: String
+    private(set) var prompts: [String] = []
+
+    init(response: String) {
+        self.response = response
+    }
+
+    func generate(prompt: String) async throws -> String {
+        prompts.append(prompt)
+        return response
+    }
+}
+
 // MARK: - App Settings Tests
 
 @Suite("App Settings")

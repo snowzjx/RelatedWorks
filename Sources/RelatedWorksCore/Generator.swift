@@ -4,13 +4,13 @@ public struct RelatedWorksGenerator {
     public static func generate(for project: Project) async -> String {
         let prompt = buildPrompt(project)
         do {
-            return try await callOllama(prompt: prompt)
+            return try await generateWithConfiguredBackend(prompt: prompt)
         } catch {
             return friendlyFailureMessage(for: error)
         }
     }
 
-    private static func buildPrompt(_ project: Project) -> String {
+    public static func buildPrompt(_ project: Project) -> String {
         var lines: [String] = []
         lines.append("You are an expert academic writer.")
         lines.append("Write a Related Works section for a paper titled: \"\(project.name)\".")
@@ -47,10 +47,24 @@ public struct RelatedWorksGenerator {
         return lines.joined(separator: "\n")
     }
 
-    private static func callOllama(prompt: String) async throws -> String {
+    public static func generate(for project: Project, using backend: any AIBackend) async -> String {
+        let prompt = buildPrompt(project)
+        do {
+            let response = try await backend.generate(prompt: prompt)
+            return cleanGeneratedText(response)
+        } catch {
+            return friendlyFailureMessage(for: error)
+        }
+    }
+
+    private static func generateWithConfiguredBackend(prompt: String) async throws -> String {
         let backend = AppSettings.shared.generationBackendInstance()
         let response = try await backend.generate(prompt: prompt)
-        return stripThinkingBlocks(response).trimmingCharacters(in: .whitespacesAndNewlines)
+        return cleanGeneratedText(response)
+    }
+
+    private static func cleanGeneratedText(_ text: String) -> String {
+        stripThinkingBlocks(text).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private static func stripThinkingBlocks(_ text: String) -> String {
