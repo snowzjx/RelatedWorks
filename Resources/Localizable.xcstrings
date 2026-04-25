@@ -141,6 +141,9 @@
         }
       }
     },
+    "© 2026 Junxue ZHANG" : {
+
+    },
     "~/Library/Application Support/RelatedWorks/projects/" : {
 
     },
@@ -461,7 +464,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批注预览"
+            "value" : "笔记预览"
           }
         }
       }
@@ -472,7 +475,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批注流程"
+            "value" : "笔记流程"
           }
         }
       }
@@ -506,6 +509,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "外观"
+          }
+        }
+      }
+    },
+    "arXiv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "arXiv"
           }
         }
       }
@@ -697,6 +711,17 @@
         }
       }
     },
+    "Citation Graph" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引用图谱"
+          }
+        }
+      }
+    },
     "Click Generated Related Works in the project view." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -714,7 +739,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在项目视图中点击“生成的相关工作”。RelatedWorks 会把你的批注和论文元数据综合成可直接用于 LaTeX 的草稿。"
+            "value" : "在项目视图中点击“生成的相关工作”。RelatedWorks 会把你的笔记和论文元数据综合成可直接用于 LaTeX 的草稿。"
           }
         }
       }
@@ -1027,6 +1052,17 @@
         }
       }
     },
+    "DBLP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DBLP"
+          }
+        }
+      }
+    },
     "DBLP returned no results" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1126,6 +1162,17 @@
         }
       }
     },
+    "Details" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详情"
+          }
+        }
+      }
+    },
     "Do you want to import \"%@\" into RelatedWorks?" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1220,7 +1267,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每篇论文都会获得一个语义 ID，通常由论文中的算法或系统名建议生成。你之后可以修改，并在批注中像 @Transformer 这样引用它。"
+            "value" : "每篇论文都会获得一个语义 ID，通常由论文中的算法或系统名建议生成。你之后可以修改，并在笔记中像 @Transformer 这样引用它。"
           }
         }
       }
@@ -1397,6 +1444,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在导出项目"
+          }
+        }
+      }
+    },
+    "External Papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部论文"
+          }
+        }
+      }
+    },
+    "External reference" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部引用"
           }
         }
       }
@@ -1756,6 +1825,17 @@
         }
       }
     },
+    "In Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目内"
+          }
+        }
+      }
+    },
     "Inbox" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1888,6 +1968,17 @@
         }
       }
     },
+    "Legend" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图例"
+          }
+        }
+      }
+    },
     "Library" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1895,6 +1986,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "论文库"
+          }
+        }
+      }
+    },
+    "Linked project papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联的项目论文"
           }
         }
       }
@@ -1932,6 +2034,17 @@
         }
       }
     },
+    "Looking up citation metadata..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检索引用元数据..."
+          }
+        }
+      }
+    },
     "Mac" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1949,7 +2062,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "macOS 版本提供完整功能。iPhone 和 iPad 版本主要用于阅读论文和编写批注。"
+            "value" : "macOS 版本提供完整功能。iPhone 和 iPad 版本主要用于阅读论文和编写笔记。"
           }
         }
       }
@@ -1961,6 +2074,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手动输入"
+          }
+        }
+      }
+    },
+    "Mention connection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提及连接"
+          }
+        }
+      }
+    },
+    "Mentions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提及"
           }
         }
       }
@@ -2174,6 +2309,28 @@
         }
       }
     },
+    "No papers to refresh." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可刷新的论文。"
+          }
+        }
+      }
+    },
+    "No project papers linked here yet." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里还没有关联到项目中的论文。"
+          }
+        }
+      }
+    },
     "No Project Selected" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2290,7 +2447,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一篇论文对应一个项目。项目会保存相关论文、批注、该论文的生成提示词和 BibTeX 输出。"
+            "value" : "一篇论文对应一个项目。项目会保存相关论文、笔记、该论文的生成提示词和 BibTeX 输出。"
           }
         }
       }
@@ -2313,6 +2470,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开“添加论文”"
+          }
+        }
+      }
+    },
+    "Open in %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %1$@ 中打开"
           }
         }
       }
@@ -2394,358 +2562,6 @@
         }
       }
     },
-    "Open User Guide" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开用户指南"
-          }
-        }
-      }
-    },
-    "Project paper" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "项目论文"
-          }
-        }
-      }
-    },
-    "Reference within project" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "项目内引用"
-          }
-        }
-      }
-    },
-    "Reference metadata is matched with DBLP first, then arXiv. External reference lists come from OpenAlex." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "引用元数据会先匹配 DBLP，再回退到 arXiv。外部引用列表来自 OpenAlex。"
-          }
-        }
-      }
-    },
-    "Refresh References" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刷新引用"
-          }
-        }
-      }
-    },
-    "Search external papers…" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜索外部论文…"
-          }
-        }
-      }
-    },
-    "Sources" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "数据来源"
-          }
-        }
-      }
-    },
-    "Select a node in the graph or a paper in the external list." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请选择图中的节点或外部列表中的论文。"
-          }
-        }
-      }
-    },
-    "Shared external reference" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享的外部引用"
-          }
-        }
-      }
-    },
-    "Shared outside paper" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享的外部论文"
-          }
-        }
-      }
-    },
-    "Shared outside reference" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享外部引用"
-          }
-        }
-      }
-    },
-    "Shared Outside" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享外部"
-          }
-        }
-      }
-    },
-    "Shared >= %d" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共享 >= %d"
-          }
-        }
-      }
-    },
-    "Show if shared by %d+ papers" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅显示被 %d+ 篇论文共同引用的外部论文"
-          }
-        }
-      }
-    },
-    "Updated %d of %d papers" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已更新 %d / %d 篇论文"
-          }
-        }
-      }
-    },
-    "Updated %d papers. %d lookups failed." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已更新 %d 篇论文，%d 次查询失败。"
-          }
-        }
-      }
-    },
-    "Updated references for %d papers." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已更新 %d 篇论文的引用。"
-          }
-        }
-      }
-    },
-    "arXiv" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "arXiv"
-          }
-        }
-      }
-    },
-    "Looking up citation metadata..." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在检索引用元数据..."
-          }
-        }
-      }
-    },
-    "Legend" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图例"
-          }
-        }
-      }
-    },
-    "Linked project papers" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关联的项目论文"
-          }
-        }
-      }
-    },
-    "Mention connection" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提及连接"
-          }
-        }
-      }
-    },
-    "Mentions" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提及"
-          }
-        }
-      }
-    },
-    "No papers to refresh." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有可刷新的论文。"
-          }
-        }
-      }
-    },
-    "No project papers linked here yet." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这里还没有关联到项目中的论文。"
-          }
-        }
-      }
-    },
-    "External Papers" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外部论文"
-          }
-        }
-      }
-    },
-    "External reference" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外部引用"
-          }
-        }
-      }
-    },
-    "DBLP" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "DBLP"
-          }
-        }
-      }
-    },
-    "Details" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "详情"
-          }
-        }
-      }
-    },
-    "Citation Graph" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "引用图谱"
-          }
-        }
-      }
-    },
-    "Open Window → Citation Graph from a project to compare @mentions, in-project references, and shared outside references." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可从项目中打开“窗口 → 引用图谱”，对比 @提及、项目内引用以及共享的外部引用。"
-          }
-        }
-      }
-    },
-    "In Project" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "项目内"
-          }
-        }
-      }
-    },
     "Open the citation graph from a project to inspect its paper relationships." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2757,13 +2573,24 @@
         }
       }
     },
-    "Open in %@" : {
+    "Open User Guide" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 %1$@ 中打开"
+            "value" : "打开用户指南"
+          }
+        }
+      }
+    },
+    "Open Window → Citation Graph from a project to compare @mentions, in-project references, and shared outside references." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可从项目中打开“窗口 → 引用图谱”，对比 @提及、项目内引用以及共享的外部引用。"
           }
         }
       }
@@ -2911,6 +2738,17 @@
         }
       }
     },
+    "Project paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目论文"
+          }
+        }
+      }
+    },
     "Project Prompt" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2977,6 +2815,28 @@
         }
       }
     },
+    "Reference metadata is matched with DBLP first, then arXiv. External reference lists come from OpenAlex." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "引用元数据会先匹配 DBLP，再回退到 arXiv。外部引用列表来自 OpenAlex。"
+          }
+        }
+      }
+    },
+    "Reference within project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目内引用"
+          }
+        }
+      }
+    },
     "Refresh" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2984,6 +2844,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刷新"
+          }
+        }
+      }
+    },
+    "Refresh References" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刷新引用"
           }
         }
       }
@@ -3210,6 +3081,17 @@
         }
       }
     },
+    "Search external papers…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索外部论文…"
+          }
+        }
+      }
+    },
     "Search papers…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3217,6 +3099,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索论文…"
+          }
+        }
+      }
+    },
+    "Select a node in the graph or a paper in the external list." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择图中的节点或外部列表中的论文。"
           }
         }
       }
@@ -3238,7 +3131,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择一篇论文并撰写带语义 ID 的批注。"
+            "value" : "选择一篇论文并撰写带语义 ID 的笔记。"
           }
         }
       }
@@ -3364,6 +3257,61 @@
         }
       }
     },
+    "Shared >= %d" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享 >= %d"
+          }
+        }
+      }
+    },
+    "Shared external reference" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享的外部引用"
+          }
+        }
+      }
+    },
+    "Shared Outside" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享外部"
+          }
+        }
+      }
+    },
+    "Shared outside paper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享的外部论文"
+          }
+        }
+      }
+    },
+    "Shared outside reference" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享外部引用"
+          }
+        }
+      }
+    },
     "Shared PDFs will appear here when they sync in." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3393,6 +3341,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "演示 PDF 如何变成论文条目。"
+          }
+        }
+      }
+    },
+    "Show if shared by %d+ papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅显示被 %d+ 篇论文共同引用的外部论文"
           }
         }
       }
@@ -3437,6 +3396,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "来源"
+          }
+        }
+      }
+    },
+    "Sources" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据来源"
           }
         }
       }
@@ -3789,6 +3759,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未命名收件箱项目"
+          }
+        }
+      }
+    },
+    "Updated %d of %d papers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %d / %d 篇论文"
+          }
+        }
+      }
+    },
+    "Updated %d papers. %d lookups failed." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %d 篇论文，%d 次查询失败。"
+          }
+        }
+      }
+    },
+    "Updated references for %d papers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已更新 %d 篇论文的引用。"
           }
         }
       }
