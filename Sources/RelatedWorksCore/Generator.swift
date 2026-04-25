@@ -1,5 +1,10 @@
 import Foundation
 
+public enum RelatedWorksGenerationEvent: Equatable {
+    case thinking(Bool)
+    case output(String)
+}
+
 public struct RelatedWorksGenerator {
     public static func generate(for project: Project) async -> String {
         let prompt = buildPrompt(project)
@@ -57,6 +62,70 @@ public struct RelatedWorksGenerator {
         }
     }
 
+    public static func stream(for project: Project) -> AsyncStream<String> {
+        stream(for: project, using: AppSettings.shared.generationBackendInstance())
+    }
+
+    public static func stream(for project: Project, using backend: any AIBackend) -> AsyncStream<String> {
+        AsyncStream { continuation in
+            let task = Task {
+                for await event in streamEvents(for: project, using: backend) {
+                    guard case let .output(output) = event else { continue }
+                    continuation.yield(output)
+                }
+                continuation.finish()
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    public static func streamEvents(for project: Project) -> AsyncStream<RelatedWorksGenerationEvent> {
+        streamEvents(for: project, using: AppSettings.shared.generationBackendInstance())
+    }
+
+    public static func streamEvents(for project: Project, using backend: any AIBackend) -> AsyncStream<RelatedWorksGenerationEvent> {
+        let prompt = buildPrompt(project)
+        return AsyncStream { continuation in
+            let task = Task {
+                var rawOutput = ""
+                var lastVisibleOutput = ""
+                var wasThinking = false
+
+                do {
+                    for try await chunk in backend.stream(prompt: prompt) {
+                        rawOutput += chunk
+                        let isThinking = hasOpenThinkingBlock(rawOutput)
+                        if isThinking != wasThinking {
+                            wasThinking = isThinking
+                            continuation.yield(.thinking(isThinking))
+                        }
+
+                        let visibleOutput = visibleGeneratedText(rawOutput)
+                        guard visibleOutput != lastVisibleOutput else { continue }
+                        lastVisibleOutput = visibleOutput
+                        continuation.yield(.output(visibleOutput))
+                    }
+
+                    let finalOutput = cleanGeneratedText(rawOutput)
+                    if wasThinking {
+                        continuation.yield(.thinking(false))
+                    }
+                    if finalOutput != lastVisibleOutput {
+                        continuation.yield(.output(finalOutput))
+                    }
+                    continuation.finish()
+                } catch {
+                    if wasThinking {
+                        continuation.yield(.thinking(false))
+                    }
+                    continuation.yield(.output(friendlyFailureMessage(for: error)))
+                    continuation.finish()
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
     private static func generateWithConfiguredBackend(prompt: String) async throws -> String {
         let backend = AppSettings.shared.generationBackendInstance()
         let response = try await backend.generate(prompt: prompt)
@@ -67,13 +136,40 @@ public struct RelatedWorksGenerator {
         stripThinkingBlocks(text).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    private static func visibleGeneratedText(_ text: String) -> String {
+        stripThinkingBlocks(text).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private static func stripThinkingBlocks(_ text: String) -> String {
-        guard let regex = try? NSRegularExpression(pattern: "<think>[\\s\\S]*?</think>",
-                                                    options: .caseInsensitive) else { return text }
-        return regex.stringByReplacingMatches(in: text,
-                                               range: NSRange(text.startIndex..., in: text),
-                                               withTemplate: "")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        var result = text
+        while let openRange = result.range(of: "<think", options: .caseInsensitive) {
+            guard let tagEnd = result.range(of: ">",
+                                            range: openRange.upperBound..<result.endIndex) else {
+                result.removeSubrange(openRange.lowerBound..<result.endIndex)
+                break
+            }
+
+            guard let closeRange = result.range(of: "</think>",
+                                                options: .caseInsensitive,
+                                                range: tagEnd.upperBound..<result.endIndex) else {
+                result.removeSubrange(openRange.lowerBound..<result.endIndex)
+                break
+            }
+
+            result.removeSubrange(openRange.lowerBound..<closeRange.upperBound)
+        }
+        return result
+    }
+
+    private static func hasOpenThinkingBlock(_ text: String) -> Bool {
+        guard let openRange = text.range(of: "<think", options: .caseInsensitive) else { return false }
+        guard let tagEnd = text.range(of: ">",
+                                      range: openRange.upperBound..<text.endIndex) else {
+            return true
+        }
+        return text.range(of: "</think>",
+                          options: .caseInsensitive,
+                          range: tagEnd.upperBound..<text.endIndex) == nil
     }
 
     private static func friendlyFailureMessage(for error: Error) -> String {

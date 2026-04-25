@@ -69,6 +69,8 @@ struct GenerateWindowView: View {
     @State private var tab: GeneratedOutputTab = .draft
     @State private var copied = false
     @State private var isGenerating = false
+    @State private var streamingLatex: String?
+    @State private var isThinking = false
 
     private var project: Project? {
         guard let id = projectID else { return nil }
@@ -115,16 +117,33 @@ struct GenerateWindowView: View {
     @ViewBuilder
     private func contentView(proj: Project) -> some View {
         let bibContent = proj.bibEntries.values.joined(separator: "\n\n")
+        let draftLatex = streamingLatex ?? proj.generatedLatex
         switch tab {
         case .draft:
-            if let latex = proj.generatedLatex, !latex.isEmpty {
-                ScrollView {
-                    Text(highlightedLatex(latex))
-                        .lineSpacing(4)
-                        .textSelection(.enabled)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
+            if let latex = draftLatex, !latex.isEmpty || isGenerating {
+                ZStack(alignment: .topLeading) {
+                    ScrollView {
+                        Text(highlightedLatex(latex))
+                            .lineSpacing(4)
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                    }
+
+                    if isGenerating && latex.isEmpty {
+                        VStack {
+                            Spacer()
+                            HStack(spacing: 8) {
+                                ProgressView()
+                                    .controlSize(.small)
+                                Text(isThinking ? "Thinking..." : "Generating...")
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
                 .background(Color(nsColor: .textBackgroundColor))
             } else {
@@ -169,17 +188,41 @@ struct GenerateWindowView: View {
 
     private func regenerate(_ proj: inout Project) {
         isGenerating = true
+        isThinking = false
+        streamingLatex = ""
         proj.generatedLatex = nil
         proj.generationModel = nil
         try? store.save(proj)
         let snapshot = proj
+        let modelName = AppSettings.shared.activeGenerationModelName
         Task {
-            let output = await RelatedWorksGenerator.generate(for: snapshot)
+            var output = ""
+            for await event in RelatedWorksGenerator.streamEvents(for: snapshot) {
+                switch event {
+                case let .thinking(thinking):
+                    await MainActor.run {
+                        isThinking = thinking
+                    }
+                case let .output(partialOutput):
+                    output = partialOutput
+                    await MainActor.run {
+                        streamingLatex = partialOutput
+                    }
+                }
+            }
+
             await MainActor.run {
-                guard var updated = store.projects.first(where: { $0.id == snapshot.id }) else { return }
+                guard var updated = store.projects.first(where: { $0.id == snapshot.id }) else {
+                    streamingLatex = nil
+                    isThinking = false
+                    isGenerating = false
+                    return
+                }
                 updated.generatedLatex = output
-                updated.generationModel = AppSettings.shared.activeGenerationModelName
+                updated.generationModel = modelName
                 try? store.save(updated)
+                streamingLatex = nil
+                isThinking = false
                 isGenerating = false
             }
         }
@@ -187,7 +230,7 @@ struct GenerateWindowView: View {
 
     private func copyContent(_ proj: Project) {
         let bibContent = proj.bibEntries.values.joined(separator: "\n\n")
-        let content = tab == .draft ? (proj.generatedLatex ?? "") : bibContent
+        let content = tab == .draft ? (streamingLatex ?? proj.generatedLatex ?? "") : bibContent
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(content, forType: .string)
         copied = true

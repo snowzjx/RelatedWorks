@@ -1635,6 +1635,9 @@
         }
       }
     },
+    "Generating..." : {
+
+    },
     "Getting Started" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3564,6 +3567,9 @@
           }
         }
       }
+    },
+    "Thinking..." : {
+
     },
     "This ID is already taken — choose a different one" : {
       "extractionState" : "manual",

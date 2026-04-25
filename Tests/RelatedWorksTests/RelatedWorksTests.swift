@@ -171,19 +171,66 @@ struct RelatedWorksGeneratorTests {
         #expect(backend.prompts.first?.contains("Prompt Target") == true)
         #expect(backend.prompts.first?.contains("Only output LaTeX.") == true)
     }
+
+    @Test func streamFiltersThinkingBlocksWhilePublishingVisibleDraft() async {
+        let project = Project(name: "Streaming Target", generationPrompt: "Only output LaTeX.")
+        let backend = RecordingBackend(
+            response: "",
+            streamChunks: ["<think>hidden", " scratchpad</think>\nVis", "ible draft"]
+        )
+
+        var outputs: [String] = []
+        for await output in RelatedWorksGenerator.stream(for: project, using: backend) {
+            outputs.append(output)
+        }
+
+        #expect(outputs == ["Vis", "Visible draft"])
+    }
+
+    @Test func streamEventsReportThinkingStateWithoutPublishingThinkingText() async {
+        let project = Project(name: "Streaming Target", generationPrompt: "Only output LaTeX.")
+        let backend = RecordingBackend(
+            response: "",
+            streamChunks: ["<think>hidden", " scratchpad</think>\nVis", "ible draft"]
+        )
+
+        var events: [RelatedWorksGenerationEvent] = []
+        for await event in RelatedWorksGenerator.streamEvents(for: project, using: backend) {
+            events.append(event)
+        }
+
+        #expect(events == [
+            .thinking(true),
+            .thinking(false),
+            .output("Vis"),
+            .output("Visible draft")
+        ])
+    }
 }
 
 private final class RecordingBackend: AIBackend {
     let response: String
+    let streamChunks: [String]
     private(set) var prompts: [String] = []
 
-    init(response: String) {
+    init(response: String, streamChunks: [String]? = nil) {
         self.response = response
+        self.streamChunks = streamChunks ?? [response]
     }
 
     func generate(prompt: String) async throws -> String {
         prompts.append(prompt)
         return response
+    }
+
+    func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        prompts.append(prompt)
+        return AsyncThrowingStream { continuation in
+            for chunk in streamChunks {
+                continuation.yield(chunk)
+            }
+            continuation.finish()
+        }
     }
 }
 

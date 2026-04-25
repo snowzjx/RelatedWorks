@@ -4,6 +4,23 @@ import Foundation
 
 public protocol AIBackend {
     func generate(prompt: String) async throws -> String
+    func stream(prompt: String) -> AsyncThrowingStream<String, Error>
+}
+
+public extension AIBackend {
+    func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    continuation.yield(try await generate(prompt: prompt))
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
 }
 
 // MARK: - No Backend
@@ -82,6 +99,78 @@ public struct OllamaBackend: AIBackend {
         }
     }
 
+    public func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    let url = URL(string: "\(baseURL)/api/generate")!
+                    var req = URLRequest(url: url)
+                    req.httpMethod = "POST"
+                    req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    req.timeoutInterval = timeoutInterval
+                    let body: [String: Any] = [
+                        "model": model,
+                        "prompt": prompt,
+                        "stream": true,
+                        "options": ["temperature": 0.7]
+                    ]
+                    req.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+                    let (bytes, response) = try await URLSession.shared.bytes(for: req)
+                    if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+                        var errorData = Data()
+                        for try await byte in bytes {
+                            errorData.append(byte)
+                        }
+                        let message = parseOllamaErrorMessage(from: errorData) ?? "HTTP \(http.statusCode)"
+                        throw NSError(
+                            domain: "Ollama",
+                            code: http.statusCode,
+                            userInfo: [NSLocalizedDescriptionKey: message]
+                        )
+                    }
+
+                    for try await line in bytes.lines {
+                        guard !line.isEmpty,
+                              let data = line.data(using: .utf8),
+                              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                            continue
+                        }
+                        if let response = json["response"] as? String, !response.isEmpty {
+                            continuation.yield(response)
+                        }
+                        if (json["done"] as? Bool) == true {
+                            break
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    let nsError = error as NSError
+                    let isTimeout = (error as? URLError)?.code == .timedOut
+                        || nsError.code == NSURLErrorTimedOut
+                    if isTimeout {
+                        print("[RelatedWorks] Ollama stream timed out for model '\(model)' with timeout \(Int(timeoutInterval))s.")
+                        continuation.finish(throwing: NSError(
+                            domain: "Ollama",
+                            code: NSURLErrorTimedOut,
+                            userInfo: [
+                                NSUnderlyingErrorKey: nsError,
+                                NSLocalizedDescriptionKey: appLocalizedFormat(
+                                    "Ollama timed out after %lld second(s) using model \"%@\". Try increasing timeout in Settings, reducing prompt complexity, or using a smaller model.",
+                                    Int64(timeoutInterval),
+                                    model
+                                )
+                            ]
+                        ))
+                    } else {
+                        continuation.finish(throwing: error)
+                    }
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
     private func parseOllamaErrorMessage(from data: Data) -> String? {
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let error = json["error"] as? String,
@@ -150,6 +239,68 @@ public struct GeminiBackend: AIBackend {
             throw URLError(.cannotParseResponse)
         }
         return text
+    }
+
+    public func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    let url = URL(string: "\(baseURL)/v1beta/models/\(model):streamGenerateContent?alt=sse")!
+                    var req = URLRequest(url: url)
+                    req.httpMethod = "POST"
+                    req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    req.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
+                    req.timeoutInterval = 300
+                    let body: [String: Any] = [
+                        "contents": [["parts": [["text": prompt]]]],
+                        "generationConfig": [
+                            "temperature": 0.7,
+                            "thinkingConfig": ["thinkingBudget": 0]
+                        ]
+                    ]
+                    req.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+                    let (bytes, response) = try await geminiSession.bytes(for: req)
+                    if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+                        var errorData = Data()
+                        for try await byte in bytes {
+                            errorData.append(byte)
+                        }
+                        if let json = try? JSONSerialization.jsonObject(with: errorData) as? [String: Any],
+                           let error = json["error"] as? [String: Any],
+                           let message = error["message"] as? String {
+                            throw NSError(domain: "Gemini", code: http.statusCode,
+                                          userInfo: [NSLocalizedDescriptionKey: message])
+                        }
+                        throw NSError(domain: "Gemini", code: http.statusCode,
+                                      userInfo: [NSLocalizedDescriptionKey: "HTTP \(http.statusCode)"])
+                    }
+
+                    for try await line in bytes.lines {
+                        let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard trimmed.hasPrefix("data:") else { continue }
+                        let payload = trimmed.dropFirst("data:".count).trimmingCharacters(in: .whitespaces)
+                        guard payload != "[DONE]",
+                              let data = payload.data(using: .utf8),
+                              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                              let candidates = json["candidates"] as? [[String: Any]],
+                              let content = candidates.first?["content"] as? [String: Any],
+                              let parts = content["parts"] as? [[String: Any]] else {
+                            continue
+                        }
+                        for part in parts {
+                            if let text = part["text"] as? String, !text.isEmpty {
+                                continuation.yield(text)
+                            }
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
 }
 
