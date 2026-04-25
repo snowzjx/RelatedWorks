@@ -283,6 +283,29 @@ struct RelatedWorksApp: App {
         !UserDefaults.standard.bool(forKey: DefaultsKey.didShowFirstLaunchTutorial)
     }
 
+    private func showAboutPanel() {
+        let website = "https://snowzjx.me/RelatedWorks/"
+        let credits = NSMutableAttributedString(
+            string: "Website: ",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
+                .foregroundColor: NSColor.secondaryLabelColor
+            ]
+        )
+        credits.append(NSAttributedString(
+            string: website,
+            attributes: [
+                .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
+                .foregroundColor: NSColor.linkColor,
+                .link: website
+            ]
+        ))
+
+        NSApplication.shared.orderFrontStandardAboutPanel(options: [
+            .credits: credits
+        ])
+    }
+
     private func presentFirstLaunchTutorialIfNeeded() {
         guard shouldShowFirstLaunchTutorial else { return }
         guard !didRequestFirstLaunchTutorial else { return }
@@ -453,6 +476,11 @@ struct RelatedWorksApp: App {
         .windowToolbarStyle(.unified)
         .handlesExternalEvents(matching: ["*"])
         .commands {
+            CommandGroup(replacing: .appInfo) {
+                Button(appLocalized("About RelatedWorks")) {
+                    showAboutPanel()
+                }
+            }
             CommandGroup(replacing: .newItem) {
                 Button(appLocalized("New Project")) {
                     NotificationCenter.default.post(name: .newProject, object: nil)
