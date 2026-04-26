@@ -30,20 +30,20 @@ Full version history:
 
 - **Project-based workspaces** — one project per paper you're writing
 - **Import PDFs with AI-powered metadata extraction** (macOS only)
-- **PDF Inbox via Share Extension** — send PDFs from Safari or Files on iPhone and iPad into an Inbox that syncs to macOS
+- **PDF Inbox via Share Extension** — send PDFs from Safari or Files into a synced Inbox, then bulk import captured papers on macOS
 - **Search DBLP and arXiv** to fetch bibliographic data automatically (macOS only)
 - **Semantic IDs** — give each paper a short memorable tag like `@Transformer` or `@BERT`
 - **Cross-reference annotations** — link papers using `@mentions` in your notes
 - **Citation Graph** — compare `@mentions`, in-project references, and shared outside references for each project (macOS only)
-- **Generate a LaTeX-ready Related Works draft** with one click (macOS only)
+- **Generate a streaming LaTeX-ready Related Works draft** with one click (macOS only)
 - **Per-project generation prompts** with presets for **Survey**, **Research Paper**, **Tech Report**, or **Custom** (macOS only)
 - **Export BibTeX entries** fetched from DBLP or auto-generated (macOS only)
 - **iCloud Drive sync** — keep your library in sync across Mac and iPhone/iPad
-- **Export and import projects** as `.relatedworks` files (macOS); **import projects** on iPhone and iPad
+- **Export, import, and open projects from Finder** as `.relatedworks` files (macOS); **import projects** on iPhone and iPad
 - **Supports Ollama** and **Google Gemini** (macOS only)
 - **iPhone and iPad companion app** — browse papers, review notes, and make lightweight edits on the go
 - **Terminal UI (TUI)** — keyboard-driven and SSH/headless use (macOS only, distributed via GitHub release)
-- **Deep link support** — `relatedworks://` URIs for every paper and project
+- **Automation and linking support** — `relatedworks://` deep links, read-only AppleScript, and Hookmark integration
 
 ## Requirements
 
