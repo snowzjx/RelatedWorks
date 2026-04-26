@@ -1,5 +1,44 @@
 # Version History
 
+## v2.1.8
+
+Released to make generation feel more responsive and improve app-to-website discovery.
+
+- Related Works generation now streams output as it is produced instead of waiting for the full draft to finish.
+- The macOS About window includes a link back to the RelatedWorks website.
+
+## v2.1.7
+
+Released to stabilize generation settings and polish localization.
+
+- Preserves the selected Ollama backend across generation workflows.
+- Decouples per-project prompt fallback behavior from shared settings.
+- Avoids synchronous store loading in app flows.
+- Standardizes annotation localization text.
+- Unifies the Related Works generation implementation behind the refreshed behavior.
+
+## v2.1.6
+
+Released to deepen citation-awareness and external workflow integration.
+
+- Adds a dedicated citation graph window for inspecting project references and shared outside references.
+- Uses source-aware reference metadata when comparing citation relationships.
+- Adds Hookmark scripting integration for linking RelatedWorks items into external knowledge workflows.
+
+## v2.1.5
+
+Released to improve automation and make Inbox triage faster.
+
+- Adds a bulk Inbox import workflow for processing multiple captured PDFs.
+- Adds read-only AppleScript support for inspecting projects, papers, and current selections from automation tools.
+
+## v2.1.4
+
+Released to smooth Finder-based project workflows.
+
+- Supports opening exported `.relatedworks` projects directly from Finder.
+- Deduplicates repeated Finder open requests so the same project is not opened multiple times.
+
 ## v2.1.3
 
 Released to make PDF import more convenient during project work.

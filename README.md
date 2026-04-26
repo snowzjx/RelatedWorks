@@ -20,7 +20,7 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 
 ## Latest Release
 
-v2.1.2 improves Ollama timeout handling with configurable request timeout settings, clearer generation failure messages, and localization updates for new settings/error text. The full version history lives on the website and in [version.md](version.md).
+v2.1.8 streams Related Works generation results as they arrive and adds a website link in the macOS About window. Recent releases also added citation graph tooling, Hookmark integration, AppleScript read-only automation, bulk Inbox import, and Finder support for opening exported projects. The full version history lives on the website and in [version.md](version.md).
 
 Full version history:
 - [Website release notes](https://snowzjx.github.io/RelatedWorks/version.html)
