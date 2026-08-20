@@ -20,7 +20,7 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 
 ## Latest Release
 
-v2.1.8 streams Related Works generation results as they arrive and adds a website link in the macOS About window. Recent releases also added citation graph tooling, Hookmark integration, AppleScript read-only automation, bulk Inbox import, and Finder support for opening exported projects. The full version history lives on the website and in [version.md](version.md).
+v2.1.9 adds OpenAI-compatible and Anthropic Claude backends, including streaming output, Keychain-protected API keys, model discovery, and custom `/v1` endpoints for local servers. The full version history lives on the website and in [version.md](version.md).
 
 Full version history:
 - [Website release notes](https://snowzjx.github.io/RelatedWorks/version.html)
@@ -40,7 +40,7 @@ Full version history:
 - **Export BibTeX entries** fetched from DBLP or auto-generated (macOS only)
 - **iCloud Drive sync** — keep your library in sync across Mac and iPhone/iPad
 - **Export, import, and open projects from Finder** as `.relatedworks` files (macOS); **import projects** on iPhone and iPad
-- **Supports Ollama** and **Google Gemini** (macOS only)
+- **Supports Ollama, Google Gemini, OpenAI-compatible APIs, and Anthropic Claude** (macOS only)
 - **iPhone and iPad companion app** — browse papers, review notes, and make lightweight edits on the go
 - **Terminal UI (TUI)** — keyboard-driven and SSH/headless use (macOS only, distributed via GitHub release)
 - **Automation and linking support** — `relatedworks://` deep links, read-only AppleScript, and Hookmark integration
@@ -51,7 +51,9 @@ Full version history:
 - Released binaries require macOS 26+ (built with Xcode 26 / macOS 26 SDK)
 - At least one AI backend:
   - [Ollama](https://ollama.com) running locally, **or**
-  - [Google Gemini API key](https://aistudio.google.com/apikey)
+  - [Google Gemini API key](https://aistudio.google.com/apikey), **or**
+  - OpenAI API key or an OpenAI-compatible local server, **or**
+  - Anthropic API key
 - Source builds require macOS 14+
 
 ### iOS/iPadOS App
@@ -138,6 +140,8 @@ swift build -c release --product RelatedWorksTUI
 |---------|-------|
 | Ollama | Install from [ollama.com](https://ollama.com), run locally |
 | Gemini | API key from [Google AI Studio](https://aistudio.google.com/apikey) |
+| OpenAI Compatible | OpenAI API key, or a custom `/v1` endpoint such as llama.cpp or MLX-LM |
+| Anthropic | Anthropic API key |
 
 Configure in **Settings → AI Backends** and **Settings → Models**.
 

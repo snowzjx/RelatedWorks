@@ -491,6 +491,39 @@
         }
       }
     },
+    "API Key (optional for local servers)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 密钥（本地服务器可选）"
+          }
+        }
+      }
+    },
+    "Anthropic uses an API key for Claude models." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anthropic 使用 API 密钥访问 Claude 模型。"
+          }
+        }
+      }
+    },
+    "Base URL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "基础 URL"
+          }
+        }
+      }
+    },
     "App Import" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -810,6 +843,17 @@
         }
       }
     },
+    "Configure Anthropic API Key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置 Anthropic API 密钥"
+          }
+        }
+      }
+    },
     "Configure Gemini API Key" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -832,6 +876,17 @@
         }
       }
     },
+    "Configure OpenAI-Compatible API" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置 OpenAI 兼容 API"
+          }
+        }
+      }
+    },
     "Configure the AI backend first, then choose models in Settings." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -850,6 +905,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配置你的 AI 后端和模型。"
+          }
+        }
+      }
+    },
+    "Custom server configured without an API key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已配置无需 API 密钥的自定义服务器"
           }
         }
       }
@@ -2433,6 +2499,28 @@
         }
       }
     },
+    "OpenAI Compatible" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI 兼容"
+          }
+        }
+      }
+    },
+    "OpenAI supports hosted models and compatible local servers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenAI 支持托管模型和兼容的本地服务器。"
+          }
+        }
+      }
+    },
     "On iPhone or iPad, share a PDF from Safari or Files to RelatedWorks. Mac processes it, sends a notification, and you can add it to your project." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3809,6 +3897,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用 @SemanticID 语法链接其他论文，它们会显示为可点击链接。"
+          }
+        }
+      }
+    },
+    "Use an endpoint ending in /v1. OpenAI, llama.cpp, MLX-LM, and other Chat Completions-compatible servers are supported." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请使用以 /v1 结尾的端点。支持 OpenAI、llama.cpp、MLX-LM 及其他兼容 Chat Completions 的服务器。"
           }
         }
       }

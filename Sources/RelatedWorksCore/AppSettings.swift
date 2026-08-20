@@ -35,6 +35,8 @@ public enum AIBackendType: String, CaseIterable {
     case none = "None"
     case ollama = "Ollama"
     case gemini = "Gemini"
+    case openAI = "OpenAI"
+    case anthropic = "Anthropic"
 
     public var displayName: String {
         switch self {
@@ -44,6 +46,10 @@ public enum AIBackendType: String, CaseIterable {
             return appLocalized("Ollama")
         case .gemini:
             return appLocalized("Gemini")
+        case .openAI:
+            return appLocalized("OpenAI")
+        case .anthropic:
+            return appLocalized("Anthropic")
         }
     }
 }
@@ -114,6 +120,51 @@ public class AppSettings: ObservableObject {
         }
     }
 
+    // OpenAI and compatible APIs
+    @Published public var openAIBaseURL: String {
+        didSet { UserDefaults.standard.set(openAIBaseURL, forKey: "openAIBaseURL") }
+    }
+    @Published public var openAIExtractionModel: String {
+        didSet { UserDefaults.standard.set(openAIExtractionModel, forKey: "openAIExtractionModel") }
+    }
+    @Published public var openAIGenerationModel: String {
+        didSet { UserDefaults.standard.set(openAIGenerationModel, forKey: "openAIGenerationModel") }
+    }
+    private var _openAIAPIKeyCache: String? = nil
+    public var openAIAPIKey: String {
+        get {
+            if let cached = _openAIAPIKeyCache { return cached }
+            return APIKeychain.load(for: "openai-api-key") ?? ""
+        }
+        set {
+            _openAIAPIKeyCache = newValue
+            if newValue.isEmpty { APIKeychain.delete(for: "openai-api-key") }
+            else { APIKeychain.save(key: newValue, for: "openai-api-key") }
+            objectWillChange.send()
+        }
+    }
+
+    // Anthropic
+    @Published public var anthropicExtractionModel: String {
+        didSet { UserDefaults.standard.set(anthropicExtractionModel, forKey: "anthropicExtractionModel") }
+    }
+    @Published public var anthropicGenerationModel: String {
+        didSet { UserDefaults.standard.set(anthropicGenerationModel, forKey: "anthropicGenerationModel") }
+    }
+    private var _anthropicAPIKeyCache: String? = nil
+    public var anthropicAPIKey: String {
+        get {
+            if let cached = _anthropicAPIKeyCache { return cached }
+            return APIKeychain.load(for: "anthropic-api-key") ?? ""
+        }
+        set {
+            _anthropicAPIKeyCache = newValue
+            if newValue.isEmpty { APIKeychain.delete(for: "anthropic-api-key") }
+            else { APIKeychain.save(key: newValue, for: "anthropic-api-key") }
+            objectWillChange.send()
+        }
+    }
+
     // Legacy global generation prompt, kept only to migrate older project JSON.
     @Published public var generationPrompt: String {
         didSet { UserDefaults.standard.set(generationPrompt, forKey: "generationPrompt") }
@@ -142,6 +193,11 @@ public class AppSettings: ObservableObject {
         generationBackend = AIBackendType(rawValue: UserDefaults.standard.string(forKey: "generationBackend") ?? "") ?? .none
         geminiExtractionModel = UserDefaults.standard.string(forKey: "geminiExtractionModel") ?? ""
         geminiGenerationModel = UserDefaults.standard.string(forKey: "geminiGenerationModel") ?? ""
+        openAIBaseURL = UserDefaults.standard.string(forKey: "openAIBaseURL") ?? OpenAIBackend.defaultBaseURL
+        openAIExtractionModel = UserDefaults.standard.string(forKey: "openAIExtractionModel") ?? ""
+        openAIGenerationModel = UserDefaults.standard.string(forKey: "openAIGenerationModel") ?? ""
+        anthropicExtractionModel = UserDefaults.standard.string(forKey: "anthropicExtractionModel") ?? ""
+        anthropicGenerationModel = UserDefaults.standard.string(forKey: "anthropicGenerationModel") ?? ""
         generationPrompt = UserDefaults.standard.string(forKey: "generationPrompt") ?? AppSettings.defaultGenerationPrompt
         iCloudSyncEnabled = UserDefaults.standard.bool(forKey: "iCloudSyncEnabled")
         applyLanguagePreference()
@@ -197,6 +253,10 @@ public class AppSettings: ObservableObject {
                 timeoutInterval: TimeInterval(ollamaTimeoutSeconds)
             )
         case .gemini: return GeminiBackend(apiKey: geminiAPIKey, model: geminiExtractionModel)
+        case .openAI:
+            return OpenAIBackend(apiKey: openAIAPIKey, model: openAIExtractionModel, baseURL: openAIBaseURL)
+        case .anthropic:
+            return AnthropicBackend(apiKey: anthropicAPIKey, model: anthropicExtractionModel)
         }
     }
 
@@ -210,6 +270,10 @@ public class AppSettings: ObservableObject {
                 timeoutInterval: TimeInterval(ollamaTimeoutSeconds)
             )
         case .gemini: return GeminiBackend(apiKey: geminiAPIKey, model: geminiGenerationModel)
+        case .openAI:
+            return OpenAIBackend(apiKey: openAIAPIKey, model: openAIGenerationModel, baseURL: openAIBaseURL)
+        case .anthropic:
+            return AnthropicBackend(apiKey: anthropicAPIKey, model: anthropicGenerationModel)
         }
     }
 
@@ -241,6 +305,8 @@ public class AppSettings: ObservableObject {
         case .none: return ""
         case .ollama: return generationModel
         case .gemini: return geminiGenerationModel
+        case .openAI: return openAIGenerationModel
+        case .anthropic: return anthropicGenerationModel
         }
     }
 
@@ -249,6 +315,8 @@ public class AppSettings: ObservableObject {
         case .none: return ""
         case .ollama: return extractionModel
         case .gemini: return geminiExtractionModel
+        case .openAI: return openAIExtractionModel
+        case .anthropic: return anthropicExtractionModel
         }
     }
 
@@ -257,6 +325,8 @@ public class AppSettings: ObservableObject {
         case .none: return false
         case .ollama: return !generationModel.isEmpty
         case .gemini: return !geminiAPIKey.isEmpty && !geminiGenerationModel.isEmpty
+        case .openAI: return isOpenAIProviderConfigured && !openAIGenerationModel.isEmpty
+        case .anthropic: return !anthropicAPIKey.isEmpty && !anthropicGenerationModel.isEmpty
         }
     }
 
@@ -265,7 +335,15 @@ public class AppSettings: ObservableObject {
         case .none: return false
         case .ollama: return !extractionModel.isEmpty
         case .gemini: return !geminiAPIKey.isEmpty && !geminiExtractionModel.isEmpty
+        case .openAI: return isOpenAIProviderConfigured && !openAIExtractionModel.isEmpty
+        case .anthropic: return !anthropicAPIKey.isEmpty && !anthropicExtractionModel.isEmpty
         }
+    }
+
+    public var isOpenAIProviderConfigured: Bool {
+        let configuredURL = openAIBaseURL.trimmingCharacters(in: .init(charactersIn: "/"))
+        let defaultURL = OpenAIBackend.defaultBaseURL.trimmingCharacters(in: .init(charactersIn: "/"))
+        return !openAIAPIKey.isEmpty || configuredURL != defaultURL
     }
 
     public var shouldShowOllamaBanner: Bool {
@@ -278,6 +356,23 @@ public class AppSettings: ObservableObject {
         _geminiAPIKeyCache = nil
         if extractionBackend == .gemini { extractionBackend = .none }
         if generationBackend == .gemini { generationBackend = .none }
+        objectWillChange.send()
+    }
+
+    public func deleteOpenAIConfig() {
+        openAIAPIKey = ""
+        _openAIAPIKeyCache = nil
+        openAIBaseURL = OpenAIBackend.defaultBaseURL
+        if extractionBackend == .openAI { extractionBackend = .none }
+        if generationBackend == .openAI { generationBackend = .none }
+        objectWillChange.send()
+    }
+
+    public func deleteAnthropicConfig() {
+        anthropicAPIKey = ""
+        _anthropicAPIKeyCache = nil
+        if extractionBackend == .anthropic { extractionBackend = .none }
+        if generationBackend == .anthropic { generationBackend = .none }
         objectWillChange.send()
     }
 

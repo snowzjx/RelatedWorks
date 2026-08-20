@@ -234,6 +234,202 @@ private final class RecordingBackend: AIBackend {
     }
 }
 
+// MARK: - AI Backend Tests
+
+@Suite("Cloud AI Backends", .serialized)
+struct CloudAIBackendTests {
+
+    @Test func openAIGeneratesWithChatCompletionsAndBearerAuthentication() async throws {
+        let session = makeMockSession { request in
+            #expect(request.url?.absoluteString == "https://example.test/v1/chat/completions")
+            #expect(request.httpMethod == "POST")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer test-openai-key")
+            let body = try #require(requestBodyData(request))
+            let json = try #require(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            #expect(json["model"] as? String == "gpt-test")
+            let messages = try #require(json["messages"] as? [[String: Any]])
+            #expect(messages.first?["content"] as? String == "Draft this section")
+
+            return MockResponse(
+                statusCode: 200,
+                body: #"{"choices":[{"message":{"role":"assistant","content":"OpenAI result"}}]}"#
+            )
+        }
+        let backend = OpenAIBackend(
+            apiKey: "test-openai-key",
+            model: "gpt-test",
+            baseURL: "https://example.test/v1/",
+            session: session
+        )
+
+        #expect(try await backend.generate(prompt: "Draft this section") == "OpenAI result")
+    }
+
+    @Test func openAICompatibleServerAllowsMissingAPIKeyAndListsModels() async throws {
+        let session = makeMockSession { request in
+            #expect(request.url?.absoluteString == "http://localhost:8080/v1/models")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
+            return MockResponse(
+                statusCode: 200,
+                body: #"{"data":[{"id":"local-b"},{"id":"local-a"}]}"#
+            )
+        }
+        let backend = OpenAIBackend(
+            apiKey: "",
+            model: "",
+            baseURL: "http://localhost:8080/v1",
+            session: session
+        )
+
+        #expect(try await backend.availableModels() == ["local-a", "local-b"])
+    }
+
+    @Test func openAIStreamsChatCompletionDeltas() async throws {
+        let session = makeMockSession { _ in
+            MockResponse(
+                statusCode: 200,
+                body: """
+                data: {"choices":[{"delta":{"content":"First"}}]}
+
+                data: {"choices":[{"delta":{"content":" second"}}]}
+
+                data: [DONE]
+
+                """
+            )
+        }
+        let backend = OpenAIBackend(apiKey: "key", model: "gpt-test", session: session)
+        var chunks: [String] = []
+
+        for try await chunk in backend.stream(prompt: "Hello") {
+            chunks.append(chunk)
+        }
+
+        #expect(chunks == ["First", " second"])
+    }
+
+    @Test func anthropicGeneratesWithMessagesAPIHeaders() async throws {
+        let session = makeMockSession { request in
+            #expect(request.url?.absoluteString == "https://api.anthropic.com/v1/messages")
+            #expect(request.value(forHTTPHeaderField: "x-api-key") == "test-anthropic-key")
+            #expect(request.value(forHTTPHeaderField: "anthropic-version") == "2023-06-01")
+            let body = try #require(requestBodyData(request))
+            let json = try #require(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            #expect(json["model"] as? String == "claude-test")
+            #expect(json["max_tokens"] as? Int == 4096)
+
+            return MockResponse(
+                statusCode: 200,
+                body: #"{"content":[{"type":"thinking","thinking":"hidden"},{"type":"text","text":"Claude result"}]}"#
+            )
+        }
+        let backend = AnthropicBackend(
+            apiKey: "test-anthropic-key",
+            model: "claude-test",
+            session: session
+        )
+
+        #expect(try await backend.generate(prompt: "Draft this section") == "Claude result")
+    }
+
+    @Test func anthropicStreamsTextDeltas() async throws {
+        let session = makeMockSession { _ in
+            MockResponse(
+                statusCode: 200,
+                body: """
+                event: content_block_delta
+                data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"First"}}
+
+                event: content_block_delta
+                data: {"type":"content_block_delta","delta":{"type":"text_delta","text":" second"}}
+
+                event: message_stop
+                data: {"type":"message_stop"}
+
+                """
+            )
+        }
+        let backend = AnthropicBackend(apiKey: "key", model: "claude-test", session: session)
+        var chunks: [String] = []
+
+        for try await chunk in backend.stream(prompt: "Hello") {
+            chunks.append(chunk)
+        }
+
+        #expect(chunks == ["First", " second"])
+    }
+
+    @Test func providerErrorMessageIsSurfaced() async throws {
+        let session = makeMockSession { _ in
+            MockResponse(statusCode: 401, body: #"{"error":{"message":"Invalid API key"}}"#)
+        }
+        let backend = AnthropicBackend(apiKey: "bad-key", model: "claude-test", session: session)
+
+        do {
+            _ = try await backend.generate(prompt: "Hello")
+            Issue.record("Expected the provider request to fail")
+        } catch {
+            #expect(error.localizedDescription == "Invalid API key")
+        }
+    }
+
+    private func makeMockSession(
+        handler: @escaping (URLRequest) throws -> MockResponse
+    ) -> URLSession {
+        MockURLProtocol.handler = handler
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        return URLSession(configuration: configuration)
+    }
+}
+
+private struct MockResponse {
+    let statusCode: Int
+    let body: String
+}
+
+private func requestBodyData(_ request: URLRequest) -> Data? {
+    if let body = request.httpBody { return body }
+    guard let stream = request.httpBodyStream else { return nil }
+    stream.open()
+    defer { stream.close() }
+    var result = Data()
+    var buffer = [UInt8](repeating: 0, count: 4096)
+    while stream.hasBytesAvailable {
+        let count = stream.read(&buffer, maxLength: buffer.count)
+        guard count > 0 else { break }
+        result.append(buffer, count: count)
+    }
+    return result
+}
+
+private final class MockURLProtocol: URLProtocol {
+    static var handler: ((URLRequest) throws -> MockResponse)?
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        do {
+            let handler = try #require(Self.handler)
+            let response = try handler(request)
+            let httpResponse = HTTPURLResponse(
+                url: try #require(request.url),
+                statusCode: response.statusCode,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+            client?.urlProtocol(self, didReceive: httpResponse, cacheStoragePolicy: .notAllowed)
+            client?.urlProtocol(self, didLoad: Data(response.body.utf8))
+            client?.urlProtocolDidFinishLoading(self)
+        } catch {
+            client?.urlProtocol(self, didFailWithError: error)
+        }
+    }
+
+    override func stopLoading() {}
+}
+
 // MARK: - App Settings Tests
 
 @Suite("App Settings")
@@ -273,6 +469,11 @@ struct AppSettingsTests {
             "generationBackend",
             "geminiExtractionModel",
             "geminiGenerationModel",
+            "openAIBaseURL",
+            "openAIExtractionModel",
+            "openAIGenerationModel",
+            "anthropicExtractionModel",
+            "anthropicGenerationModel",
             "generationPrompt",
             "iCloudSyncEnabled",
             "AppleLanguages",

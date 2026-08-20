@@ -38,6 +38,8 @@ struct HelpView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Label(appLocalized("Ollama runs locally and needs no API key."), systemImage: "desktopcomputer")
                         Label(appLocalized("Gemini uses a key from Google AI Studio. Recommended: gemini-2.5-flash."), systemImage: "cloud")
+                        Label(appLocalized("OpenAI supports hosted models and compatible local servers."), systemImage: "network")
+                        Label(appLocalized("Anthropic uses an API key for Claude models."), systemImage: "cloud.fill")
                     }
                     .font(.callout)
                 }

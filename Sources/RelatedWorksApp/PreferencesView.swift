@@ -123,11 +123,15 @@ struct ModelsSettingsView: View {
     @ObservedObject private var reachability = OllamaReachability.shared
     @State private var ollamaModels: [String] = []
     @State private var geminiModels: [String] = []
+    @State private var openAIModels: [String] = []
+    @State private var anthropicModels: [String] = []
 
     var availableBackends: [AIBackendType] {
         var backends: [AIBackendType] = [.none]
         if reachability.reachable { backends.append(.ollama) }
         if !settings.geminiAPIKey.isEmpty { backends.append(.gemini) }
+        if settings.isOpenAIProviderConfigured { backends.append(.openAI) }
+        if !settings.anthropicAPIKey.isEmpty { backends.append(.anthropic) }
         return backends
     }
 
@@ -143,6 +147,10 @@ struct ModelsSettingsView: View {
                         modelPicker(models: ollamaModels, selection: $settings.extractionModel, placeholder: appLocalized("model name"))
                     } else if settings.extractionBackend == .gemini {
                         modelPicker(models: geminiModels, selection: $settings.geminiExtractionModel, placeholder: appLocalized("gemini-2.5-flash"), isGemini: true)
+                    } else if settings.extractionBackend == .openAI {
+                        modelPicker(models: openAIModels, selection: $settings.openAIExtractionModel, placeholder: appLocalized("model name"))
+                    } else if settings.extractionBackend == .anthropic {
+                        modelPicker(models: anthropicModels, selection: $settings.anthropicExtractionModel, placeholder: appLocalized("model name"))
                     }
                 }
             } header: { Text(appLocalized("PDF Extraction")) }
@@ -157,6 +165,10 @@ struct ModelsSettingsView: View {
                         modelPicker(models: ollamaModels, selection: $settings.generationModel, placeholder: appLocalized("model name"))
                     } else if settings.generationBackend == .gemini {
                         modelPicker(models: geminiModels, selection: $settings.geminiGenerationModel, placeholder: appLocalized("gemini-2.5-flash"), isGemini: true)
+                    } else if settings.generationBackend == .openAI {
+                        modelPicker(models: openAIModels, selection: $settings.openAIGenerationModel, placeholder: appLocalized("model name"))
+                    } else if settings.generationBackend == .anthropic {
+                        modelPicker(models: anthropicModels, selection: $settings.anthropicGenerationModel, placeholder: appLocalized("model name"))
                     }
                 }
             } header: { Text(appLocalized("Related Works Generation")) }
@@ -169,9 +181,8 @@ struct ModelsSettingsView: View {
     @ViewBuilder
     private func modelPicker(models: [String], selection: Binding<String>, placeholder: String, isGemini: Bool = false) -> some View {
         if models.isEmpty {
-            Text(selection.wrappedValue.isEmpty ? appLocalized("No models available") : selection.wrappedValue)
-                .foregroundStyle(.secondary)
-                .font(.callout)
+            TextField(placeholder, text: selection)
+                .textFieldStyle(.roundedBorder)
         } else {
             Picker("", selection: selection) {
                 Text(appLocalized("Select model…")).tag("").foregroundStyle(.secondary)
@@ -201,6 +212,8 @@ struct ModelsSettingsView: View {
     private func fetchModels() {
         fetchOllamaModels()
         fetchGeminiModels()
+        fetchOpenAIModels()
+        fetchAnthropicModels()
     }
 
     private func fetchOllamaModels() {
@@ -237,19 +250,49 @@ struct ModelsSettingsView: View {
             await MainActor.run { geminiModels = names }
         }
     }
+
+    private func fetchOpenAIModels() {
+        guard settings.isOpenAIProviderConfigured else { return }
+        Task {
+            let backend = OpenAIBackend(
+                apiKey: settings.openAIAPIKey,
+                model: "",
+                baseURL: settings.openAIBaseURL
+            )
+            guard let models = try? await backend.availableModels() else { return }
+            await MainActor.run { openAIModels = models }
+        }
+    }
+
+    private func fetchAnthropicModels() {
+        let key = settings.anthropicAPIKey
+        guard !key.isEmpty else { return }
+        Task {
+            let backend = AnthropicBackend(apiKey: key, model: "")
+            guard let models = try? await backend.availableModels() else { return }
+            await MainActor.run { anthropicModels = models }
+        }
+    }
 }
 
-// MARK: - AI Backends (Ollama + Gemini config)
+// MARK: - AI Backends
 
 struct BackendsSettingsView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject private var reachability = OllamaReachability.shared
-    @State private var ollamaModelCount: Int = 0
     @State private var showingURLEditor = false
     @State private var showingGeminiKeyEditor = false
+    @State private var showingOpenAIEditor = false
+    @State private var showingAnthropicKeyEditor = false
     @State private var geminiTestStatus: TestStatus = .idle
     @State private var geminiModels: [String] = []
     @State private var isFetchingGemini = false
+    @State private var openAITestStatus: TestStatus = .idle
+    @State private var openAIModels: [String] = []
+    @State private var isFetchingOpenAI = false
+    @State private var anthropicTestStatus: TestStatus = .idle
+    @State private var anthropicModels: [String] = []
+    @State private var isFetchingAnthropic = false
 
     enum TestStatus { case idle, testing, ok, failed(String) }
 
@@ -324,17 +367,95 @@ struct BackendsSettingsView: View {
                     }
                 }
             } header: { Text(appLocalized("Gemini")) }
+
+            // ── OpenAI and compatible servers ────────────────────────
+            Section {
+                HStack(spacing: 8) {
+                    Text(settings.openAIBaseURL)
+                        .foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                    Spacer()
+                    Button(appLocalized("Configure")) { showingOpenAIEditor = true }.controlSize(.small)
+                    Button(appLocalized("Refresh")) { fetchOpenAIModels() }
+                        .disabled(!settings.isOpenAIProviderConfigured)
+                        .controlSize(.small)
+                    Button(appLocalized("Delete"), role: .destructive) { settings.deleteOpenAIConfig() }
+                        .controlSize(.small).foregroundStyle(.red)
+                }
+                if !settings.openAIAPIKey.isEmpty {
+                    Label(appLocalized("API key stored in Keychain"), systemImage: "lock.fill")
+                        .font(.caption2).foregroundStyle(.secondary)
+                } else if settings.isOpenAIProviderConfigured {
+                    Label(appLocalized("Custom server configured without an API key"), systemImage: "server.rack")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+                providerStatus(isFetching: isFetchingOpenAI, status: openAITestStatus, modelCount: openAIModels.count)
+            } header: { Text(appLocalized("OpenAI Compatible")) }
+
+            // ── Anthropic ─────────────────────────────────────────────
+            Section {
+                HStack(spacing: 8) {
+                    Text(settings.anthropicAPIKey.isEmpty ? appLocalized("No API key set") : "••••••••••••••••")
+                        .foregroundStyle(.secondary).lineLimit(1)
+                    Spacer()
+                    Button(appLocalized("Configure")) { showingAnthropicKeyEditor = true }.controlSize(.small)
+                    Button(appLocalized("Refresh")) { fetchAnthropicModels() }
+                        .disabled(settings.anthropicAPIKey.isEmpty)
+                        .controlSize(.small)
+                    Button(appLocalized("Delete"), role: .destructive) { settings.deleteAnthropicConfig() }
+                        .controlSize(.small).foregroundStyle(.red)
+                }
+                if !settings.anthropicAPIKey.isEmpty {
+                    Label(appLocalized("API key stored in Keychain"), systemImage: "lock.fill")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+                providerStatus(isFetching: isFetchingAnthropic, status: anthropicTestStatus, modelCount: anthropicModels.count)
+            } header: { Text(appLocalized("Anthropic")) }
         }
         .formStyle(.grouped)
-        .onAppear { Task { await settings.checkOllama() }; fetchGeminiModels() }
+        .onAppear {
+            Task { await settings.checkOllama() }
+            fetchGeminiModels()
+            fetchOpenAIModels()
+            fetchAnthropicModels()
+        }
         .sheet(isPresented: $showingURLEditor) {
             URLEditorSheet(url: $settings.ollamaBaseURL) { Task { await settings.checkOllama() } }
         }
         .sheet(isPresented: $showingGeminiKeyEditor) {
             GeminiKeyEditorSheet(settings: settings) { fetchGeminiModels() }
         }
+        .sheet(isPresented: $showingOpenAIEditor) {
+            OpenAIEditorSheet(settings: settings) { fetchOpenAIModels() }
+        }
+        .sheet(isPresented: $showingAnthropicKeyEditor) {
+            AnthropicKeyEditorSheet(settings: settings) { fetchAnthropicModels() }
+        }
     }
 
+    @ViewBuilder
+    private func providerStatus(isFetching: Bool, status: TestStatus, modelCount: Int) -> some View {
+        HStack(spacing: 6) {
+            if isFetching {
+                ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
+                Text(appLocalized("Fetching models…")).font(.caption).foregroundStyle(.secondary)
+            } else {
+                switch status {
+                case .idle:
+                    EmptyView()
+                case .testing:
+                    ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
+                    Text(appLocalized("Testing…")).font(.caption).foregroundStyle(.secondary)
+                case .ok:
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    Text(appLocalizedFormat("%lld model(s) available", modelCount))
+                        .font(.caption).foregroundStyle(.secondary)
+                case .failed(let message):
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+                    Text(message).font(.caption).foregroundStyle(.red).lineLimit(2)
+                }
+            }
+        }
+    }
 
     private func fetchGeminiModels() {
         let key = settings.geminiAPIKey
@@ -378,6 +499,54 @@ struct BackendsSettingsView: View {
             }
         }
     }
+
+    private func fetchOpenAIModels() {
+        guard settings.isOpenAIProviderConfigured else { return }
+        isFetchingOpenAI = true
+        openAITestStatus = .idle
+        Task {
+            do {
+                let backend = OpenAIBackend(
+                    apiKey: settings.openAIAPIKey,
+                    model: "",
+                    baseURL: settings.openAIBaseURL
+                )
+                let models = try await backend.availableModels()
+                await MainActor.run {
+                    openAIModels = models
+                    isFetchingOpenAI = false
+                    openAITestStatus = .ok
+                }
+            } catch {
+                await MainActor.run {
+                    isFetchingOpenAI = false
+                    openAITestStatus = .failed(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    private func fetchAnthropicModels() {
+        let key = settings.anthropicAPIKey
+        guard !key.isEmpty else { return }
+        isFetchingAnthropic = true
+        anthropicTestStatus = .idle
+        Task {
+            do {
+                let models = try await AnthropicBackend(apiKey: key, model: "").availableModels()
+                await MainActor.run {
+                    anthropicModels = models
+                    isFetchingAnthropic = false
+                    anthropicTestStatus = .ok
+                }
+            } catch {
+                await MainActor.run {
+                    isFetchingAnthropic = false
+                    anthropicTestStatus = .failed(error.localizedDescription)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Gemini Key Editor Sheet
@@ -406,6 +575,88 @@ struct GeminiKeyEditorSheet: View {
         }
         .padding(24).frame(width: 400)
         .onAppear { draft = settings.geminiAPIKey; focused = true }
+    }
+}
+
+struct OpenAIEditorSheet: View {
+    let settings: AppSettings
+    let onSave: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var apiKeyDraft = ""
+    @State private var baseURLDraft = ""
+    @FocusState private var focusedField: Field?
+
+    private enum Field { case baseURL, apiKey }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(appLocalized("Configure OpenAI-Compatible API")).font(.headline)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(appLocalized("Base URL")).font(.caption).foregroundStyle(.secondary)
+                TextField(OpenAIBackend.defaultBaseURL, text: $baseURLDraft)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focusedField, equals: .baseURL)
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                Text(appLocalized("API Key (optional for local servers)"))
+                    .font(.caption).foregroundStyle(.secondary)
+                SecureField(appLocalized("sk-..."), text: $apiKeyDraft)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focusedField, equals: .apiKey)
+            }
+            Text(appLocalized("Use an endpoint ending in /v1. OpenAI, llama.cpp, MLX-LM, and other Chat Completions-compatible servers are supported."))
+                .font(.caption2).foregroundStyle(.secondary)
+            HStack {
+                Spacer()
+                Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
+                Button(appLocalized("Save")) {
+                    settings.openAIBaseURL = baseURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+                    settings.openAIAPIKey = apiKeyDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+                    onSave()
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent).keyboardShortcut(.return)
+                .inactiveAwareProminentButtonForeground()
+                .disabled(baseURLDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+        .padding(24).frame(width: 460)
+        .onAppear {
+            apiKeyDraft = settings.openAIAPIKey
+            baseURLDraft = settings.openAIBaseURL
+            focusedField = .baseURL
+        }
+    }
+}
+
+struct AnthropicKeyEditorSheet: View {
+    let settings: AppSettings
+    let onSave: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft = ""
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(appLocalized("Configure Anthropic API Key")).font(.headline)
+            SecureField(appLocalized("sk-ant-..."), text: $draft)
+                .textFieldStyle(.roundedBorder)
+                .focused($focused)
+            HStack {
+                Spacer()
+                Button(appLocalized("Cancel")) { dismiss() }.keyboardShortcut(.escape)
+                Button(appLocalized("Save")) {
+                    settings.anthropicAPIKey = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+                    onSave()
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent).keyboardShortcut(.return)
+                .inactiveAwareProminentButtonForeground()
+                .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+        .padding(24).frame(width: 400)
+        .onAppear { draft = settings.anthropicAPIKey; focused = true }
     }
 }
 

@@ -304,6 +304,251 @@ public struct GeminiBackend: AIBackend {
     }
 }
 
+// MARK: - OpenAI-Compatible Backend
+
+private let cloudAIBackendSession: URLSession = {
+    let config = URLSessionConfiguration.default
+    config.timeoutIntervalForRequest = 300
+    config.timeoutIntervalForResource = 300
+    return URLSession(configuration: config)
+}()
+
+public struct OpenAIBackend: AIBackend {
+    public static let defaultBaseURL = "https://api.openai.com/v1"
+
+    public let apiKey: String
+    public let model: String
+    public let baseURL: String
+    private let session: URLSession
+
+    public init(
+        apiKey: String,
+        model: String,
+        baseURL: String = OpenAIBackend.defaultBaseURL,
+        session: URLSession? = nil
+    ) {
+        self.apiKey = apiKey
+        self.model = model
+        self.baseURL = baseURL
+        self.session = session ?? cloudAIBackendSession
+    }
+
+    public func generate(prompt: String) async throws -> String {
+        var request = try makeRequest(path: "chat/completions")
+        request.httpMethod = "POST"
+        request.httpBody = try JSONSerialization.data(withJSONObject: [
+            "model": model,
+            "messages": [["role": "user", "content": prompt]],
+            "stream": false,
+        ])
+
+        let (data, response) = try await session.data(for: request)
+        try validateCloudResponse(data: data, response: response, domain: "OpenAI")
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let choices = json["choices"] as? [[String: Any]],
+              let message = choices.first?["message"] as? [String: Any],
+              let text = message["content"] as? String else {
+            throw URLError(.cannotParseResponse)
+        }
+        return text
+    }
+
+    public func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    var request = try makeRequest(path: "chat/completions")
+                    request.httpMethod = "POST"
+                    request.httpBody = try JSONSerialization.data(withJSONObject: [
+                        "model": model,
+                        "messages": [["role": "user", "content": prompt]],
+                        "stream": true,
+                    ])
+
+                    let (bytes, response) = try await session.bytes(for: request)
+                    if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+                        var data = Data()
+                        for try await byte in bytes { data.append(byte) }
+                        try validateCloudResponse(data: data, response: response, domain: "OpenAI")
+                    }
+
+                    for try await line in bytes.lines {
+                        let payload = ssePayload(from: line)
+                        guard let payload, payload != "[DONE]",
+                              let data = payload.data(using: .utf8),
+                              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                              let choices = json["choices"] as? [[String: Any]],
+                              let delta = choices.first?["delta"] as? [String: Any],
+                              let text = delta["content"] as? String,
+                              !text.isEmpty else {
+                            continue
+                        }
+                        continuation.yield(text)
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    public func availableModels() async throws -> [String] {
+        let request = try makeRequest(path: "models")
+        let (data, response) = try await session.data(for: request)
+        try validateCloudResponse(data: data, response: response, domain: "OpenAI")
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let models = json["data"] as? [[String: Any]] else {
+            throw URLError(.cannotParseResponse)
+        }
+        return models.compactMap { $0["id"] as? String }.sorted()
+    }
+
+    private func makeRequest(path: String) throws -> URLRequest {
+        let root = baseURL.trimmingCharacters(in: .init(charactersIn: "/"))
+        guard let url = URL(string: "\(root)/\(path)") else { throw URLError(.badURL) }
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if !apiKey.isEmpty {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        }
+        request.timeoutInterval = 300
+        return request
+    }
+}
+
+// MARK: - Anthropic Backend
+
+public struct AnthropicBackend: AIBackend {
+    public static let defaultBaseURL = "https://api.anthropic.com/v1"
+
+    public let apiKey: String
+    public let model: String
+    public let baseURL: String
+    private let session: URLSession
+
+    public init(
+        apiKey: String,
+        model: String,
+        baseURL: String = AnthropicBackend.defaultBaseURL,
+        session: URLSession? = nil
+    ) {
+        self.apiKey = apiKey
+        self.model = model
+        self.baseURL = baseURL
+        self.session = session ?? cloudAIBackendSession
+    }
+
+    public func generate(prompt: String) async throws -> String {
+        var request = try makeRequest(path: "messages")
+        request.httpMethod = "POST"
+        request.httpBody = try JSONSerialization.data(withJSONObject: [
+            "model": model,
+            "max_tokens": 4096,
+            "messages": [["role": "user", "content": prompt]],
+            "stream": false,
+        ])
+
+        let (data, response) = try await session.data(for: request)
+        try validateCloudResponse(data: data, response: response, domain: "Anthropic")
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let content = json["content"] as? [[String: Any]] else {
+            throw URLError(.cannotParseResponse)
+        }
+        let text = content.compactMap { block -> String? in
+            guard block["type"] as? String == "text" else { return nil }
+            return block["text"] as? String
+        }.joined()
+        guard !text.isEmpty else { throw URLError(.cannotParseResponse) }
+        return text
+    }
+
+    public func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    var request = try makeRequest(path: "messages")
+                    request.httpMethod = "POST"
+                    request.httpBody = try JSONSerialization.data(withJSONObject: [
+                        "model": model,
+                        "max_tokens": 4096,
+                        "messages": [["role": "user", "content": prompt]],
+                        "stream": true,
+                    ])
+
+                    let (bytes, response) = try await session.bytes(for: request)
+                    if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+                        var data = Data()
+                        for try await byte in bytes { data.append(byte) }
+                        try validateCloudResponse(data: data, response: response, domain: "Anthropic")
+                    }
+
+                    for try await line in bytes.lines {
+                        guard let payload = ssePayload(from: line),
+                              let data = payload.data(using: .utf8),
+                              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                              json["type"] as? String == "content_block_delta",
+                              let delta = json["delta"] as? [String: Any],
+                              delta["type"] as? String == "text_delta",
+                              let text = delta["text"] as? String,
+                              !text.isEmpty else {
+                            continue
+                        }
+                        continuation.yield(text)
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    public func availableModels() async throws -> [String] {
+        let request = try makeRequest(path: "models")
+        let (data, response) = try await session.data(for: request)
+        try validateCloudResponse(data: data, response: response, domain: "Anthropic")
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let models = json["data"] as? [[String: Any]] else {
+            throw URLError(.cannotParseResponse)
+        }
+        return models.compactMap { $0["id"] as? String }.sorted()
+    }
+
+    private func makeRequest(path: String) throws -> URLRequest {
+        let root = baseURL.trimmingCharacters(in: .init(charactersIn: "/"))
+        guard let url = URL(string: "\(root)/\(path)") else { throw URLError(.badURL) }
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+        request.timeoutInterval = 300
+        return request
+    }
+}
+
+private func ssePayload(from line: String) -> String? {
+    let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard trimmed.hasPrefix("data:") else { return nil }
+    return String(trimmed.dropFirst("data:".count)).trimmingCharacters(in: .whitespaces)
+}
+
+private func validateCloudResponse(data: Data, response: URLResponse, domain: String) throws {
+    guard let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) else { return }
+    let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    let message = (json?["error"] as? [String: Any])?["message"] as? String
+        ?? appLocalizedFormat("HTTP %lld", Int64(http.statusCode))
+    throw NSError(
+        domain: domain,
+        code: http.statusCode,
+        userInfo: [NSLocalizedDescriptionKey: message]
+    )
+}
+
 // MARK: - Keychain helper for API key
 
 public enum APIKeychain {

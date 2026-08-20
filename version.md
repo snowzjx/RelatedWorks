@@ -1,5 +1,13 @@
 # Version History
 
+## v2.1.9
+
+Released to expand the hosted and self-hosted AI options available for extraction and generation.
+
+- Adds native OpenAI-compatible and Anthropic Claude backends with streaming output.
+- Supports OpenAI API keys and custom `/v1` endpoints such as llama.cpp and MLX-LM.
+- Stores provider keys in Keychain and discovers available models for separate extraction and generation choices.
+
 ## v2.1.8
 
 Released to make generation feel more responsive and improve app-to-website discovery.
