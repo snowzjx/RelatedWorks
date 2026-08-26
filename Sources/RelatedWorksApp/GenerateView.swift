@@ -5,6 +5,25 @@ private enum GeneratedOutputTab: Hashable {
     case bibtex
 }
 
+@MainActor
+final class GenerationLogCoordinator: ObservableObject {
+    @Published private var activeLogs: [UUID: GenerationLog] = [:]
+
+    func log(for projectID: UUID) -> GenerationLog? {
+        activeLogs[projectID]
+    }
+
+    func setLog(_ log: GenerationLog, for projectID: UUID) {
+        activeLogs[projectID] = log
+    }
+
+    func updateResponse(_ response: String, for projectID: UUID) {
+        guard var log = activeLogs[projectID] else { return }
+        log.response = response
+        activeLogs[projectID] = log
+    }
+}
+
 // MARK: - Syntax Highlighting
 
 private func applyHighlights(to source: String, rules: [(pattern: String, color: Color, options: NSRegularExpression.Options)]) -> AttributedString {
@@ -66,11 +85,14 @@ struct GenerateButton: View {
 struct GenerateWindowView: View {
     let projectID: UUID?
     @EnvironmentObject var store: Store
+    @EnvironmentObject private var generationLogCoordinator: GenerationLogCoordinator
+    @Environment(\.openWindow) private var openWindow
     @State private var tab: GeneratedOutputTab = .draft
     @State private var copied = false
     @State private var isGenerating = false
     @State private var streamingLatex: String?
     @State private var isThinking = false
+    @State private var generationTask: Task<Void, Never>?
 
     private var project: Project? {
         guard let id = projectID else { return nil }
@@ -79,7 +101,7 @@ struct GenerateWindowView: View {
 
     var body: some View {
         Group {
-            if var proj = project {
+            if let proj = project {
                 contentView(proj: proj)
                     .navigationTitle(proj.name)
                     .navigationSubtitle(proj.generationModel.map { "⚙ \($0)" } ?? "")
@@ -94,23 +116,32 @@ struct GenerateWindowView: View {
                         }
 
                         ToolbarItemGroup(placement: .primaryAction) {
+                            Button(action: { openWindow(id: AppWindowID.generationLog, value: proj.id) }) {
+                                Label("Log", systemImage: "text.alignleft")
+                            }
+                            .disabled(generationLogCoordinator.log(for: proj.id) == nil && proj.generationLog == nil)
+
                             Button(action: { copyContent(proj) }) {
                                 Label(copied ? "Copied!" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
                             }
 
-                            Button(action: { regenerate(&proj) }) {
-                                if isGenerating {
-                                    ProgressView().scaleEffect(0.7).frame(width: 14, height: 14)
-                                } else {
+                            if isGenerating {
+                                Button(action: cancelGeneration) {
+                                    Label("Cancel", systemImage: "stop.circle")
+                                }
+                            } else {
+                                Button(action: { regenerate(proj) }) {
                                     Label("Regenerate", systemImage: "sparkles")
                                 }
                             }
-                            .disabled(isGenerating)
                         }
                     }
             } else {
                 Text("Project not found").foregroundStyle(.secondary)
             }
+        }
+        .onDisappear {
+            generationTask?.cancel()
         }
     }
 
@@ -153,8 +184,7 @@ struct GenerateWindowView: View {
                     Text("Click Regenerate to generate a Related Works section.")
                         .foregroundStyle(.secondary)
                     Button("Generate Now") {
-                        var p = proj
-                        regenerate(&p)
+                        regenerate(proj)
                     }
                     .buttonStyle(.borderedProminent)
                     .inactiveAwareProminentButtonForeground()
@@ -186,17 +216,29 @@ struct GenerateWindowView: View {
         }
     }
 
-    private func regenerate(_ proj: inout Project) {
+    private func regenerate(_ proj: Project) {
+        generationTask?.cancel()
+
+        let prompt = RelatedWorksGenerator.buildPrompt(proj)
+        let modelName = AppSettings.shared.activeGenerationModelName
+        let startedLog = GenerationLog(prompt: prompt, model: modelName)
+
         isGenerating = true
         isThinking = false
         streamingLatex = ""
-        proj.generatedLatex = nil
-        proj.generationModel = nil
-        try? store.save(proj)
-        let snapshot = proj
-        let modelName = AppSettings.shared.activeGenerationModelName
-        Task {
+        generationLogCoordinator.setLog(startedLog, for: proj.id)
+
+        var snapshot = proj
+        snapshot.generatedLatex = nil
+        snapshot.generationModel = nil
+        snapshot.generationLog = startedLog
+        try? store.save(snapshot)
+
+        generationTask = Task {
             var output = ""
+            var failed = false
+            var receivedCancellation = false
+
             for await event in RelatedWorksGenerator.streamEvents(for: snapshot) {
                 switch event {
                 case let .thinking(thinking):
@@ -207,25 +249,50 @@ struct GenerateWindowView: View {
                     output = partialOutput
                     await MainActor.run {
                         streamingLatex = partialOutput
+                        generationLogCoordinator.updateResponse(partialOutput, for: snapshot.id)
                     }
+                case let .failed(message):
+                    failed = true
+                    output = message
+                    await MainActor.run {
+                        streamingLatex = message
+                        generationLogCoordinator.updateResponse(message, for: snapshot.id)
+                    }
+                case .cancelled:
+                    receivedCancellation = true
                 }
             }
 
+            let wasCancelled = Task.isCancelled || receivedCancellation
             await MainActor.run {
                 guard var updated = store.projects.first(where: { $0.id == snapshot.id }) else {
                     streamingLatex = nil
                     isThinking = false
                     isGenerating = false
+                    generationTask = nil
                     return
                 }
-                updated.generatedLatex = output
-                updated.generationModel = modelName
+
+                var completedLog = startedLog
+                completedLog.response = output
+                completedLog.completedAt = Date()
+                completedLog.status = wasCancelled ? .cancelled : (failed ? .failed : .completed)
+
+                updated.generatedLatex = output.isEmpty ? nil : output
+                updated.generationModel = output.isEmpty ? nil : modelName
+                updated.generationLog = completedLog
                 try? store.save(updated)
+                generationLogCoordinator.setLog(completedLog, for: snapshot.id)
                 streamingLatex = nil
                 isThinking = false
                 isGenerating = false
+                generationTask = nil
             }
         }
+    }
+
+    private func cancelGeneration() {
+        generationTask?.cancel()
     }
 
     private func copyContent(_ proj: Project) {
@@ -237,6 +304,115 @@ struct GenerateWindowView: View {
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             await MainActor.run { copied = false }
+        }
+    }
+}
+
+struct GenerationLogWindowView: View {
+    let projectID: UUID?
+    @EnvironmentObject private var store: Store
+    @EnvironmentObject private var generationLogCoordinator: GenerationLogCoordinator
+
+    private var log: GenerationLog? {
+        guard let projectID else { return nil }
+        return generationLogCoordinator.log(for: projectID)
+            ?? store.projects.first(where: { $0.id == projectID })?.generationLog
+    }
+
+    var body: some View {
+        if let log {
+            GenerationLogView(log: log)
+        } else {
+            ContentUnavailableView(
+                "No Generation Log",
+                systemImage: "text.alignleft",
+                description: Text("Generate a Related Works draft to create a conversation log.")
+            )
+        }
+    }
+}
+
+private struct GenerationLogView: View {
+    let log: GenerationLog
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 8) {
+                        Image(systemName: statusIcon)
+                            .foregroundStyle(statusColor)
+                        Text(statusText)
+                            .font(.headline)
+                        Spacer()
+                        if !log.model.isEmpty {
+                            Text(log.model)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Text(log.startedAt.formatted(date: .abbreviated, time: .standard))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    transcriptSection(title: "User", text: log.prompt)
+                    transcriptSection(
+                        title: "Assistant",
+                        text: log.response.isEmpty ? emptyResponseText : log.response
+                    )
+                }
+                .padding(20)
+            }
+            .navigationTitle("Generation Log")
+        }
+    }
+
+    private func transcriptSection(title: LocalizedStringKey, text: String) -> some View {
+        GroupBox {
+            Text(text)
+                .font(.system(.body, design: .monospaced))
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.vertical, 4)
+        } label: {
+            Text(title)
+                .font(.headline)
+        }
+    }
+
+    private var statusText: LocalizedStringKey {
+        switch log.status {
+        case .inProgress: "Generating..."
+        case .completed: "Completed"
+        case .cancelled: "Cancelled"
+        case .failed: "Failed"
+        }
+    }
+
+    private var statusIcon: String {
+        switch log.status {
+        case .inProgress: "ellipsis.circle"
+        case .completed: "checkmark.circle.fill"
+        case .cancelled: "stop.circle.fill"
+        case .failed: "exclamationmark.triangle.fill"
+        }
+    }
+
+    private var statusColor: Color {
+        switch log.status {
+        case .inProgress: .accentColor
+        case .completed: .green
+        case .cancelled: .orange
+        case .failed: .red
+        }
+    }
+
+    private var emptyResponseText: String {
+        switch log.status {
+        case .inProgress: appLocalized("Waiting for the model to respond…")
+        case .cancelled: appLocalized("Generation was cancelled before the model returned any text.")
+        case .completed, .failed: appLocalized("No response was returned.")
         }
     }
 }

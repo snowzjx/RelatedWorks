@@ -157,6 +157,38 @@ public struct PaperReference: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
+public struct GenerationLog: Codable, Hashable, Sendable {
+    public enum Status: String, Codable, Hashable, Sendable {
+        case inProgress
+        case completed
+        case cancelled
+        case failed
+    }
+
+    public var prompt: String
+    public var response: String
+    public var model: String
+    public var startedAt: Date
+    public var completedAt: Date?
+    public var status: Status
+
+    public init(
+        prompt: String,
+        response: String = "",
+        model: String,
+        startedAt: Date = Date(),
+        completedAt: Date? = nil,
+        status: Status = .inProgress
+    ) {
+        self.prompt = prompt
+        self.response = response
+        self.model = model
+        self.startedAt = startedAt
+        self.completedAt = completedAt
+        self.status = status
+    }
+}
+
 public struct Project: Codable, Identifiable, Hashable, Sendable {
     public var id: UUID
     public var name: String
@@ -167,6 +199,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
     public var createdAt: Date
     public var generatedLatex: String?
     public var generationModel: String?
+    public var generationLog: GenerationLog?
     public var bibEntries: [String: String]
 
     public init(name: String, description: String = "", projectType: ProjectType = .researchPaper,
@@ -179,6 +212,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
         self.papers = []
         self.createdAt = Date()
         self.generatedLatex = nil
+        self.generationLog = nil
         self.bibEntries = [:]
     }
 
@@ -200,6 +234,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
         createdAt = try c.decode(Date.self, forKey: .createdAt)
         generatedLatex = try c.decodeIfPresent(String.self, forKey: .generatedLatex)
         generationModel = try c.decodeIfPresent(String.self, forKey: .generationModel)
+        generationLog = try c.decodeIfPresent(GenerationLog.self, forKey: .generationLog)
         bibEntries = try c.decodeIfPresent([String: String].self, forKey: .bibEntries) ?? [:]
     }
 
@@ -217,6 +252,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
         self.createdAt = Date()
         self.generatedLatex = source.generatedLatex
         self.generationModel = source.generationModel
+        self.generationLog = source.generationLog
         self.bibEntries = source.bibEntries
     }
 
@@ -264,7 +300,7 @@ public struct Project: Codable, Identifiable, Hashable, Sendable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, name, description, projectType, generationPrompt, papers, createdAt, generatedLatex, generationModel, bibEntries
+        case id, name, description, projectType, generationPrompt, papers, createdAt, generatedLatex, generationModel, generationLog, bibEntries
     }
 
     enum LegacyCodingKeys: String, CodingKey {

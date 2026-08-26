@@ -447,6 +447,17 @@
         }
       }
     },
+    "Assistant" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助手"
+          }
+        }
+      }
+    },
     "Annotation" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -700,6 +711,17 @@
         }
       }
     },
+    "Cancelled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已取消"
+          }
+        }
+      }
+    },
     "Cannot connect to Ollama" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -817,6 +839,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关闭教程"
+          }
+        }
+      }
+    },
+    "Completed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成"
           }
         }
       }
@@ -1657,6 +1690,28 @@
         }
       }
     },
+    "Failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失败"
+          }
+        }
+      }
+    },
+    "Generate a Related Works draft to create a conversation log." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成相关工作草稿后，即可创建对话日志。"
+          }
+        }
+      }
+    },
     "Generate Now" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1697,6 +1752,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "生成相关工作"
+          }
+        }
+      }
+    },
+    "Generation Log" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成日志"
+          }
+        }
+      }
+    },
+    "Generation was cancelled before the model returned any text." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "生成已在模型返回任何文本之前取消。"
           }
         }
       }
@@ -2202,6 +2279,17 @@
         }
       }
     },
+    "Log" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志"
+          }
+        }
+      }
+    },
     "Models" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2275,6 +2363,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "否"
+          }
+        }
+      }
+    },
+    "No response was returned." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未返回任何响应。"
+          }
+        }
+      }
+    },
+    "No Generation Log" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有生成日志"
           }
         }
       }
@@ -3912,6 +4022,17 @@
         }
       }
     },
+    "User" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户"
+          }
+        }
+      }
+    },
     "User Guide" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3941,6 +4062,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "期刊 / 会议"
+          }
+        }
+      }
+    },
+    "Waiting for the model to respond…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待模型响应……"
           }
         }
       }

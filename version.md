@@ -1,5 +1,13 @@
 # Version History
 
+## v2.1.10
+
+Released to make long-running Related Works generation easier to control and inspect.
+
+- Adds a Cancel button that interrupts an active generation request without reporting cancellation as a failure.
+- Adds a live Generation Log window showing the model, status, timestamp, complete prompt, and assistant response.
+- Persists the latest generation transcript, including partial output from cancelled runs.
+
 ## v2.1.9
 
 Released to expand the hosted and self-hosted AI options available for extraction and generation.

@@ -206,6 +206,32 @@ struct RelatedWorksGeneratorTests {
             .output("Visible draft")
         ])
     }
+
+    @Test func streamEventsReportCancellationWithoutShowingAnError() async {
+        let project = Project(name: "Cancelled Target")
+        let backend = FailingBackend(error: CancellationError())
+
+        var events: [RelatedWorksGenerationEvent] = []
+        for await event in RelatedWorksGenerator.streamEvents(for: project, using: backend) {
+            events.append(event)
+        }
+
+        #expect(events == [.cancelled])
+    }
+}
+
+private struct FailingBackend: AIBackend {
+    let error: Error
+
+    func generate(prompt: String) async throws -> String {
+        throw error
+    }
+
+    func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            continuation.finish(throwing: error)
+        }
+    }
 }
 
 private final class RecordingBackend: AIBackend {
@@ -506,6 +532,13 @@ struct StoreTests {
         let store = makeTestStore()
         var project = Project(name: "Survey Paper")
         project.addPaper(Paper(id: "Transformer", title: "Attention Is All You Need", authors: ["Vaswani"], year: 2017))
+        project.generationLog = GenerationLog(
+            prompt: "Write the section.",
+            response: "Generated response.",
+            model: "test-model",
+            completedAt: Date(),
+            status: .completed
+        )
         try store.save(project)
 
         let loaded = try store.loadAll()
@@ -514,6 +547,10 @@ struct StoreTests {
         #expect(found?.name == "Survey Paper")
         #expect(found?.papers.first?.id == "Transformer")
         #expect(found?.papers.first?.year == 2017)
+        #expect(found?.generationLog?.prompt == "Write the section.")
+        #expect(found?.generationLog?.response == "Generated response.")
+        #expect(found?.generationLog?.model == "test-model")
+        #expect(found?.generationLog?.status == .completed)
     }
 
     @Test func deleteProject() throws {
@@ -670,6 +707,13 @@ struct StoreTests {
             generationPrompt: "Project prompt"
         )
         source.addPaper(Paper(id: "BERT", title: "BERT", authors: ["Devlin"], year: 2019))
+        source.generationLog = GenerationLog(
+            prompt: "Prompt",
+            response: "Response",
+            model: "test-model",
+            completedAt: Date(),
+            status: .completed
+        )
 
         let imported = Project(importing: source, newID: UUID())
         #expect(imported.name == source.name)
@@ -677,6 +721,7 @@ struct StoreTests {
         #expect(imported.projectType == .techReport)
         #expect(imported.generationPrompt == "Project prompt")
         #expect(imported.papers.first?.id == "BERT")
+        #expect(imported.generationLog == source.generationLog)
         #expect(imported.id != source.id)
     }
 

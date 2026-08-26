@@ -4,6 +4,7 @@ import UserNotifications
 enum AppWindowID {
     static let main = "main"
     static let generate = "generate"
+    static let generationLog = "generationLog"
     static let inbox = "inbox"
     static let citationGraph = "citationGraph"
 }
@@ -265,6 +266,7 @@ struct RelatedWorksApp: App {
     @StateObject private var deepLinkHandler = DeepLinkHandler()
     @StateObject private var inboxProcessingCoordinator = InboxProcessingCoordinator()
     @StateObject private var launchCoordinator = AppLaunchCoordinator()
+    @StateObject private var generationLogCoordinator = GenerationLogCoordinator()
     @State private var showHelp = false
     @State private var showFirstLaunchTutorial = false
     @State private var didRequestFirstLaunchTutorial = false
@@ -535,6 +537,7 @@ struct RelatedWorksApp: App {
             if let store = launchCoordinator.store {
                 GenerateWindowView(projectID: projectID)
                     .environmentObject(store)
+                    .environmentObject(generationLogCoordinator)
                     .environment(\.locale, settings.locale)
                     .id(settings.appLanguage.rawValue)
             } else {
@@ -546,6 +549,23 @@ struct RelatedWorksApp: App {
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
         .defaultSize(width: 720, height: 540)
+
+        WindowGroup(id: AppWindowID.generationLog, for: UUID.self) { $projectID in
+            if let store = launchCoordinator.store {
+                GenerationLogWindowView(projectID: projectID)
+                    .environmentObject(store)
+                    .environmentObject(generationLogCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
+            } else {
+                AppLaunchView(coordinator: launchCoordinator)
+                    .environment(\.locale, settings.locale)
+                    .id(settings.appLanguage.rawValue)
+            }
+        }
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified)
+        .defaultSize(width: 760, height: 600)
 
         Window(appLocalized("Inbox"), id: AppWindowID.inbox) {
             if let store = launchCoordinator.store {

@@ -3,6 +3,8 @@ import Foundation
 public enum RelatedWorksGenerationEvent: Equatable {
     case thinking(Bool)
     case output(String)
+    case failed(String)
+    case cancelled
 }
 
 public struct RelatedWorksGenerator {
@@ -11,6 +13,7 @@ public struct RelatedWorksGenerator {
         do {
             return try await generateWithConfiguredBackend(prompt: prompt)
         } catch {
+            if isCancellation(error) { return "" }
             return friendlyFailureMessage(for: error)
         }
     }
@@ -58,6 +61,7 @@ public struct RelatedWorksGenerator {
             let response = try await backend.generate(prompt: prompt)
             return cleanGeneratedText(response)
         } catch {
+            if isCancellation(error) { return "" }
             return friendlyFailureMessage(for: error)
         }
     }
@@ -70,8 +74,12 @@ public struct RelatedWorksGenerator {
         AsyncStream { continuation in
             let task = Task {
                 for await event in streamEvents(for: project, using: backend) {
-                    guard case let .output(output) = event else { continue }
-                    continuation.yield(output)
+                    switch event {
+                    case let .output(output), let .failed(output):
+                        continuation.yield(output)
+                    case .thinking, .cancelled:
+                        break
+                    }
                 }
                 continuation.finish()
             }
@@ -114,11 +122,17 @@ public struct RelatedWorksGenerator {
                         continuation.yield(.output(finalOutput))
                     }
                     continuation.finish()
+                } catch where isCancellation(error) {
+                    if wasThinking {
+                        continuation.yield(.thinking(false))
+                    }
+                    continuation.yield(.cancelled)
+                    continuation.finish()
                 } catch {
                     if wasThinking {
                         continuation.yield(.thinking(false))
                     }
-                    continuation.yield(.output(friendlyFailureMessage(for: error)))
+                    continuation.yield(.failed(friendlyFailureMessage(for: error)))
                     continuation.finish()
                 }
             }
@@ -170,6 +184,11 @@ public struct RelatedWorksGenerator {
         return text.range(of: "</think>",
                           options: .caseInsensitive,
                           range: tagEnd.upperBound..<text.endIndex) == nil
+    }
+
+    private static func isCancellation(_ error: Error) -> Bool {
+        if error is CancellationError { return true }
+        return (error as? URLError)?.code == .cancelled
     }
 
     private static func friendlyFailureMessage(for error: Error) -> String {

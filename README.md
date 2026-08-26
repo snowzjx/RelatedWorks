@@ -20,7 +20,7 @@ RelatedWorks is a native macOS and iOS/iPadOS app built for Computer Science res
 
 ## Latest Release
 
-v2.1.9 adds OpenAI-compatible and Anthropic Claude backends, including streaming output, Keychain-protected API keys, model discovery, and custom `/v1` endpoints for local servers. The full version history lives on the website and in [version.md](version.md).
+v2.1.10 adds cancellable Related Works generation and a live, persistent conversation log for inspecting prompts and model responses. The full version history lives on the website and in [version.md](version.md).
 
 Full version history:
 - [Website release notes](https://snowzjx.github.io/RelatedWorks/version.html)
