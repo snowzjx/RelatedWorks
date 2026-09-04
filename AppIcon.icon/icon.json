@@ -1,19 +1,7 @@
 {
   "fill-specializations" : [
     {
-      "value" : {
-        "automatic-gradient" : "srgb:0.92143,0.92145,0.92144,1.00000",
-        "orientation" : {
-          "start" : {
-            "x" : 0.5,
-            "y" : 0
-          },
-          "stop" : {
-            "x" : 0.5,
-            "y" : 0.7
-          }
-        }
-      }
+      "value" : "system-light"
     },
     {
       "appearance" : "dark",
@@ -55,8 +43,13 @@
         }
       ],
       "name" : "Group",
+      "refractivity" : {
+        "depth" : 0,
+        "enabled" : false,
+        "strength" : 0.5
+      },
       "shadow" : {
-        "kind" : "neutral",
+        "kind" : "none",
         "opacity" : 0.5
       },
       "specular" : false,
@@ -72,7 +65,7 @@
       "layers" : [
         {
           "blend-mode" : "normal",
-          "fill" : "none",
+          "fill" : "system-light",
           "glass" : true,
           "hidden" : false,
           "image-name" : "04-paper-front.svg",
@@ -87,14 +80,19 @@
         }
       ],
       "lighting" : "individual",
+      "refractivity" : {
+        "depth" : 0,
+        "enabled" : false,
+        "strength" : 0.5
+      },
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.2
       },
-      "specular" : false,
+      "specular" : true,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.1
+        "value" : 0.2
       }
     },
     {
@@ -105,7 +103,7 @@
           "image-name" : "03-paper-middle.svg",
           "name" : "03-paper-middle",
           "position" : {
-            "scale" : 0.88,
+            "scale" : 0.9,
             "translation-in-points" : [
               0,
               0
@@ -113,14 +111,15 @@
           }
         }
       ],
+      "lighting" : "individual",
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5
       },
-      "specular" : false,
+      "specular" : true,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.5
+        "value" : 0.6
       }
     },
     {
@@ -158,7 +157,7 @@
           "image-name" : "02-paper-back.svg",
           "name" : "02-paper-back",
           "position" : {
-            "scale" : 0.82,
+            "scale" : 0.9,
             "translation-in-points" : [
               0.26272625539752426,
               -26.249971519967175
@@ -171,10 +170,10 @@
         "kind" : "neutral",
         "opacity" : 0.5
       },
-      "specular" : false,
+      "specular" : true,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.5
+        "value" : 0.7
       }
     }
   ],
