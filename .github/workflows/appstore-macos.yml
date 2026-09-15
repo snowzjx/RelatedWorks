@@ -12,9 +12,14 @@ permissions:
 
 jobs:
   submit:
-    runs-on: macos-26
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show build environment
+        run: |
+          sw_vers
+          xcodebuild -version
 
       - name: Import certificates
         env:

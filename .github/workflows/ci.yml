@@ -9,11 +9,16 @@ on:
 
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: xcode-27
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show build environment
+        run: |
+          sw_vers
+          xcodebuild -version
 
       - name: Run Swift package tests
         run: swift test
