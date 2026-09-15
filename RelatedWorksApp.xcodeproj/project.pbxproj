@@ -37,7 +37,6 @@
 		A024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F024 /* Sources/RelatedWorksApp/AppleScriptSupport.swift */; };
 		A025 /* Sources/RelatedWorksApp/RelatedWorks.sdef in Resources */ = {isa = PBXBuildFile; fileRef = F025 /* Sources/RelatedWorksApp/RelatedWorks.sdef */; };
 		A026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F026 /* Sources/RelatedWorksApp/CitationGraphWindowView.swift */; };
-		LOC001 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		IOS001 /* Sources/RelatedWorksIOS/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF001 /* Sources/RelatedWorksIOS/App.swift */; };
 		IOS002 /* Sources/RelatedWorksIOS/ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF002 /* Sources/RelatedWorksIOS/ProjectListView.swift */; };
 		IOS003 /* Sources/RelatedWorksIOS/PaperListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IF003 /* Sources/RelatedWorksIOS/PaperListView.swift */; };
@@ -60,10 +59,11 @@
 		IOS020 /* Sources/RelatedWorksCore/BlacklistedModels.plist in Resources */ = {isa = PBXBuildFile; fileRef = F020 /* Sources/RelatedWorksCore/BlacklistedModels.plist */; };
 		IOS021 /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
 		IOS_ASSETS_BUILD /* Sources/RelatedWorksIOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FIOSASSETS /* Sources/RelatedWorksIOS/Assets.xcassets */; };
+		IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FIOSSHAREAPP /* RelatedWorksShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
+		LOC001 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		LOC002 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
 		LOC004 /* Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = LOC003 /* Resources/Localizable.xcstrings */; };
-		IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FIOSSHAREAPP /* RelatedWorksShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		IOS_SAMPLE_BUILD /* Sources/RelatedWorksIOS/SampleProject.relatedworks in Resources */ = {isa = PBXBuildFile; fileRef = FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */; };
 		MAC_ZF_Archive /* Sources/ZIPFoundation/Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */; };
 		MAC_ZF_BackingConfig /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_ArchivePBackingConfiguration /* Sources/ZIPFoundation/Archive+BackingConfiguration.swift */; };
 		MAC_ZF_DataComp /* Sources/ZIPFoundation/Data+Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZF_REF_DataPCompression /* Sources/ZIPFoundation/Data+Compression.swift */; };
@@ -107,10 +107,10 @@
 		TUI_BLD_DeepLink /* Sources/RelatedWorksCore/DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* Sources/RelatedWorksCore/DeepLink.swift */; };
 		TUI_BLD_Generator /* Sources/RelatedWorksCore/Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* Sources/RelatedWorksCore/Generator.swift */; };
 		TUI_BLD_Inbox /* Sources/RelatedWorksCore/Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017c /* Sources/RelatedWorksCore/Inbox.swift */; };
-		TUI_BLD_OpenAlexService /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */; };
 		TUI_BLD_Main /* Sources/RelatedWorksTUI/main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTUI_MAIN /* Sources/RelatedWorksTUI/main.swift */; };
 		TUI_BLD_Models /* Sources/RelatedWorksCore/Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* Sources/RelatedWorksCore/Models.swift */; };
 		TUI_BLD_OllamaReachability /* Sources/RelatedWorksCore/OllamaReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017b /* Sources/RelatedWorksCore/OllamaReachability.swift */; };
+		TUI_BLD_OpenAlexService /* Sources/RelatedWorksCore/OpenAlexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F017d /* Sources/RelatedWorksCore/OpenAlexService.swift */; };
 		TUI_BLD_ProjectExporter /* Sources/RelatedWorksCore/ProjectExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F021 /* Sources/RelatedWorksCore/ProjectExporter.swift */; };
 		TUI_BLD_Store /* Sources/RelatedWorksCore/Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F011 /* Sources/RelatedWorksCore/Store.swift */; };
 		TUI_BLD_TUI /* Sources/RelatedWorksTUI/TUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FTUI /* Sources/RelatedWorksTUI/TUI.swift */; };
@@ -148,15 +148,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		BPIOS_EMBED /* Embed App Extensions */ = {
+		BPIOS_EMBED /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed App Extensions */,
+				IOS_EXT_EMBED /* RelatedWorksShareExtension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -201,7 +201,6 @@
 		FIOSSHAREAPP /* RelatedWorksShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelatedWorksShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FIOS_ENT /* RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksIOS/RelatedWorksIOS.AppStore.entitlements; sourceTree = SOURCE_ROOT; };
 		FIOS_SAMPLE /* Sources/RelatedWorksIOS/SampleProject.relatedworks */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sources/RelatedWorksIOS/SampleProject.relatedworks; sourceTree = SOURCE_ROOT; };
-		LOC003 /* Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = SOURCE_ROOT; };
 		FSHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksShareExtension/ShareViewController.swift; sourceTree = SOURCE_ROOT; };
 		FSHARE_ENT /* RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelatedWorksShareExtension/RelatedWorksShareExtension.entitlements; sourceTree = SOURCE_ROOT; };
 		FSHARE_INFO /* Sources/RelatedWorksShareExtension/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksShareExtension/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -216,6 +215,7 @@
 		IF006 /* Sources/RelatedWorksIOS/IOSProjectImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/IOSProjectImporter.swift; sourceTree = SOURCE_ROOT; };
 		IF007 /* Sources/RelatedWorksIOS/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/RelatedWorksIOS/SettingsView.swift; sourceTree = SOURCE_ROOT; };
 		IF008 /* Sources/RelatedWorksIOS/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Sources/RelatedWorksIOS/Info.plist; sourceTree = SOURCE_ROOT; };
+		LOC003 /* Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Resources/Localizable.xcstrings; sourceTree = SOURCE_ROOT; };
 		TF001 /* Tests/RelatedWorksTests/RelatedWorksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/RelatedWorksTests/RelatedWorksTests.swift; sourceTree = SOURCE_ROOT; };
 		TPROD /* RelatedWorksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RelatedWorksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ZF_REF_Archive /* Sources/ZIPFoundation/Archive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/ZIPFoundation/Archive.swift; sourceTree = SOURCE_ROOT; };
@@ -444,7 +444,7 @@
 			buildPhases = (
 				BPIOS /* Sources */,
 				BPIOSRES /* Resources */,
-				BPIOS_EMBED /* Embed App Extensions */,
+				BPIOS_EMBED /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -510,7 +510,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 2700;
 				ORGANIZATIONNAME = RelatedWorks;
 			};
 			buildConfigurationList = BCPROJ /* Build configuration list for PBXProject "RelatedWorksApp" */;
@@ -519,7 +519,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				zh-Hans,
+				"zh-Hans",
 				Base,
 			);
 			mainGroup = GROOT;
@@ -558,6 +558,14 @@
 				A025 /* Sources/RelatedWorksApp/RelatedWorks.sdef in Resources */,
 				80939E9F2F8A75040094ACE5 /* AppIcon.icon in Resources */,
 				LOC001 /* Resources/Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BPSHARERES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LOC004 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -618,14 +626,6 @@
 			files = (
 				SHARE001 /* Sources/RelatedWorksShareExtension/ShareViewController.swift in Sources */,
 				SHARE002 /* Sources/RelatedWorksCore/Inbox.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BPSHARERES /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				LOC004 /* Resources/Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -739,6 +739,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -793,6 +794,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -846,6 +848,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = A47Y4XPLXR;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Sources/RelatedWorksApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
