@@ -48,7 +48,7 @@ Full version history:
 ## Requirements
 
 ### macOS App
-- Released binaries require macOS 26+ (built with Xcode 26 / macOS 26 SDK)
+- Released binaries require macOS 26+ (built with Xcode 27 / macOS 27 SDK)
 - At least one AI backend:
   - [Ollama](https://ollama.com) running locally, **or**
   - [Google Gemini API key](https://aistudio.google.com/apikey), **or**
@@ -57,7 +57,7 @@ Full version history:
 - Source builds require macOS 14+
 
 ### iOS/iPadOS App
-- Released binaries require iOS 26+ (built with Xcode 26 / iOS 26 SDK)
+- Released binaries require iOS 26+ (built with Xcode 27 / iOS 27 SDK)
 - No AI backend required — the iPhone and iPad app is focused on viewing and lightweight editing
 - Source builds require iOS 17+
 
