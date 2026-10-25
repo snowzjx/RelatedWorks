@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: xcode-27
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
     permissions:
       contents: write
     steps:
@@ -19,6 +21,8 @@ jobs:
         run: |
           sw_vers
           xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          xcrun --sdk iphonesimulator --show-sdk-version
 
       - name: Run Swift package tests
         run: swift test

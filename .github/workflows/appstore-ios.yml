@@ -13,6 +13,8 @@ permissions:
 jobs:
   submit:
     runs-on: xcode-27
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +22,8 @@ jobs:
         run: |
           sw_vers
           xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          xcrun --sdk iphonesimulator --show-sdk-version
 
       - name: Import certificate
         env:
